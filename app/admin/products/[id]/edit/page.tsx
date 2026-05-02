@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import ProductForm from "../../ProductForm";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Modifier le produit" };
 
 interface Props { params: { id: string } }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CheckCircle, Package, MessageCircle, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Commande confirmée" };
 
 interface Props { params: { id: string } }
