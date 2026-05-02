@@ -3,9 +3,7 @@ generator client {
 }
 
 datasource db {
-  // dev local : DATABASE_URL="file:./dev.db"
-  // production Vercel : changer en "postgresql" + URL Neon/Supabase
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
