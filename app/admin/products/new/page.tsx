@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import ProductForm from "../ProductForm";
 
 export const metadata = { title: "Nouveau produit" };
+export const dynamic  = "force-dynamic";
 
 export default async function NewProductPage() {
   const categories = await prisma.category.findMany({

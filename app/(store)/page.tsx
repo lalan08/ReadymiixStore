@@ -4,6 +4,8 @@ import { ArrowRight, ShoppingBag, Truck, Award, Leaf, Star, ChevronRight, Sparkl
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 
+export const dynamic = "force-dynamic";
+
 async function getFeaturedProducts() {
   return prisma.product.findMany({
     where:   { featured: true, active: true },

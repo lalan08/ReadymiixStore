@@ -3,6 +3,8 @@ import ProductCard from "@/components/store/ProductCard";
 import Link from "next/link";
 import { Filter, Search } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 interface ShopPageProps {
   searchParams: { category?: string; q?: string; sort?: string };
 }

@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import ProductDetail from "./ProductDetail";
 import ProductCard from "@/components/store/ProductCard";
 import type { Metadata } from "next";
