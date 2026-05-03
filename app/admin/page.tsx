@@ -10,38 +10,49 @@ export const metadata = { title: "Tableau de bord" };
 export const dynamic  = "force-dynamic";
 
 async function getDashboardData() {
-  const [
-    totalOrders,
-    pendingOrders,
-    totalProducts,
-    recentOrders,
-    lowStockProducts,
-    revenue,
-  ] = await Promise.all([
-    prisma.order.count(),
-    prisma.order.count({ where: { status: "PENDING" } }),
-    prisma.product.count({ where: { active: true } }),
-    prisma.order.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      include: { items: { select: { quantity: true } } },
-    }),
-    prisma.product.findMany({
-      where: { stock: { lte: 5 }, active: true },
-      orderBy: { stock: "asc" },
-      take: 5,
-    }),
-    prisma.order.aggregate({ _sum: { total: true } }),
-  ]);
+  try {
+    const [
+      totalOrders,
+      pendingOrders,
+      totalProducts,
+      recentOrders,
+      lowStockProducts,
+      revenue,
+    ] = await Promise.all([
+      prisma.order.count(),
+      prisma.order.count({ where: { status: "PENDING" } }),
+      prisma.product.count({ where: { active: true } }),
+      prisma.order.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        include: { items: { select: { quantity: true } } },
+      }),
+      prisma.product.findMany({
+        where: { stock: { lte: 5 }, active: true },
+        orderBy: { stock: "asc" },
+        take: 5,
+      }),
+      prisma.order.aggregate({ _sum: { total: true } }),
+    ]);
 
-  return {
-    totalOrders,
-    pendingOrders,
-    totalProducts,
-    recentOrders,
-    lowStockProducts,
-    totalRevenue: revenue._sum.total ?? 0,
-  };
+    return {
+      totalOrders,
+      pendingOrders,
+      totalProducts,
+      recentOrders,
+      lowStockProducts,
+      totalRevenue: revenue._sum.total ?? 0,
+    };
+  } catch {
+    return {
+      totalOrders: 0,
+      pendingOrders: 0,
+      totalProducts: 0,
+      recentOrders: [],
+      lowStockProducts: [],
+      totalRevenue: 0,
+    };
+  }
 }
 
 export default async function AdminDashboard() {

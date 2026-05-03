@@ -7,20 +7,28 @@ import ProductCard from "@/components/store/ProductCard";
 export const dynamic = "force-dynamic";
 
 async function getFeaturedProducts() {
-  return prisma.product.findMany({
-    where:   { featured: true, active: true },
-    include: { category: true },
-    orderBy: { createdAt: "desc" },
-    take: 4,
-  });
+  try {
+    return await prisma.product.findMany({
+      where:   { featured: true, active: true },
+      include: { category: true },
+      orderBy: { createdAt: "desc" },
+      take: 4,
+    });
+  } catch {
+    return [];
+  }
 }
 
 async function getCategories() {
-  return prisma.category.findMany({
-    where:   { active: true },
-    orderBy: { sortOrder: "asc" },
-    include: { _count: { select: { products: true } } },
-  });
+  try {
+    return await prisma.category.findMany({
+      where:   { active: true },
+      orderBy: { sortOrder: "asc" },
+      include: { _count: { select: { products: true } } },
+    });
+  } catch {
+    return [];
+  }
 }
 
 const features = [
