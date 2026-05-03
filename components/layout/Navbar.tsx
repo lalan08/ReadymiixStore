@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingCart, Menu, X, Sparkles } from "lucide-react";
+import { ShoppingCart, Menu, X } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import CartDrawer from "@/components/store/CartDrawer";
@@ -44,15 +44,18 @@ export default function Navbar() {
           <nav className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="relative w-9 h-9 rounded-lg bg-gradient-brand flex items-center justify-center shadow-gold-sm group-hover:shadow-gold transition-shadow">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
+              {/* Logo triangle ReadyMiix */}
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                <polygon points="18,1 35,32 1,32" fill="#F72585" opacity="0.9"/>
+                <polygon points="18,13 30,32 6,32" fill="#C5006A"/>
+                <text x="18" y="26" textAnchor="middle" fill="#00D2C8" fontSize="7" fontWeight="bold" fontFamily="Arial,sans-serif">RMX</text>
+              </svg>
               <div className="flex flex-col leading-none">
                 <span className="font-display font-bold text-lg text-brand-text tracking-tight">
                   Ready<span className="text-gold-gradient">Miix</span>
                 </span>
-                <span className="text-[10px] text-brand-muted uppercase tracking-widest">
-                  Store
+                <span className="text-[10px] text-brand-teal uppercase tracking-widest font-semibold">
+                  Cocktails
                 </span>
               </div>
             </Link>
