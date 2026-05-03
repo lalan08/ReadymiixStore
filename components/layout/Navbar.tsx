@@ -15,6 +15,45 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+function RMXLogo({ size = 40 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 80 80"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="shrink-0"
+    >
+      {/* Outer triangle — hot pink */}
+      <polygon points="40,4 76,72 4,72" fill="#F72585" opacity="0.95" />
+      {/* Inner triangle — darker pink */}
+      <polygon points="40,22 66,70 14,70" fill="#C5006A" />
+      {/* Glow overlay on top */}
+      <polygon points="40,4 76,72 4,72" fill="url(#rmxGlow)" opacity="0.4" />
+      {/* "RMX" text */}
+      <text
+        x="40"
+        y="60"
+        textAnchor="middle"
+        fill="#00D2C8"
+        fontSize="17"
+        fontWeight="900"
+        fontFamily="'Arial Black', Impact, sans-serif"
+        letterSpacing="1"
+      >
+        RMX
+      </text>
+      <defs>
+        <radialGradient id="rmxGlow" cx="50%" cy="30%" r="60%">
+          <stop offset="0%" stopColor="#FF6AC2" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#F72585" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+    </svg>
+  );
+}
+
 export default function Navbar() {
   const [scrolled, setScrolled]   = useState(false);
   const [menuOpen, setMenuOpen]   = useState(false);
@@ -36,26 +75,22 @@ export default function Navbar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
           scrolled
-            ? "glass shadow-[0_2px_30px_rgba(0,0,0,0.5)] border-b border-brand-border"
+            ? "glass shadow-[0_2px_30px_rgba(0,0,0,0.6)] border-b border-brand-border"
             : "bg-transparent"
         )}
       >
         <div className="container-custom">
           <nav className="flex items-center justify-between h-16 md:h-20">
+
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
-              {/* Logo triangle ReadyMiix */}
-              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-                <polygon points="18,1 35,32 1,32" fill="#F72585" opacity="0.9"/>
-                <polygon points="18,13 30,32 6,32" fill="#C5006A"/>
-                <text x="18" y="26" textAnchor="middle" fill="#00D2C8" fontSize="7" fontWeight="bold" fontFamily="Arial,sans-serif">RMX</text>
-              </svg>
+            <Link href="/" className="flex items-center gap-3 group">
+              <RMXLogo size={38} />
               <div className="flex flex-col leading-none">
-                <span className="font-display font-bold text-lg text-brand-text tracking-tight">
+                <span className="font-display text-xl text-white tracking-wide uppercase">
                   Ready<span className="text-gold-gradient">Miix</span>
                 </span>
-                <span className="text-[10px] text-brand-teal uppercase tracking-widest font-semibold">
-                  Cocktails
+                <span className="text-[10px] text-brand-teal uppercase tracking-[0.25em] font-bold">
+                  Cocktails · 973
                 </span>
               </div>
             </Link>
@@ -92,9 +127,9 @@ export default function Navbar() {
                 aria-label="Panier"
                 className="relative flex items-center justify-center w-10 h-10 rounded-xl border border-brand-border/50 hover:border-brand-gold/40 hover:bg-brand-gold/5 transition-all"
               >
-                <ShoppingCart className="w-5 h-5 text-brand-muted group-hover:text-brand-text" />
+                <ShoppingCart className="w-5 h-5 text-brand-muted" />
                 {count > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-brand-gold text-brand-darker text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-fade-in">
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-brand-gold text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-fade-in">
                     {count}
                   </span>
                 )}
@@ -102,7 +137,7 @@ export default function Navbar() {
 
               <Link
                 href="/shop"
-                className="hidden md:inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold hover:from-brand-gold hover:to-brand-gold-light text-brand-darker text-sm font-semibold px-5 py-2.5 rounded-xl shadow-gold-sm hover:shadow-gold transition-all active:scale-[0.98]"
+                className="hidden md:inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold hover:from-brand-gold hover:to-brand-gold-light text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-gold-sm hover:shadow-gold transition-all active:scale-[0.98] uppercase tracking-wide"
               >
                 Commander
               </Link>
@@ -145,7 +180,7 @@ export default function Navbar() {
               <li className="pt-2">
                 <Link
                   href="/shop"
-                  className="flex items-center justify-center w-full bg-gradient-to-r from-brand-gold-dark to-brand-gold text-brand-darker text-sm font-semibold px-5 py-3 rounded-xl"
+                  className="flex items-center justify-center w-full bg-gradient-to-r from-brand-gold-dark to-brand-gold text-white text-sm font-bold px-5 py-3 rounded-xl uppercase tracking-wide"
                 >
                   Commander maintenant
                 </Link>

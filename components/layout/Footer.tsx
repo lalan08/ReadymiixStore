@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, Instagram, MapPin, Phone, MessageCircle } from "lucide-react";
+import { Instagram, MapPin, Phone, MessageCircle } from "lucide-react";
 
 const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP ?? "594694369615";
 
@@ -56,16 +56,18 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-5">
-              <div className="w-9 h-9 rounded-lg bg-gradient-brand flex items-center justify-center shadow-gold-sm">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
+            <Link href="/" className="flex items-center gap-3 mb-5">
+              <svg width="36" height="36" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                <polygon points="40,4 76,72 4,72" fill="#F72585" opacity="0.95" />
+                <polygon points="40,22 66,70 14,70" fill="#C5006A" />
+                <text x="40" y="60" textAnchor="middle" fill="#00D2C8" fontSize="17" fontWeight="900" fontFamily="'Arial Black', Impact, sans-serif" letterSpacing="1">RMX</text>
+              </svg>
               <div className="flex flex-col leading-none">
-                <span className="font-display font-bold text-lg text-brand-text">
+                <span className="font-display text-xl text-white uppercase tracking-wide">
                   Ready<span className="text-gold-gradient">Miix</span>
                 </span>
-                <span className="text-[10px] text-brand-muted uppercase tracking-widest">
-                  Cocktails
+                <span className="text-[10px] text-brand-teal uppercase tracking-[0.25em] font-bold">
+                  Cocktails · 973
                 </span>
               </div>
             </Link>
