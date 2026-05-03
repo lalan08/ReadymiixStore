@@ -33,9 +33,9 @@ async function getCategories() {
 
 const features = [
   { icon: Truck,    title: "Livraison Guyane",   desc: "Livraison rapide dans toute la Guyane française" },
-  { icon: Award,    title: "Qualité Premium",     desc: "Ingrédients sélectionnés, recettes artisanales" },
+  { icon: Award,    title: "Bien frais",          desc: "Servi frais, prêt à mixer et savourer immédiatement" },
   { icon: Leaf,     title: "100% Naturel",        desc: "Sans colorants artificiels, sans conservateurs" },
-  { icon: ShoppingBag, title: "Pack Offre",      desc: "Des packs découverte à partir de 24€" },
+  { icon: ShoppingBag, title: "Packs disponibles", desc: "En boutique et chez nos points de vente partenaires" },
 ];
 
 export default async function HomePage() {
@@ -61,19 +61,19 @@ export default async function HomePage() {
               <div className="flex items-center gap-2 px-4 py-2 rounded-full glass border-glow-gold">
                 <Sparkles className="w-4 h-4 text-brand-gold" />
                 <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
-                  Cocktails Premium · Guyane
+                  Cocktails · Guyane 973
                 </span>
               </div>
 
               <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] text-balance">
-                Le cocktail parfait,{" "}
-                <span className="text-gold-gradient">prêt à savourer</span>
+                Bien frais,{" "}
+                <span className="text-gold-gradient">toujours prêt !</span>
               </h1>
 
               <p className="text-lg text-brand-muted max-w-lg leading-relaxed">
-                Des saveurs tropicales authentiques créées en Guyane, pour la Guyane.
-                Nos cocktails ReadyMiix sont élaborés avec des ingrédients naturels
-                sélectionnés pour une expérience unique.
+                Prêt à mixer, prêt à savourer. Les cocktails ReadyMiix sont faits
+                en Guyane, pour la Guyane — avec des ingrédients frais et des
+                saveurs tropicales authentiques.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -110,7 +110,7 @@ export default async function HomePage() {
                     ))}
                   </div>
                   <p className="text-xs text-brand-muted">
-                    +200 clients satisfaits en Guyane
+                    +200 clients satisfaits · Guyane 973
                   </p>
                 </div>
               </div>

@@ -59,9 +59,9 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  /* Gold gradient text */
+  /* Pink gradient text (brand primary) */
   .text-gold-gradient {
-    background: linear-gradient(135deg, #C68A1E 0%, #F5C764 50%, #C68A1E 100%);
+    background: linear-gradient(135deg, #C5006A 0%, #FF6AC2 50%, #C5006A 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -69,7 +69,7 @@
 
   /* Brand gradient text */
   .text-brand-gradient {
-    background: linear-gradient(135deg, #7B2FBE 0%, #E8A838 100%);
+    background: linear-gradient(135deg, #7B2FBE 0%, #F72585 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -87,8 +87,8 @@
 
   /* Glow borders */
   .border-glow-gold {
-    border: 1px solid rgba(232, 168, 56, 0.3);
-    box-shadow: 0 0 20px rgba(232, 168, 56, 0.1), inset 0 0 20px rgba(232, 168, 56, 0.03);
+    border: 1px solid rgba(247, 37, 133, 0.35);
+    box-shadow: 0 0 20px rgba(247, 37, 133, 0.12), inset 0 0 20px rgba(247, 37, 133, 0.04);
   }
 
   .border-glow-purple {
@@ -102,7 +102,7 @@
   }
   .product-card-hover:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(232, 168, 56, 0.15);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(247, 37, 133, 0.18);
   }
 
   /* Shimmer loading */
