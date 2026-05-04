@@ -56,20 +56,38 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-3 mb-5">
-              <svg width="36" height="36" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-                <polygon points="40,4 76,72 4,72" fill="#F72585" opacity="0.95" />
-                <polygon points="40,22 66,70 14,70" fill="#C5006A" />
-                <text x="40" y="60" textAnchor="middle" fill="#00D2C8" fontSize="17" fontWeight="900" fontFamily="'Arial Black', Impact, sans-serif" letterSpacing="1">RMX</text>
+            <Link href="/" className="flex items-center mb-5" aria-label="ReadyMiix Store — Accueil">
+              {/* Logo SVG rétro néon */}
+              <svg width="100" height="100" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                <defs>
+                  <filter id="fpinkNeon" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feMerge><feMergeNode in="blur" /><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                  </filter>
+                  <filter id="ftealNeon" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="2" result="blur" />
+                    <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                  </filter>
+                </defs>
+                <polygon points="100,10 185,100 15,100" fill="none" stroke="#FF1493" strokeWidth="3.5" filter="url(#fpinkNeon)" />
+                <polygon points="15,100 185,100 100,190" fill="none" stroke="#FF1493" strokeWidth="3.5" filter="url(#fpinkNeon)" />
+                <rect x="62" y="55" width="5" height="45" fill="#7B2FBE" rx="2" />
+                <ellipse cx="64" cy="52" rx="16" ry="8" fill="#7B2FBE" transform="rotate(-20,64,52)" />
+                <ellipse cx="64" cy="52" rx="14" ry="7" fill="#7B2FBE" transform="rotate(15,64,52)" />
+                <ellipse cx="64" cy="52" rx="12" ry="6" fill="#7B2FBE" transform="rotate(-50,64,52)" />
+                <rect x="98" y="40" width="5" height="58" fill="#6B1FBE" rx="2" />
+                <ellipse cx="100" cy="37" rx="20" ry="10" fill="#6B1FBE" transform="rotate(-10,100,37)" />
+                <ellipse cx="100" cy="37" rx="18" ry="9" fill="#6B1FBE" transform="rotate(20,100,37)" />
+                <ellipse cx="100" cy="37" rx="16" ry="8" fill="#6B1FBE" transform="rotate(-40,100,37)" />
+                <ellipse cx="100" cy="37" rx="14" ry="7" fill="#6B1FBE" transform="rotate(45,100,37)" />
+                <rect x="134" y="55" width="5" height="45" fill="#7B2FBE" rx="2" />
+                <ellipse cx="136" cy="52" rx="16" ry="8" fill="#7B2FBE" transform="rotate(20,136,52)" />
+                <ellipse cx="136" cy="52" rx="14" ry="7" fill="#7B2FBE" transform="rotate(-15,136,52)" />
+                <ellipse cx="136" cy="52" rx="12" ry="6" fill="#7B2FBE" transform="rotate(50,136,52)" />
+                <text x="100" y="124" textAnchor="middle" fill="#00D2C8" fontSize="26" fontWeight="900" fontFamily="'Arial Black', Impact, sans-serif" letterSpacing="1.5" filter="url(#ftealNeon)">READYMIIX</text>
+                <path d="M 35,130 Q 100,138 165,130" fill="none" stroke="#00D2C8" strokeWidth="2.5" strokeLinecap="round" filter="url(#ftealNeon)" />
+                <text x="100" y="155" textAnchor="middle" fill="white" fontSize="20" fontStyle="italic" fontWeight="700" fontFamily="Georgia, serif" letterSpacing="3">STORE</text>
               </svg>
-              <div className="flex flex-col leading-none">
-                <span className="font-display text-xl text-white uppercase tracking-wide">
-                  Ready<span className="text-gold-gradient">Miix</span>
-                </span>
-                <span className="text-[10px] text-brand-teal uppercase tracking-[0.25em] font-bold">
-                  Cocktails · 973
-                </span>
-              </div>
             </Link>
             <p className="text-brand-muted text-sm leading-relaxed mb-4">
               Bien frais, toujours prêt. Des cocktails tropicaux créés en Guyane,
