@@ -158,22 +158,24 @@ export default function ComposerPage() {
         {/* ── Split product section ── */}
         <div className="grid grid-cols-2 md:grid-cols-[1fr_auto_1fr] gap-3 md:gap-6 items-start mb-16">
 
-          {CARDS.map((card) => (
-            <ProductCard
-              key={card.type}
-              {...card}
-              onCompose={() => setCfg({ open: true, type: card.type })}
-            />
-          ))}
+          <ProductCard
+            {...CARDS[0]}
+            onCompose={() => setCfg({ open: true, type: "light" })}
+          />
 
-          {/* Logo centré desktop only — placed between the two cards via CSS order */}
-          <div className="hidden md:flex flex-col items-center justify-center gap-4 px-4 self-center" style={{ order: 1 }}>
+          {/* Logo centré — entre les deux cartes sur desktop, invisible sur mobile */}
+          <div className="hidden md:flex flex-col items-center justify-center gap-4 px-4 self-center">
             <Image src="/logo.png" alt="ReadyMiix" width={80} height={80} className="object-contain" />
             <div className="text-center">
               <p className="font-display text-xs text-white uppercase tracking-[0.2em]">ReadyMiix</p>
               <p className="text-[10px] text-brand-teal uppercase tracking-[0.15em]">Cocktails</p>
             </div>
           </div>
+
+          <ProductCard
+            {...CARDS[1]}
+            onCompose={() => setCfg({ open: true, type: "hard" })}
+          />
 
         </div>
 
