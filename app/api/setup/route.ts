@@ -290,10 +290,106 @@ export async function GET() {
       });
     }
 
+    // ── Sirop table ──────────────────────────────────────────
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "Sirop" (
+        "id" TEXT NOT NULL,
+        "name" TEXT NOT NULL,
+        "slug" TEXT NOT NULL,
+        "emoji" TEXT NOT NULL DEFAULT '💧',
+        "color" TEXT NOT NULL DEFAULT '#00D2C8',
+        "active" BOOLEAN NOT NULL DEFAULT true,
+        "sortOrder" INTEGER NOT NULL DEFAULT 0,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT "Sirop_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    await prisma.$executeRawUnsafe(`
+      CREATE UNIQUE INDEX IF NOT EXISTS "Sirop_slug_key" ON "Sirop"("slug");
+    `);
+
+    // ── Soft table ───────────────────────────────────────────
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "Soft" (
+        "id" TEXT NOT NULL,
+        "name" TEXT NOT NULL,
+        "slug" TEXT NOT NULL,
+        "emoji" TEXT NOT NULL DEFAULT '🥤',
+        "surcharge" DOUBLE PRECISION NOT NULL DEFAULT 0,
+        "active" BOOLEAN NOT NULL DEFAULT true,
+        "sortOrder" INTEGER NOT NULL DEFAULT 0,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT "Soft_pkey" PRIMARY KEY ("id")
+      );
+    `);
+    await prisma.$executeRawUnsafe(`
+      CREATE UNIQUE INDEX IF NOT EXISTS "Soft_slug_key" ON "Soft"("slug");
+    `);
+
+    // ── SiteConfig table ─────────────────────────────────────
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "SiteConfig" (
+        "key" TEXT NOT NULL,
+        "value" TEXT NOT NULL,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT "SiteConfig_pkey" PRIMARY KEY ("key")
+      );
+    `);
+
+    // ── Seed sirops ──────────────────────────────────────────
+    const sirops = [
+      { id: "sir_passion",   name: "Passion",   slug: "passion",   emoji: "🍊", color: "#F97316", sortOrder: 1 },
+      { id: "sir_grenadine", name: "Grenadine", slug: "grenadine", emoji: "🌹", color: "#E11D48", sortOrder: 2 },
+      { id: "sir_curacao",   name: "Curaçao",   slug: "curacao",   emoji: "🌊", color: "#3B82F6", sortOrder: 3 },
+      { id: "sir_menthe",    name: "Menthe",    slug: "menthe",    emoji: "🌿", color: "#22C55E", sortOrder: 4 },
+      { id: "sir_peche",     name: "Pêche",     slug: "peche",     emoji: "🍑", color: "#FBBF24", sortOrder: 5 },
+      { id: "sir_fraise",    name: "Fraise",    slug: "fraise",    emoji: "🍓", color: "#F43F5E", sortOrder: 6 },
+      { id: "sir_citron",    name: "Citron",    slug: "citron",    emoji: "🍋", color: "#EAB308", sortOrder: 7 },
+      { id: "sir_coco",      name: "Coco",      slug: "coco",      emoji: "🥥", color: "#A3A3A3", sortOrder: 8 },
+    ];
+    for (const s of sirops) {
+      await prisma.sirop.upsert({
+        where: { slug: s.slug },
+        update: {},
+        create: s,
+      });
+    }
+
+    // ── Seed softs ───────────────────────────────────────────
+    const softs = [
+      { id: "soft_freez",     name: "Freez Rouge",       slug: "freez-rouge", emoji: "🔴", surcharge: 1.5, sortOrder: 1 },
+      { id: "soft_sprite",    name: "Sprite",            slug: "sprite",      emoji: "🍋", surcharge: 1.5, sortOrder: 2 },
+      { id: "soft_cola",      name: "Cola",              slug: "cola",        emoji: "🥤", surcharge: 1.5, sortOrder: 3 },
+      { id: "soft_schweppes", name: "Schweppes Agrumes", slug: "schweppes",   emoji: "🍊", surcharge: 1.5, sortOrder: 4 },
+    ];
+    for (const s of softs) {
+      await prisma.soft.upsert({
+        where: { slug: s.slug },
+        update: {},
+        create: s,
+      });
+    }
+
+    // ── Seed site config ─────────────────────────────────────
+    const configs = [
+      { key: "bonbons_text", value: "Sélection variable selon le stock du jour — Haribo, Jitty Shocks, popping candy et bien d'autres surprises dans ton cup !" },
+      { key: "bonbons_items", value: JSON.stringify(["Haribo 🐻", "Jitty Shocks ⚡", "Popping Candy 🎆", "Surprise du jour 🎉"]) },
+      { key: "soft_supplement", value: "1.50" },
+    ];
+    for (const c of configs) {
+      await prisma.siteConfig.upsert({
+        where: { key: c.key },
+        update: {},
+        create: c,
+      });
+    }
+
     return NextResponse.json({
       success: true,
       message: "Base de données initialisée avec succès !",
-      data: { categories: 3, products: products.length },
+      data: { categories: 3, products: products.length, sirops: sirops.length, softs: softs.length },
     });
   } catch (error) {
     console.error("Setup error:", error);

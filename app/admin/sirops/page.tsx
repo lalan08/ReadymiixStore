@@ -1,0 +1,241 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { Plus, Pencil, Trash2, Check, X } from "lucide-react";
+import { slugify } from "@/lib/utils";
+
+interface Sirop {
+  id: string;
+  name: string;
+  slug: string;
+  emoji: string;
+  color: string;
+  active: boolean;
+  sortOrder: number;
+}
+
+const EMPTY: Omit<Sirop, "id" | "createdAt" | "updatedAt"> = {
+  name: "", slug: "", emoji: "💧", color: "#00D2C8", active: true, sortOrder: 0,
+};
+
+export default function AdminSiropsPage() {
+  const [sirops, setSirops]   = useState<Sirop[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm]       = useState({ ...EMPTY });
+  const [editId, setEditId]   = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [saving, setSaving]   = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const r = await fetch("/api/admin/sirops");
+    if (r.ok) setSirops(await r.json());
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  function openAdd() {
+    setEditId(null);
+    setForm({ ...EMPTY, sortOrder: sirops.length + 1 });
+    setShowForm(true);
+  }
+
+  function openEdit(s: Sirop) {
+    setEditId(s.id);
+    setForm({ name: s.name, slug: s.slug, emoji: s.emoji, color: s.color, active: s.active, sortOrder: s.sortOrder });
+    setShowForm(true);
+  }
+
+  function cancelForm() { setShowForm(false); setEditId(null); }
+
+  async function save() {
+    if (!form.name.trim()) return;
+    setSaving(true);
+    const payload = { ...form, slug: form.slug || slugify(form.name) };
+    const url  = editId ? `/api/admin/sirops/${editId}` : "/api/admin/sirops";
+    const method = editId ? "PUT" : "POST";
+    await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    await load();
+    cancelForm();
+    setSaving(false);
+  }
+
+  async function toggle(s: Sirop) {
+    await fetch(`/api/admin/sirops/${s.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...s, active: !s.active }),
+    });
+    await load();
+  }
+
+  async function remove(id: string) {
+    if (!confirm("Supprimer ce sirop ?")) return;
+    await fetch(`/api/admin/sirops/${id}`, { method: "DELETE" });
+    await load();
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="font-display text-3xl text-brand-text">Sirops</h1>
+          <p className="text-brand-muted text-sm mt-1">{sirops.length} sirop(s) configuré(s)</p>
+        </div>
+        <button
+          onClick={openAdd}
+          className="flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-white text-sm font-bold px-4 py-2.5 rounded-xl"
+        >
+          <Plus className="w-4 h-4" /> Ajouter
+        </button>
+      </div>
+
+      {/* Form */}
+      {showForm && (
+        <div className="bg-brand-card border border-brand-border rounded-2xl p-5 mb-6">
+          <h2 className="font-display text-lg text-brand-text mb-4">
+            {editId ? "Modifier le sirop" : "Nouveau sirop"}
+          </h2>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="text-xs text-brand-muted uppercase tracking-wide block mb-1">Nom *</label>
+              <input
+                className="input-base"
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value, slug: slugify(e.target.value) }))}
+                placeholder="ex: Passion"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-brand-muted uppercase tracking-wide block mb-1">Slug</label>
+              <input
+                className="input-base"
+                value={form.slug}
+                onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
+                placeholder="auto-généré"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-brand-muted uppercase tracking-wide block mb-1">Emoji</label>
+              <input
+                className="input-base text-2xl"
+                value={form.emoji}
+                onChange={(e) => setForm((f) => ({ ...f, emoji: e.target.value }))}
+                placeholder="💧"
+                maxLength={4}
+              />
+            </div>
+            <div>
+              <label className="text-xs text-brand-muted uppercase tracking-wide block mb-1">Couleur</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={form.color}
+                  onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
+                  className="w-10 h-10 rounded-lg cursor-pointer border border-brand-border bg-brand-card"
+                />
+                <input
+                  className="input-base flex-1"
+                  value={form.color}
+                  onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
+                  placeholder="#00D2C8"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-brand-muted uppercase tracking-wide block mb-1">Ordre d&apos;affichage</label>
+              <input
+                type="number"
+                className="input-base"
+                value={form.sortOrder}
+                onChange={(e) => setForm((f) => ({ ...f, sortOrder: parseInt(e.target.value) || 0 }))}
+              />
+            </div>
+            <div className="flex items-end">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <div
+                  onClick={() => setForm((f) => ({ ...f, active: !f.active }))}
+                  className={`w-12 h-6 rounded-full transition-colors ${form.active ? "bg-brand-gold" : "bg-brand-border"} relative`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${form.active ? "translate-x-7" : "translate-x-1"}`} />
+                </div>
+                <span className="text-sm text-brand-text">{form.active ? "Actif" : "Inactif"}</span>
+              </label>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={save}
+              disabled={saving || !form.name.trim()}
+              className="flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-white text-sm font-bold px-5 py-2.5 rounded-xl disabled:opacity-50"
+            >
+              <Check className="w-4 h-4" /> {saving ? "Enregistrement..." : "Enregistrer"}
+            </button>
+            <button onClick={cancelForm} className="flex items-center gap-2 text-sm text-brand-muted hover:text-brand-text px-4 py-2.5 rounded-xl border border-brand-border">
+              <X className="w-4 h-4" /> Annuler
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* List */}
+      <div className="bg-brand-card border border-brand-border rounded-2xl overflow-hidden">
+        {loading ? (
+          <div className="text-center py-10 text-brand-muted text-sm">Chargement...</div>
+        ) : sirops.length === 0 ? (
+          <div className="text-center py-10 text-brand-muted text-sm">
+            Aucun sirop. Clique sur &quot;Ajouter&quot; pour commencer.
+          </div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-brand-border text-brand-muted text-xs uppercase tracking-wide">
+                <th className="text-left px-5 py-3">Sirop</th>
+                <th className="text-left px-5 py-3">Couleur</th>
+                <th className="text-center px-5 py-3">Statut</th>
+                <th className="text-center px-5 py-3">Ordre</th>
+                <th className="text-right px-5 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sirops.map((s) => (
+                <tr key={s.id} className="border-b border-brand-border/50 hover:bg-white/2 transition-colors">
+                  <td className="px-5 py-3">
+                    <span className="text-xl mr-2">{s.emoji}</span>
+                    <span className="font-medium text-brand-text">{s.name}</span>
+                  </td>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded-full border border-white/10" style={{ background: s.color }} />
+                      <span className="text-brand-muted font-mono text-xs">{s.color}</span>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3 text-center">
+                    <button
+                      onClick={() => toggle(s)}
+                      className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${s.active ? "bg-brand-success/15 text-brand-success" : "bg-brand-border text-brand-muted"}`}
+                    >
+                      {s.active ? "Actif" : "Inactif"}
+                    </button>
+                  </td>
+                  <td className="px-5 py-3 text-center text-brand-muted">{s.sortOrder}</td>
+                  <td className="px-5 py-3 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button onClick={() => openEdit(s)} className="p-1.5 rounded-lg hover:bg-white/5 text-brand-muted hover:text-brand-text">
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => remove(s.id)} className="p-1.5 rounded-lg hover:bg-brand-error/10 text-brand-muted hover:text-brand-error">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}

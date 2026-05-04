@@ -79,3 +79,33 @@ model Newsletter {
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
 }
+
+model Sirop {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  emoji     String   @default("💧")
+  color     String   @default("#00D2C8")
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Soft {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  emoji     String   @default("🥤")
+  surcharge Float    @default(0)
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteConfig {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

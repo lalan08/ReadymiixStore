@@ -1,30 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, ChevronRight, ChevronLeft, ShoppingCart, Check } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 
-const SOFT_SUPPLEMENT = 1.5;
-
-const SIROPS = [
-  { id: "passion",   label: "Passion",   emoji: "🍊", accent: "#F97316", bg: "rgba(249,115,22,0.12)",  border: "rgba(249,115,22,0.5)"  },
-  { id: "grenadine", label: "Grenadine", emoji: "🌹", accent: "#E11D48", bg: "rgba(225,29,72,0.12)",   border: "rgba(225,29,72,0.5)"   },
-  { id: "curacao",   label: "Curaçao",   emoji: "🌊", accent: "#3B82F6", bg: "rgba(59,130,246,0.12)",  border: "rgba(59,130,246,0.5)"  },
-  { id: "menthe",    label: "Menthe",    emoji: "🌿", accent: "#22C55E", bg: "rgba(34,197,94,0.12)",   border: "rgba(34,197,94,0.5)"   },
-  { id: "peche",     label: "Pêche",     emoji: "🍑", accent: "#FBBF24", bg: "rgba(251,191,36,0.12)",  border: "rgba(251,191,36,0.5)"  },
-  { id: "fraise",    label: "Fraise",    emoji: "🍓", accent: "#F43F5E", bg: "rgba(244,63,94,0.12)",   border: "rgba(244,63,94,0.5)"   },
-  { id: "citron",    label: "Citron",    emoji: "🍋", accent: "#EAB308", bg: "rgba(234,179,8,0.12)",   border: "rgba(234,179,8,0.5)"   },
-  { id: "coco",      label: "Coco",      emoji: "🥥", accent: "#A3A3A3", bg: "rgba(163,163,163,0.12)", border: "rgba(163,163,163,0.5)" },
+/* ─── Fallbacks (utilisés si la DB n'est pas encore initialisée) ── */
+const SIROPS_FALLBACK: DbSirop[] = [
+  { id: "passion",   slug: "passion",   name: "Passion",   emoji: "🍊", color: "#F97316" },
+  { id: "grenadine", slug: "grenadine", name: "Grenadine", emoji: "🌹", color: "#E11D48" },
+  { id: "curacao",   slug: "curacao",   name: "Curaçao",   emoji: "🌊", color: "#3B82F6" },
+  { id: "menthe",    slug: "menthe",    name: "Menthe",    emoji: "🌿", color: "#22C55E" },
+  { id: "peche",     slug: "peche",     name: "Pêche",     emoji: "🍑", color: "#FBBF24" },
+  { id: "fraise",    slug: "fraise",    name: "Fraise",    emoji: "🍓", color: "#F43F5E" },
+  { id: "citron",    slug: "citron",    name: "Citron",    emoji: "🍋", color: "#EAB308" },
+  { id: "coco",      slug: "coco",      name: "Coco",      emoji: "🥥", color: "#A3A3A3" },
+];
+const SOFTS_FALLBACK: DbSoft[] = [
+  { id: "freez-rouge", slug: "freez-rouge", name: "Freez Rouge",       emoji: "🔴", surcharge: 1.5 },
+  { id: "sprite",      slug: "sprite",      name: "Sprite",            emoji: "🍋", surcharge: 1.5 },
+  { id: "cola",        slug: "cola",        name: "Cola",              emoji: "🥤", surcharge: 1.5 },
+  { id: "schweppes",   slug: "schweppes",   name: "Schweppes Agrumes", emoji: "🍊", surcharge: 1.5 },
 ];
 
-const SOFTS = [
-  { id: "freez-rouge", label: "Freez Rouge",       emoji: "🔴" },
-  { id: "sprite",      label: "Sprite",            emoji: "🍋" },
-  { id: "cola",        label: "Cola",              emoji: "🥤" },
-  { id: "schweppes",   label: "Schweppes Agrumes", emoji: "🍊" },
-];
+interface DbSirop { id: string; name: string; slug: string; emoji: string; color: string; }
+interface DbSoft  { id: string; name: string; slug: string; emoji: string; surcharge: number; }
+
+function hexToRgba(hex: string, alpha: number) {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
 
 interface Props {
   isOpen: boolean;
@@ -40,24 +49,48 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
   const [soft, setSoft]           = useState("");
   const { addItem, openCart }     = useCartStore();
 
-  const softPrice  = wantSoft === "oui" ? SOFT_SUPPLEMENT : 0;
-  const totalPrice = basePrice + softPrice;
-  const isStep1Done = sirop !== "";
-  const isStep3Done = wantSoft === "non" || (wantSoft === "oui" && soft !== "");
-  const isComplete  = isStep1Done && isStep3Done;
+  const [sirops, setSirops]       = useState<DbSirop[]>([]);
+  const [softs, setSofts]         = useState<DbSoft[]>([]);
+  const [bonbonsText, setBonbonsText] = useState("Sélection variable selon le stock du jour — Haribo, Jitty Shocks, popping candy et bien d'autres surprises dans ton cup !");
+  const [bonbonsItems, setBonbonsItems] = useState(["Haribo 🐻", "Jitty Shocks ⚡", "Popping Candy 🎆", "Surprise du jour 🎉"]);
 
-  function reset() {
-    setStep(1); setSirop(""); setWantSoft(""); setSoft("");
-  }
+  useEffect(() => {
+    fetch("/api/sirops")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data?.length) setSirops(data); else setSirops(SIROPS_FALLBACK); })
+      .catch(() => setSirops(SIROPS_FALLBACK));
 
-  function handleClose() {
-    onClose();
-    setTimeout(reset, 350);
-  }
+    fetch("/api/softs")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data?.length) setSofts(data); else setSofts(SOFTS_FALLBACK); })
+      .catch(() => setSofts(SOFTS_FALLBACK));
+
+    fetch("/api/admin/config")
+      .then((r) => r.ok ? r.json() : null)
+      .then((cfg) => {
+        if (!cfg) return;
+        if (cfg.bonbons_text) setBonbonsText(cfg.bonbons_text);
+        if (cfg.bonbons_items) {
+          try { setBonbonsItems(JSON.parse(cfg.bonbons_items)); } catch { /* keep default */ }
+        }
+      })
+      .catch(() => {/* keep defaults */});
+  }, []);
+
+  const selectedSirop = sirops.find((s) => s.id === s.slug ? s.slug === sirop : s.id === sirop) ?? sirops.find((s) => s.slug === sirop || s.id === sirop);
+  const selectedSoft  = softs.find((s) => s.slug === soft || s.id === soft);
+  const softPrice     = wantSoft === "oui" && selectedSoft ? selectedSoft.surcharge : 0;
+  const totalPrice    = basePrice + softPrice;
+  const isStep1Done   = sirop !== "";
+  const isStep3Done   = wantSoft === "non" || (wantSoft === "oui" && soft !== "");
+  const isComplete    = isStep1Done && isStep3Done;
+
+  function reset() { setStep(1); setSirop(""); setWantSoft(""); setSoft(""); }
+  function handleClose() { onClose(); setTimeout(reset, 350); }
 
   function handleAddToCart() {
-    const siropLabel = SIROPS.find((s) => s.id === sirop)?.label ?? sirop;
-    const softLabel  = soft ? SOFTS.find((s) => s.id === soft)?.label : null;
+    const siropLabel = selectedSirop?.name ?? sirop;
+    const softLabel  = selectedSoft?.name ?? null;
     const name       = `Cocktail ${type === "light" ? "Light" : "Hard"} – ${siropLabel}${softLabel ? ` + ${softLabel}` : ""}`;
     const cartId     = `${type}-${sirop}-${wantSoft === "oui" ? soft : "nosoft"}`;
 
@@ -79,14 +112,10 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
 
   if (!isOpen) return null;
 
-  const selectedSirop = SIROPS.find((s) => s.id === sirop);
-
   return (
     <>
-      {/* Backdrop */}
       <div className="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm" onClick={handleClose} />
 
-      {/* Bottom sheet */}
       <div className="fixed bottom-0 left-0 right-0 z-[90] max-h-[92vh] flex flex-col rounded-t-3xl bg-brand-card border-t-2 border-brand-gold/30 overflow-hidden animate-slide-up">
 
         {/* Drag handle */}
@@ -114,11 +143,7 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
 
         {/* Step indicators */}
         <div className="flex items-center justify-center gap-2 py-4 shrink-0">
-          {[
-            { n: 1, label: "Sirop" },
-            { n: 2, label: "Bonbons" },
-            { n: 3, label: "Soft" },
-          ].map(({ n, label }) => (
+          {[{ n: 1, label: "Sirop" }, { n: 2, label: "Bonbons" }, { n: 3, label: "Soft" }].map(({ n, label }) => (
             <div key={n} className="flex items-center gap-1">
               <div className="flex flex-col items-center gap-1">
                 <div className={cn(
@@ -129,16 +154,12 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
                 )}>
                   {step > n ? <Check className="w-3.5 h-3.5" /> : n}
                 </div>
-                <span className={cn(
-                  "text-[9px] uppercase tracking-wide font-bold",
-                  step === n ? "text-brand-gold" : "text-brand-muted"
-                )}>{label}</span>
+                <span className={cn("text-[9px] uppercase tracking-wide font-bold", step === n ? "text-brand-gold" : "text-brand-muted")}>
+                  {label}
+                </span>
               </div>
               {n < 3 && (
-                <div className={cn(
-                  "w-10 h-px mb-4 transition-colors",
-                  step > n ? "bg-brand-gold/40" : "bg-brand-border"
-                )} />
+                <div className={cn("w-10 h-px mb-4 transition-colors", step > n ? "bg-brand-gold/40" : "bg-brand-border")} />
               )}
             </div>
           ))}
@@ -160,23 +181,27 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                {SIROPS.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => setSirop(s.id)}
-                    style={{
-                      background:   sirop === s.id ? s.bg   : "transparent",
-                      borderColor:  sirop === s.id ? s.accent : "rgba(255,255,255,0.08)",
-                    }}
-                    className="flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left active:scale-[0.97]"
-                  >
-                    <span className="text-2xl shrink-0">{s.emoji}</span>
-                    <span className="text-sm font-semibold text-white">{s.label}</span>
-                    {sirop === s.id && (
-                      <Check className="w-4 h-4 ml-auto shrink-0" style={{ color: s.accent }} />
-                    )}
-                  </button>
-                ))}
+                {sirops.map((s) => {
+                  const key     = s.slug ?? s.id;
+                  const selected = sirop === key;
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => setSirop(key)}
+                      style={{
+                        background:  selected ? hexToRgba(s.color, 0.12) : "transparent",
+                        borderColor: selected ? s.color : "rgba(255,255,255,0.08)",
+                      }}
+                      className="flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left active:scale-[0.97]"
+                    >
+                      <span className="text-2xl shrink-0">{s.emoji}</span>
+                      <span className="text-sm font-semibold text-white">{s.name}</span>
+                      {selected && (
+                        <Check className="w-4 h-4 ml-auto shrink-0" style={{ color: s.color }} />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -190,17 +215,11 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
                 <p className="font-display text-xl text-white uppercase tracking-wide mb-2">
                   Bonbons & surprises inclus
                 </p>
-                <p className="text-sm text-brand-muted leading-relaxed">
-                  Sélection variable selon le stock du jour — Haribo, Jitty Shocks,
-                  popping candy et bien d&apos;autres surprises dans ton cup !
-                </p>
+                <p className="text-sm text-brand-muted leading-relaxed">{bonbonsText}</p>
               </div>
               <div className="flex flex-wrap gap-2 justify-center">
-                {["Haribo 🐻", "Jitty Shocks ⚡", "Popping Candy 🎆", "Surprise du jour 🎉"].map((b) => (
-                  <span
-                    key={b}
-                    className="px-3 py-1.5 rounded-full bg-brand-purple/20 border border-brand-purple/30 text-xs text-brand-muted"
-                  >
+                {bonbonsItems.map((b) => (
+                  <span key={b} className="px-3 py-1.5 rounded-full bg-brand-purple/20 border border-brand-purple/30 text-xs text-brand-muted">
                     {b}
                   </span>
                 ))}
@@ -213,7 +232,9 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
             <div className="animate-fade-in">
               <div className="mb-4">
                 <p className="text-sm font-bold text-brand-text">🥤 Ajouter un soft ?</p>
-                <p className="text-xs text-brand-muted">Supplément +{SOFT_SUPPLEMENT.toFixed(2).replace(".", ",")}€</p>
+                <p className="text-xs text-brand-muted">
+                  {softs[0]?.surcharge ? `Supplément +${softs[0].surcharge.toFixed(2).replace(".", ",")}€` : "Inclus"}
+                </p>
               </div>
 
               <div className="flex gap-3 mb-5">
@@ -230,7 +251,11 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
                         : "border-brand-border/50 text-brand-muted hover:border-brand-border"
                     )}
                   >
-                    {choice === "non" ? "Non merci" : `Oui ! +${SOFT_SUPPLEMENT.toFixed(2).replace(".", ",")}€`}
+                    {choice === "non"
+                      ? "Non merci"
+                      : softs[0]?.surcharge
+                        ? `Oui ! +${softs[0].surcharge.toFixed(2).replace(".", ",")}€`
+                        : "Oui !"}
                   </button>
                 ))}
               </div>
@@ -239,22 +264,26 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
                 <div className="animate-fade-in">
                   <p className="text-xs text-brand-muted mb-3 font-semibold uppercase tracking-wide">Choisis ton soft :</p>
                   <div className="grid grid-cols-2 gap-3">
-                    {SOFTS.map((s) => (
-                      <button
-                        key={s.id}
-                        onClick={() => setSoft(s.id)}
-                        className={cn(
-                          "flex items-center gap-2 p-3 rounded-xl border-2 transition-all",
-                          soft === s.id
-                            ? "bg-brand-teal/10 border-brand-teal text-brand-teal"
-                            : "border-brand-border/50 text-brand-muted hover:border-brand-border"
-                        )}
-                      >
-                        <span className="text-xl">{s.emoji}</span>
-                        <span className="text-sm font-semibold flex-1 text-left">{s.label}</span>
-                        {soft === s.id && <Check className="w-3.5 h-3.5 shrink-0" />}
-                      </button>
-                    ))}
+                    {softs.map((s) => {
+                      const key      = s.slug ?? s.id;
+                      const selected = soft === key;
+                      return (
+                        <button
+                          key={s.id}
+                          onClick={() => setSoft(key)}
+                          className={cn(
+                            "flex items-center gap-2 p-3 rounded-xl border-2 transition-all",
+                            selected
+                              ? "bg-brand-teal/10 border-brand-teal text-brand-teal"
+                              : "border-brand-border/50 text-brand-muted hover:border-brand-border"
+                          )}
+                        >
+                          <span className="text-xl">{s.emoji}</span>
+                          <span className="text-sm font-semibold flex-1 text-left">{s.name}</span>
+                          {selected && <Check className="w-3.5 h-3.5 shrink-0" />}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -264,13 +293,12 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
 
         {/* Footer sticky */}
         <div className="px-5 py-4 border-t border-brand-border bg-brand-darker shrink-0">
-          {/* Price recap */}
           <div className="flex items-center justify-between mb-3">
             <div className="text-xs text-brand-muted">
               {selectedSirop && (
                 <span className="flex items-center gap-1">
-                  <span>{selectedSirop.emoji}</span> {selectedSirop.label}
-                  {wantSoft === "oui" && soft && ` + ${SOFTS.find((s) => s.id === soft)?.label}`}
+                  <span>{selectedSirop.emoji}</span> {selectedSirop.name}
+                  {wantSoft === "oui" && selectedSoft && ` + ${selectedSoft.name}`}
                 </span>
               )}
             </div>
@@ -279,7 +307,6 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
             </span>
           </div>
 
-          {/* Navigation */}
           <div className="flex gap-3">
             {step > 1 && (
               <button
