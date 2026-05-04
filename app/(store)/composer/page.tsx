@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ChevronRight, ChevronDown, Truck, Snowflake, Wine, Lock, Sparkles } from "lucide-react";
+import { ChevronRight, Truck, Snowflake, Wine, Lock, Sparkles } from "lucide-react";
 import CocktailConfigurator from "@/components/store/CocktailConfigurator";
 
 /* ─── Data ─────────────────────────────────────────────────── */
@@ -12,19 +12,35 @@ const CARDS = [
     type: "light" as const,
     accent: "#00D2C8",
     title: "Light",
-    highlights: ["Léger & équilibré", "1 dose de Hennessy", "Surprises incluses 🍬"],
-    detail: ["🍾 1 bouteille de Hennessy", "💧 Sirop au choix", "🍬 Bonbons & surprises", "🥤 1 gobelet ReadyMiix", "🥤 1 paille"],
+    dose: "1 DOSE DE HENNESSY",
+    taglineIcon: "⚖️",
+    tagline: "LÉGER & ÉQUILIBRÉ",
+    taglineSub: "PARFAIT POUR CHILLER.",
+    // Remplacer par /images/light-kit.jpg quand la vraie photo est uploadée
     heroImg: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80",
+    sideIcons: [
+      { icon: "🍾", label: "1 DOSE\nDE HENNESSY" },
+      { icon: "🍬", label: "BONBONS &\nSURPRISES" },
+      { icon: "🥤", label: "GOBELET\nREADYMIIX" },
+    ],
   },
   {
     type: "hard" as const,
     accent: "#F72585",
     title: "Hard",
-    highlights: ["Plus intense 🔥", "2 doses de Hennessy", "Surprises incluses 🍬"],
-    detail: ["🍾 2 bouteilles de Hennessy", "💧 Sirop au choix", "🍬 Bonbons & surprises", "🥤 1 gobelet ReadyMiix", "🥤 1 paille"],
+    dose: "2 DOSES DE HENNESSY",
+    taglineIcon: "🔥",
+    tagline: "PLUS INTENSE & PUISSANT",
+    taglineSub: "À TOI DE CRÉER L'EXPÉRIENCE.",
+    // Remplacer par /images/hard-kit.jpg quand la vraie photo est uploadée
     heroImg: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=600&q=80",
+    sideIcons: [
+      { icon: "🍾", label: "2 DOSES\nDE HENNESSY" },
+      { icon: "🍬", label: "BONBONS &\nSURPRISES" },
+      { icon: "🥤", label: "GOBELET\nREADYMIIX" },
+    ],
   },
-] as const;
+];
 
 const FEATURES = [
   { Icon: Truck,     label: "LIVRAISON RAPIDE", sub: "EN 24/48H",       color: "#F72585" },
@@ -40,97 +56,168 @@ const INSPIRATIONS = [
   { name: "FRAISE MENTHE", emoji: "🍓🌿", desc: "Light + sirop Fraise + menthe fraîche",     type: "light" as const },
 ];
 
+/* ─── Side icon item ────────────────────────────────────────── */
+function SideIcon({ icon, label, accent }: { icon: string; label: string; accent: string }) {
+  return (
+    <div className="flex flex-col items-center gap-1.5 text-center">
+      <span className="text-2xl leading-none">{icon}</span>
+      <span
+        className="text-[9px] font-bold uppercase leading-tight whitespace-pre-line tracking-wide"
+        style={{ color: accent }}
+      >
+        {label}
+      </span>
+    </div>
+  );
+}
+
 /* ─── Product card ──────────────────────────────────────────── */
 function ProductCard({
-  type, accent, title, highlights, detail, heroImg, onCompose,
+  type, accent, title, dose, taglineIcon, tagline, taglineSub, heroImg, sideIcons, onCompose,
 }: {
   type: "light" | "hard";
   accent: string;
   title: string;
-  highlights: readonly string[];
-  detail: readonly string[];
+  dose: string;
+  taglineIcon: string;
+  tagline: string;
+  taglineSub: string;
   heroImg: string;
+  sideIcons: { icon: string; label: string }[];
   onCompose: () => void;
 }) {
-  const [showDetail, setShowDetail] = useState(false);
-
   return (
     <div
       className="flex flex-col rounded-2xl overflow-hidden"
       style={{
         background: "#0a0a14",
         border: `2px solid ${accent}`,
-        boxShadow: `0 0 30px ${accent}40`,
+        boxShadow: `0 0 32px ${accent}50, inset 0 0 60px ${accent}06`,
       }}
     >
-      {/* Title */}
-      <div className="px-3 md:px-5 pt-3 md:pt-5 pb-2 text-center">
-        <span className="font-display text-base md:text-2xl text-white uppercase tracking-wider">COCKTAIL </span>
-        <span
-          className="text-xl md:text-3xl font-bold"
-          style={{ fontFamily: "'Dancing Script', cursive", color: accent, textShadow: `0 0 20px ${accent}80` }}
-        >
-          {title}
-        </span>
-      </div>
-
-      {/* Hero image */}
-      <div className="relative mx-2 md:mx-4 rounded-xl overflow-hidden" style={{ aspectRatio: "4/3" }}>
-        <Image src={heroImg} alt={`Cocktail ${title}`} fill className="object-cover" />
-        <div
-          className="absolute inset-0"
-          style={{ background: `linear-gradient(to top, ${accent}30 0%, transparent 60%)` }}
-        />
-      </div>
-
-      {/* 3 highlights */}
-      <div className="px-3 md:px-5 pt-3 pb-2 flex flex-col gap-1.5 md:gap-2">
-        {highlights.map((h) => (
-          <div key={h} className="flex items-center gap-2">
-            <span className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full shrink-0" style={{ background: accent }} />
-            <span className="text-[10px] md:text-sm font-semibold text-white">{h}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Voir le détail toggle */}
-      <div className="px-3 md:px-5 pb-2">
-        <button
-          onClick={() => setShowDetail((v) => !v)}
-          className="flex items-center gap-1 text-[9px] md:text-xs font-semibold uppercase tracking-wide transition-opacity hover:opacity-80"
+      {/* ── Header ── */}
+      <div className="px-3 md:px-5 pt-3 md:pt-5 pb-2 md:pb-3 text-center">
+        <h2 className="leading-none">
+          <span className="font-display text-xl md:text-4xl text-white uppercase tracking-wider">
+            COCKTAIL{" "}
+          </span>
+          <span
+            className="text-2xl md:text-4xl font-bold"
+            style={{
+              fontFamily: "'Dancing Script', cursive",
+              color: accent,
+              textShadow: `0 0 24px ${accent}90`,
+            }}
+          >
+            {title}
+          </span>
+        </h2>
+        <p
+          className="text-[9px] md:text-xs font-bold uppercase tracking-[0.18em] mt-1.5"
           style={{ color: accent }}
         >
-          {showDetail ? "Masquer" : "Voir le détail"}
-          <ChevronDown
-            className="w-3 h-3 transition-transform duration-200"
-            style={{ transform: showDetail ? "rotate(180deg)" : "rotate(0deg)" }}
-          />
-        </button>
-
-        {showDetail && (
-          <ul className="mt-2 flex flex-col gap-1 pl-1">
-            {detail.map((item) => (
-              <li key={item} className="text-[9px] md:text-xs text-white/60">{item}</li>
-            ))}
-          </ul>
-        )}
+          — {dose} —
+        </p>
       </div>
 
-      {/* CTA */}
-      <div className="px-2 md:px-4 pt-1 pb-3 md:pb-5 mt-auto">
-        <button
-          onClick={onCompose}
-          className="w-full flex items-center justify-center gap-1 md:gap-2 py-3 md:py-4 rounded-xl font-bold text-white uppercase tracking-wider text-[10px] md:text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+      {/* ── Body: [icônes | photo | icônes] desktop / photo seule mobile ── */}
+      <div className="px-2 md:px-4 pb-1">
+
+        {/* Desktop: 3 colonnes */}
+        <div className="hidden md:grid grid-cols-[1fr_2.2fr_1fr] gap-3 items-center">
+          {/* Colonne gauche */}
+          <div className="flex flex-col justify-around h-full gap-5 py-2">
+            {sideIcons.map((item) => (
+              <SideIcon key={item.label} accent={accent} {...item} />
+            ))}
+          </div>
+
+          {/* Photo centrale */}
+          <div
+            className="relative rounded-xl overflow-hidden"
+            style={{
+              aspectRatio: "3/4",
+              boxShadow: `0 0 20px ${accent}30`,
+              border: `1px solid ${accent}30`,
+            }}
+          >
+            <Image
+              src={heroImg}
+              alt={`Kit Cocktail ${title}`}
+              fill
+              className="object-cover"
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: `linear-gradient(to top, ${accent}25 0%, transparent 55%)` }}
+            />
+          </div>
+
+          {/* Colonne droite (miroir) */}
+          <div className="flex flex-col justify-around h-full gap-5 py-2">
+            {sideIcons.map((item) => (
+              <SideIcon key={item.label + "-r"} accent={accent} {...item} />
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile: photo pleine largeur */}
+        <div
+          className="md:hidden relative rounded-xl overflow-hidden"
           style={{
-            background: type === "hard"
-              ? "linear-gradient(135deg, #C5006A, #F72585)"
-              : "linear-gradient(135deg, #00A8A0, #00D2C8)",
-            boxShadow: `0 0 25px ${accent}50`,
+            aspectRatio: "3/4",
+            border: `1px solid ${accent}30`,
           }}
         >
-          <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
-          Composer
-          <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
+          <Image
+            src={heroImg}
+            alt={`Kit Cocktail ${title}`}
+            fill
+            className="object-cover"
+          />
+          <div
+            className="absolute inset-0"
+            style={{ background: `linear-gradient(to top, ${accent}25 0%, transparent 55%)` }}
+          />
+        </div>
+      </div>
+
+      {/* ── Tagline bar ── */}
+      <div
+        className="mx-2 md:mx-4 mt-2 md:mt-3 rounded-xl px-3 md:px-5 py-2 md:py-3 flex items-center justify-center gap-2 md:gap-3"
+        style={{ background: "rgba(0,0,0,0.55)", border: `1px solid ${accent}25` }}
+      >
+        <span className="text-base md:text-2xl shrink-0">{taglineIcon}</span>
+        <div className="text-center md:text-left">
+          <p
+            className="text-[9px] md:text-xs font-bold uppercase tracking-wider leading-tight"
+            style={{ color: accent }}
+          >
+            {tagline}
+          </p>
+          <p className="text-[8px] md:text-[10px] text-white/50 uppercase tracking-wide mt-0.5">
+            {taglineSub}
+          </p>
+        </div>
+      </div>
+
+      {/* ── CTA ── */}
+      <div className="px-2 md:px-4 pt-2 md:pt-3 pb-3 md:pb-5">
+        <button
+          onClick={onCompose}
+          className="w-full flex items-center justify-center gap-1.5 md:gap-2 py-3 md:py-4 rounded-xl font-bold text-white uppercase tracking-wider text-[10px] md:text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+          style={{
+            background:
+              type === "hard"
+                ? "linear-gradient(135deg, #C5006A, #F72585)"
+                : "linear-gradient(135deg, #00A8A0, #00D2C8)",
+            boxShadow: `0 4px 28px ${accent}55`,
+          }}
+        >
+          <Sparkles className="w-3 h-3 md:w-4 md:h-4 shrink-0" />
+          <span className="hidden sm:inline">COMPOSER MON COCKTAIL</span>
+          <span className="sm:hidden">COMPOSER</span>
+          <ChevronRight className="w-3 h-3 md:w-4 md:h-4 shrink-0" />
         </button>
       </div>
     </div>
@@ -140,38 +227,37 @@ function ProductCard({
 /* ─── Page ──────────────────────────────────────────────────── */
 export default function ComposerPage() {
   const [cfg, setCfg] = useState<{ open: boolean; type: "light" | "hard" }>({
-    open: false, type: "light",
+    open: false,
+    type: "light",
   });
 
   return (
-    <div className="min-h-screen bg-[#050510] pt-24 pb-20 overflow-x-hidden">
+    <div className="min-h-screen bg-[#050510] pt-20 md:pt-24 pb-20 overflow-x-hidden">
       <div className="container-custom">
 
-        {/* ── Hero heading ── */}
-        <div className="text-center mb-8">
-          <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.25em] mb-2">— Compose ton cocktail</p>
-          <h1 className="font-display text-3xl md:text-5xl text-white uppercase tracking-wide">
-            Choisis ton style
-          </h1>
-        </div>
+        {/* ── Grid principal ── */}
+        <div className="grid grid-cols-2 md:grid-cols-[1fr_auto_1fr] gap-3 md:gap-5 items-start mb-12 md:mb-16">
 
-        {/* ── Split product section ── */}
-        <div className="grid grid-cols-2 md:grid-cols-[1fr_auto_1fr] gap-3 md:gap-6 items-start mb-16">
-
+          {/* Carte Light */}
           <ProductCard
             {...CARDS[0]}
             onCompose={() => setCfg({ open: true, type: "light" })}
           />
 
-          {/* Logo centré — entre les deux cartes sur desktop, invisible sur mobile */}
-          <div className="hidden md:flex flex-col items-center justify-center gap-4 px-4 self-center">
-            <Image src="/logo.png" alt="ReadyMiix" width={80} height={80} className="object-contain" />
+          {/* Logo centré entre les deux cartes — desktop uniquement */}
+          <div className="hidden md:flex flex-col items-center justify-start gap-3 px-3 pt-6">
+            <Image src="/logo.png" alt="ReadyMiix" width={90} height={90} className="object-contain" />
             <div className="text-center">
-              <p className="font-display text-xs text-white uppercase tracking-[0.2em]">ReadyMiix</p>
-              <p className="text-[10px] text-brand-teal uppercase tracking-[0.15em]">Cocktails</p>
+              <p className="font-display text-sm text-white uppercase tracking-[0.2em] leading-tight">
+                READYMIIX
+              </p>
+              <p className="text-[11px] uppercase tracking-[0.15em]" style={{ color: "#00D2C8" }}>
+                COCKTAILS
+              </p>
             </div>
           </div>
 
+          {/* Carte Hard */}
           <ProductCard
             {...CARDS[1]}
             onCompose={() => setCfg({ open: true, type: "hard" })}
@@ -179,31 +265,42 @@ export default function ComposerPage() {
 
         </div>
 
-        {/* ── Bottom features bar ── */}
+        {/* ── Barre features ── */}
         <div
-          className="rounded-2xl grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden mb-16"
+          className="rounded-2xl grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden mb-12 md:mb-16"
           style={{ background: "#1a1a2e", border: "1px solid rgba(255,255,255,0.06)" }}
         >
           {FEATURES.map(({ Icon, label, sub, color }) => (
-            <div key={label} className="flex items-center gap-3 px-4 py-4 bg-[#0a0a18]">
+            <div key={label} className="flex items-center gap-2 md:gap-3 px-3 md:px-5 py-4 bg-[#0a0a18]">
               <Icon className="w-5 h-5 md:w-6 md:h-6 shrink-0" style={{ color }} />
               <div>
-                <p className="text-[10px] md:text-xs font-bold text-white uppercase tracking-wide leading-tight">{label}</p>
-                {sub && <p className="text-[9px] md:text-[10px] uppercase tracking-wide" style={{ color }}>{sub}</p>}
+                <p className="text-[10px] md:text-xs font-bold text-white uppercase tracking-wide leading-tight">
+                  {label}
+                </p>
+                {sub && (
+                  <p className="text-[9px] md:text-[10px] uppercase tracking-wide" style={{ color }}>
+                    {sub}
+                  </p>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-        {/* ── Inspiration section ── */}
+        {/* ── Section Inspirations ── */}
         <div>
           <div className="text-center mb-8">
-            <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.25em] mb-2">— Idées du moment</p>
+            <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.25em] mb-2">
+              — Idées du moment
+            </p>
             <h2 className="font-display text-3xl md:text-4xl text-white uppercase tracking-wide mb-2">
               Inspiration du moment
             </h2>
-            <p className="text-brand-muted text-sm">💡 Recrée ces cocktails ou invente le tien</p>
+            <p className="text-brand-muted text-sm">
+              💡 Recrée ces cocktails ou invente le tien
+            </p>
           </div>
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {INSPIRATIONS.map((inspo) => (
               <button
@@ -226,7 +323,7 @@ export default function ComposerPage() {
 
       </div>
 
-      {/* Configurator drawer */}
+      {/* Configurateur */}
       <CocktailConfigurator
         isOpen={cfg.open}
         onClose={() => setCfg((c) => ({ ...c, open: false }))}
