@@ -11,6 +11,10 @@ export interface CartItem {
   image: string;
   quantity: number;
   volume?: string;
+  options?: {
+    sirop?: string;
+    soft?: string;
+  };
 }
 
 export interface CartStore {

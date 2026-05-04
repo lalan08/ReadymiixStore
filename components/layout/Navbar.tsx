@@ -10,10 +10,11 @@ import { cn } from "@/lib/utils";
 import CartDrawer from "@/components/store/CartDrawer";
 
 const navLinks = [
-  { href: "/",        label: "Accueil" },
-  { href: "/shop",    label: "Boutique" },
-  { href: "/about",   label: "Notre histoire" },
-  { href: "/contact", label: "Contact" },
+  { href: "/",          label: "Accueil" },
+  { href: "/composer",  label: "Composer 🎯" },
+  { href: "/shop",      label: "Boutique" },
+  { href: "/about",     label: "Notre histoire" },
+  { href: "/contact",   label: "Contact" },
 ];
 
 export default function Navbar() {
