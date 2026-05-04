@@ -109,3 +109,11 @@ model SiteConfig {
   value     String
   updatedAt DateTime @updatedAt
 }
+
+model Media {
+  id        String   @id @default(cuid())
+  name      String
+  slot      String?
+  src       String
+  createdAt DateTime @default(now())
+}

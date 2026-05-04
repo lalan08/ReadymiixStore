@@ -372,6 +372,18 @@ export async function GET() {
       });
     }
 
+    // ── Media table ──────────────────────────────────────────
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "Media" (
+        "id" TEXT NOT NULL,
+        "name" TEXT NOT NULL,
+        "slot" TEXT,
+        "src" TEXT NOT NULL,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT "Media_pkey" PRIMARY KEY ("id")
+      );
+    `);
+
     // ── Seed site config ─────────────────────────────────────
     const configs = [
       { key: "bonbons_text", value: "Sélection variable selon le stock du jour — Haribo, Jitty Shocks, popping candy et bien d'autres surprises dans ton cup !" },

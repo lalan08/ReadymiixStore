@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { Sparkles, LayoutDashboard, Package, ShoppingBag, Tag, LogOut, Menu, Droplets, Coffee, Settings } from "lucide-react";
+import { Sparkles, LayoutDashboard, Package, ShoppingBag, Tag, LogOut, Menu, Droplets, Coffee, Settings, Image as ImageIcon } from "lucide-react";
 
 const navItems = [
   { href: "/admin",            icon: LayoutDashboard, label: "Tableau de bord" },
   { href: "/admin/products",   icon: Package,         label: "Produits" },
   { href: "/admin/orders",     icon: ShoppingBag,     label: "Commandes" },
   { href: "/admin/categories", icon: Tag,             label: "Catégories" },
+  { href: "/admin/media",      icon: ImageIcon,       label: "Médias" },
   { href: "/admin/sirops",     icon: Droplets,        label: "Sirops" },
   { href: "/admin/softs",      icon: Coffee,          label: "Softs" },
   { href: "/admin/settings",   icon: Settings,        label: "Paramètres" },

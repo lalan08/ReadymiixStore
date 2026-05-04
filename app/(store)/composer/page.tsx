@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { ChevronRight, ChevronDown, Truck, Snowflake, Wine, Lock, Sparkles } from "lucide-react";
 import CocktailConfigurator from "@/components/store/CocktailConfigurator";
 
@@ -77,7 +76,8 @@ function ProductCard({
 
       {/* Hero image */}
       <div className="relative mx-2 md:mx-4 rounded-xl overflow-hidden" style={{ aspectRatio: "4/3" }}>
-        <Image src={heroImg} alt={`Cocktail ${title}`} fill className="object-cover" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={heroImg} alt={`Cocktail ${title}`} className="absolute inset-0 w-full h-full object-cover" />
         <div
           className="absolute inset-0"
           style={{ background: `linear-gradient(to top, ${accent}30 0%, transparent 60%)` }}
@@ -183,7 +183,8 @@ export default function ComposerPage() {
 
           {/* Logo centré — entre les deux cartes sur desktop, invisible sur mobile */}
           <div className="hidden md:flex flex-col items-center justify-center gap-4 px-4 self-center">
-            <Image src="/logo.png" alt="ReadyMiix" width={80} height={80} className="object-contain" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="ReadyMiix" width={80} height={80} className="object-contain" />
             <div className="text-center">
               <p className="font-display text-xs text-white uppercase tracking-[0.2em]">ReadyMiix</p>
               <p className="text-[10px] text-brand-teal uppercase tracking-[0.15em]">Cocktails</p>
