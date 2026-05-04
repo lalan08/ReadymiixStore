@@ -108,21 +108,18 @@ export default async function HomePage() {
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
             <Link
-              href="/shop"
+              href="/composer"
               className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-white font-bold px-8 py-4 rounded-xl shadow-gold hover:shadow-[0_0_50px_rgba(247,37,133,0.5)] transition-all active:scale-[0.98] text-base uppercase tracking-wide"
             >
-              <ShoppingBag className="w-5 h-5" />
-              Commander maintenant
+              🎯 Composer mon cocktail
             </Link>
-            <a
-              href={`https://wa.me/${whatsapp}?text=Bonjour%20ReadyMiix%20!%20Je%20voudrais%20commander.`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-3 border border-brand-border text-brand-text hover:border-green-500/40 hover:bg-green-500/5 font-semibold px-8 py-4 rounded-xl transition-all text-base"
+            <Link
+              href="/shop"
+              className="inline-flex items-center justify-center gap-3 border border-brand-border text-brand-text hover:border-brand-gold/40 font-semibold px-8 py-4 rounded-xl transition-all text-base"
             >
-              <MessageCircle className="w-5 h-5 text-green-400" />
-              WhatsApp
-            </a>
+              <ShoppingBag className="w-5 h-5" />
+              Voir la boutique
+            </Link>
           </div>
 
           {/* Social proof pills */}
