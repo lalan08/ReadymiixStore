@@ -64,6 +64,7 @@ export default function Footer() {
                 width={110}
                 height={110}
                 className="object-contain"
+                style={{ mixBlendMode: "screen" }}
               />
             </Link>
             <p className="text-brand-muted text-sm leading-relaxed mb-4">
