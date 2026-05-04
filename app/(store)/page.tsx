@@ -61,6 +61,20 @@ export default async function HomePage() {
 
         <div className="container-custom relative z-10 pt-28 pb-20 flex flex-col items-center text-center">
 
+          {/* Logo grand format */}
+          <div className="relative mb-6">
+            <div className="absolute inset-0 rounded-full bg-brand-gold/25 blur-3xl scale-125 animate-pulse" />
+            <div className="absolute inset-0 rounded-full bg-brand-purple/20 blur-2xl scale-150" />
+            <Image
+              src="/logo.png"
+              alt="ReadyMiix Store"
+              width={200}
+              height={200}
+              className="relative z-10 object-contain w-[180px] h-[180px] md:w-[240px] md:h-[240px] drop-shadow-[0_0_50px_rgba(247,37,133,0.7)]"
+              priority
+            />
+          </div>
+
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-teal/40 bg-brand-teal/10 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-teal animate-pulse" />
