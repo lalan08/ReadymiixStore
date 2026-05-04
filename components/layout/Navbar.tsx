@@ -52,7 +52,6 @@ export default function Navbar() {
                 width={56}
                 height={56}
                 className="object-contain"
-                style={{ mixBlendMode: "screen" }}
                 priority
               />
             </Link>
