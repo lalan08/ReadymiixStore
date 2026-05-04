@@ -58,6 +58,61 @@ export default function AdminSettingsPage() {
 
       <div className="flex flex-col gap-6">
 
+        {/* ── Section Visuels Composer ── */}
+        <section className="bg-brand-card border border-brand-gold/30 rounded-2xl p-5">
+          <h2 className="font-display text-lg text-brand-text mb-1">📸 Visuels — Page Composer</h2>
+          <p className="text-brand-muted text-xs mb-4">
+            Photos affichées dans les cartes <strong className="text-brand-text">Cocktail Light</strong> et <strong className="text-brand-text">Cocktail Hard</strong> sur la page /composer.
+          </p>
+
+          <div className="bg-brand-darker rounded-xl border border-brand-border p-4 mb-4">
+            <p className="text-xs font-bold text-brand-gold uppercase tracking-wide mb-2">📋 Comment ajouter tes photos ?</p>
+            <ol className="text-xs text-brand-muted space-y-1 list-decimal list-inside leading-relaxed">
+              <li>Va sur GitHub → ton dépôt → dossier <code className="text-brand-teal">public/images/</code></li>
+              <li>Clique sur <strong className="text-brand-text">Add file → Upload files</strong></li>
+              <li>Upload ta photo Light (<code className="text-brand-teal">light-kit.jpg</code>) et ta photo Hard (<code className="text-brand-teal">hard-kit.jpg</code>)</li>
+              <li>Reviens ici et entre <code className="text-brand-teal">/images/light-kit.jpg</code> dans le champ ci-dessous</li>
+            </ol>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="text-xs text-brand-muted uppercase tracking-wide block mb-2">
+                🟦 Image Cocktail <span style={{ color: "#00D2C8" }}>Light</span>
+              </label>
+              <input
+                className="input-base"
+                value={config.light_card_image ?? ""}
+                onChange={(e) => set("light_card_image", e.target.value)}
+                placeholder="/images/light-kit.jpg  ou  https://lien-direct-image.jpg"
+              />
+              {config.light_card_image && (
+                <div className="mt-2 relative w-32 h-24 rounded-lg overflow-hidden border border-brand-border">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={config.light_card_image} alt="Light preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+            </div>
+            <div>
+              <label className="text-xs text-brand-muted uppercase tracking-wide block mb-2">
+                🟥 Image Cocktail <span style={{ color: "#F72585" }}>Hard</span>
+              </label>
+              <input
+                className="input-base"
+                value={config.hard_card_image ?? ""}
+                onChange={(e) => set("hard_card_image", e.target.value)}
+                placeholder="/images/hard-kit.jpg  ou  https://lien-direct-image.jpg"
+              />
+              {config.hard_card_image && (
+                <div className="mt-2 relative w-32 h-24 rounded-lg overflow-hidden border border-brand-border">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={config.hard_card_image} alt="Hard preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
         {/* Section Softs */}
         <section className="bg-brand-card border border-brand-border rounded-2xl p-5">
           <h2 className="font-display text-lg text-brand-text mb-1">🥤 Supplément Softs</h2>

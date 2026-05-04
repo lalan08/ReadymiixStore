@@ -18,6 +18,7 @@ async function getDashboardData() {
       recentOrders,
       lowStockProducts,
       revenue,
+      siropCount,
     ] = await Promise.all([
       prisma.order.count(),
       prisma.order.count({ where: { status: "PENDING" } }),
@@ -33,6 +34,7 @@ async function getDashboardData() {
         take: 5,
       }),
       prisma.order.aggregate({ _sum: { total: true } }),
+      prisma.sirop.count(),
     ]);
 
     return {
@@ -42,6 +44,7 @@ async function getDashboardData() {
       recentOrders,
       lowStockProducts,
       totalRevenue: revenue._sum.total ?? 0,
+      needsSetup: siropCount === 0,
     };
   } catch {
     return {
@@ -51,6 +54,7 @@ async function getDashboardData() {
       recentOrders: [],
       lowStockProducts: [],
       totalRevenue: 0,
+      needsSetup: true,
     };
   }
 }
@@ -91,6 +95,26 @@ export default async function AdminDashboard() {
 
   return (
     <div className="max-w-6xl flex flex-col gap-8">
+
+      {/* ── Bannière setup ── */}
+      {data.needsSetup && (
+        <div className="rounded-2xl border border-brand-warning/40 bg-brand-warning/10 p-5 flex flex-col md:flex-row items-start md:items-center gap-4">
+          <div className="flex-1">
+            <p className="font-bold text-brand-warning text-sm">⚠️ Base de données non initialisée</p>
+            <p className="text-brand-muted text-xs mt-1">
+              Clique sur le bouton pour créer les tables et ajouter les sirops, softs et paramètres par défaut.
+            </p>
+          </div>
+          <a
+            href="/api/setup"
+            target="_blank"
+            className="shrink-0 bg-brand-warning text-brand-darker font-bold text-sm px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+          >
+            ✦ Initialiser maintenant
+          </a>
+        </div>
+      )}
+
       {/* Header */}
       <div>
         <h1 className="font-display text-2xl md:text-3xl font-bold text-brand-text">

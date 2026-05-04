@@ -1,20 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronRight, ChevronDown, Truck, Snowflake, Wine, Lock, Sparkles } from "lucide-react";
 import CocktailConfigurator from "@/components/store/CocktailConfigurator";
 
+const DEFAULT_LIGHT_IMG = "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80";
+const DEFAULT_HARD_IMG  = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=600&q=80";
+
 /* ─── Data ─────────────────────────────────────────────────── */
 
-const CARDS = [
+const BASE_CARDS = [
   {
     type: "light" as const,
     accent: "#00D2C8",
     title: "Light",
     highlights: ["Léger & équilibré", "1 dose de Hennessy", "Surprises incluses 🍬"],
     detail: ["🍾 1 bouteille de Hennessy", "💧 Sirop au choix", "🍬 Bonbons & surprises", "🥤 1 gobelet ReadyMiix", "🥤 1 paille"],
-    heroImg: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80",
   },
   {
     type: "hard" as const,
@@ -22,7 +24,6 @@ const CARDS = [
     title: "Hard",
     highlights: ["Plus intense 🔥", "2 doses de Hennessy", "Surprises incluses 🍬"],
     detail: ["🍾 2 bouteilles de Hennessy", "💧 Sirop au choix", "🍬 Bonbons & surprises", "🥤 1 gobelet ReadyMiix", "🥤 1 paille"],
-    heroImg: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=600&q=80",
   },
 ] as const;
 
@@ -142,6 +143,23 @@ export default function ComposerPage() {
   const [cfg, setCfg] = useState<{ open: boolean; type: "light" | "hard" }>({
     open: false, type: "light",
   });
+  const [lightImg, setLightImg] = useState(DEFAULT_LIGHT_IMG);
+  const [hardImg,  setHardImg]  = useState(DEFAULT_HARD_IMG);
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((r) => r.ok ? r.json() : {})
+      .then((cfg: Record<string, string>) => {
+        if (cfg.light_card_image) setLightImg(cfg.light_card_image);
+        if (cfg.hard_card_image)  setHardImg(cfg.hard_card_image);
+      })
+      .catch(() => {});
+  }, []);
+
+  const CARDS = [
+    { ...BASE_CARDS[0], heroImg: lightImg },
+    { ...BASE_CARDS[1], heroImg: hardImg  },
+  ];
 
   return (
     <div className="min-h-screen bg-[#050510] pt-24 pb-20 overflow-x-hidden">

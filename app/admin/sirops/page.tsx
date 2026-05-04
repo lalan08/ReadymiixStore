@@ -184,8 +184,21 @@ export default function AdminSiropsPage() {
         {loading ? (
           <div className="text-center py-10 text-brand-muted text-sm">Chargement...</div>
         ) : sirops.length === 0 ? (
-          <div className="text-center py-10 text-brand-muted text-sm">
-            Aucun sirop. Clique sur &quot;Ajouter&quot; pour commencer.
+          <div className="text-center py-12 px-6">
+            <div className="text-4xl mb-3">💧</div>
+            <p className="text-brand-text font-semibold mb-1">Aucun sirop trouvé</p>
+            <p className="text-brand-muted text-sm mb-5">
+              La base de données n&apos;est pas encore initialisée.
+            </p>
+            <button
+              onClick={async () => {
+                await fetch("/api/setup");
+                await load();
+              }}
+              className="bg-gradient-to-r from-brand-gold-dark to-brand-gold text-white text-sm font-bold px-6 py-3 rounded-xl"
+            >
+              ✦ Initialiser les sirops par défaut
+            </button>
           </div>
         ) : (
           <table className="w-full text-sm">
