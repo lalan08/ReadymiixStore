@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import { useCartStore } from "@/lib/store";
@@ -14,121 +15,6 @@ const navLinks = [
   { href: "/about",   label: "Notre histoire" },
   { href: "/contact", label: "Contact" },
 ];
-
-/* ── Logo SVG — style rétro néon, proche du vrai logo ── */
-function RMXLogo({ size = 44 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 200 200"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="shrink-0"
-    >
-      <defs>
-        {/* Neon pink glow */}
-        <filter id="pinkNeon" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="4" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        {/* Teal glow */}
-        <filter id="tealNeon" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="2" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-
-      {/* ── Diamond outline (2 triangles = 1 losange) ── */}
-      {/* Upper triangle */}
-      <polygon
-        points="100,10 185,100 15,100"
-        fill="none"
-        stroke="#FF1493"
-        strokeWidth="3.5"
-        filter="url(#pinkNeon)"
-      />
-      {/* Lower triangle */}
-      <polygon
-        points="15,100 185,100 100,190"
-        fill="none"
-        stroke="#FF1493"
-        strokeWidth="3.5"
-        filter="url(#pinkNeon)"
-      />
-
-      {/* ── Palm trees (simplified silhouettes) ── */}
-      {/* Left palm trunk */}
-      <rect x="62" y="55" width="5" height="45" fill="#7B2FBE" rx="2" />
-      {/* Left palm leaves */}
-      <ellipse cx="64" cy="52" rx="16" ry="8" fill="#7B2FBE" transform="rotate(-20,64,52)" />
-      <ellipse cx="64" cy="52" rx="14" ry="7" fill="#7B2FBE" transform="rotate(15,64,52)" />
-      <ellipse cx="64" cy="52" rx="12" ry="6" fill="#7B2FBE" transform="rotate(-50,64,52)" />
-
-      {/* Center palm trunk */}
-      <rect x="98" y="40" width="5" height="58" fill="#6B1FBE" rx="2" />
-      {/* Center palm leaves */}
-      <ellipse cx="100" cy="37" rx="20" ry="10" fill="#6B1FBE" transform="rotate(-10,100,37)" />
-      <ellipse cx="100" cy="37" rx="18" ry="9" fill="#6B1FBE" transform="rotate(20,100,37)" />
-      <ellipse cx="100" cy="37" rx="16" ry="8" fill="#6B1FBE" transform="rotate(-40,100,37)" />
-      <ellipse cx="100" cy="37" rx="14" ry="7" fill="#6B1FBE" transform="rotate(45,100,37)" />
-
-      {/* Right palm trunk */}
-      <rect x="134" y="55" width="5" height="45" fill="#7B2FBE" rx="2" />
-      {/* Right palm leaves */}
-      <ellipse cx="136" cy="52" rx="16" ry="8" fill="#7B2FBE" transform="rotate(20,136,52)" />
-      <ellipse cx="136" cy="52" rx="14" ry="7" fill="#7B2FBE" transform="rotate(-15,136,52)" />
-      <ellipse cx="136" cy="52" rx="12" ry="6" fill="#7B2FBE" transform="rotate(50,136,52)" />
-
-      {/* ── READYMIIX text ── */}
-      <text
-        x="100"
-        y="124"
-        textAnchor="middle"
-        fill="#00D2C8"
-        fontSize="26"
-        fontWeight="900"
-        fontFamily="'Arial Black', Impact, sans-serif"
-        letterSpacing="1.5"
-        filter="url(#tealNeon)"
-      >
-        READYMIIX
-      </text>
-
-      {/* ── Teal underline swoosh ── */}
-      <path
-        d="M 35,130 Q 100,138 165,130"
-        fill="none"
-        stroke="#00D2C8"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        filter="url(#tealNeon)"
-      />
-
-      {/* ── STORE text ── */}
-      <text
-        x="100"
-        y="155"
-        textAnchor="middle"
-        fill="white"
-        fontSize="20"
-        fontStyle="italic"
-        fontWeight="700"
-        fontFamily="Georgia, 'Times New Roman', serif"
-        letterSpacing="3"
-      >
-        STORE
-      </text>
-    </svg>
-  );
-}
 
 export default function Navbar() {
   const [scrolled, setScrolled]   = useState(false);
@@ -160,7 +46,14 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link href="/" className="flex items-center group" aria-label="ReadyMiix Store — Accueil">
-              <RMXLogo size={56} />
+              <Image
+                src="/logo.png"
+                alt="ReadyMiix Store"
+                width={56}
+                height={56}
+                className="object-contain"
+                priority
+              />
             </Link>
 
             {/* Desktop links */}
