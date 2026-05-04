@@ -1,11 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { formatPrice, parseJsonField } from "@/lib/utils";
 import Link from "next/link";
-import { Package, Plus, Eye, EyeOff } from "lucide-react";
-import ProductActions from "./ProductActions";
+import { Package, Plus, Eye, EyeOff, Pencil } from "lucide-react";
 
-export const metadata = { title: "Gestion des produits" };
+export const metadata = { title: "Produits" };
 export const dynamic  = "force-dynamic";
+
+const TYPE_BADGE: Record<string, { label: string; color: string }> = {
+  light: { label: "Light",  color: "bg-[#00D2C8]/15 text-[#00D2C8] border-[#00D2C8]/30" },
+  hard:  { label: "Hard",   color: "bg-[#F72585]/15 text-[#F72585] border-[#F72585]/30" },
+  packs: { label: "Pack",   color: "bg-brand-gold/15 text-brand-gold border-brand-gold/30" },
+};
 
 export default async function AdminProductsPage() {
   const products = await prisma.product.findMany({
@@ -14,15 +19,15 @@ export default async function AdminProductsPage() {
   });
 
   return (
-    <div className="max-w-6xl flex flex-col gap-6">
+    <div className="max-w-5xl flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl md:text-3xl font-bold text-brand-text">Produits</h1>
-          <p className="text-brand-muted text-sm mt-0.5">{products.length} produit{products.length > 1 ? "s" : ""}</p>
+          <h1 className="font-display text-3xl font-bold text-brand-text">Produits</h1>
+          <p className="text-brand-muted text-sm mt-0.5">{products.length} produit{products.length !== 1 ? "s" : ""}</p>
         </div>
         <Link
           href="/admin/products/new"
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-brand-darker font-bold px-5 py-2.5 rounded-xl text-sm shadow-gold-sm hover:shadow-gold transition-all"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-brand-darker font-bold px-5 py-2.5 rounded-xl text-sm shadow-gold-sm hover:opacity-90 transition-all"
         >
           <Plus className="w-4 h-4" />
           Ajouter
@@ -36,115 +41,77 @@ export default async function AdminProductsPage() {
             <p className="font-display font-bold text-brand-text mb-1">Aucun produit</p>
             <p className="text-brand-muted text-sm">Commencez par ajouter votre premier produit.</p>
           </div>
-          <Link
-            href="/admin/products/new"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-brand-darker font-bold px-6 py-2.5 rounded-xl text-sm"
-          >
-            <Plus className="w-4 h-4" />
-            Ajouter un produit
+          <Link href="/admin/products/new" className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-brand-darker font-bold px-6 py-2.5 rounded-xl text-sm">
+            <Plus className="w-4 h-4" /> Ajouter un produit
           </Link>
         </div>
       ) : (
-        <div className="rounded-2xl bg-brand-card border border-brand-border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-brand-border">
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-brand-muted uppercase tracking-wide">
-                    Produit
-                  </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-brand-muted uppercase tracking-wide hidden md:table-cell">
-                    Catégorie
-                  </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-brand-muted uppercase tracking-wide">
-                    Prix
-                  </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-brand-muted uppercase tracking-wide hidden sm:table-cell">
-                    Stock
-                  </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-brand-muted uppercase tracking-wide hidden lg:table-cell">
-                    Statut
-                  </th>
-                  <th className="text-right px-5 py-3.5 text-xs font-semibold text-brand-muted uppercase tracking-wide">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-brand-border">
-                {products.map((product) => {
-                  const images = parseJsonField<string[]>(product.images, []);
-                  return (
-                    <tr key={product.id} className="hover:bg-white/3 transition-colors">
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="w-10 h-10 rounded-lg shrink-0 bg-brand-border overflow-hidden"
-                            style={{
-                              backgroundImage: images[0] ? `url(${images[0]})` : undefined,
-                              backgroundSize: "cover",
-                              backgroundPosition: "center",
-                            }}
-                          >
-                            {!images[0] && (
-                              <div className="w-full h-full bg-gradient-brand opacity-30" />
-                            )}
-                          </div>
-                          <div>
-                            <p className="font-medium text-brand-text">{product.name}</p>
-                            {product.volume && (
-                              <p className="text-xs text-brand-muted">{product.volume}</p>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3.5 hidden md:table-cell text-brand-muted">
-                        {product.category.name}
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <span className="font-bold text-brand-gold">{formatPrice(product.price)}</span>
-                        {product.comparePrice && (
-                          <span className="text-xs text-brand-muted line-through ml-1.5">
-                            {formatPrice(product.comparePrice)}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3.5 hidden sm:table-cell">
-                        <span
-                          className={`text-xs font-semibold ${
-                            product.stock === 0
-                              ? "text-brand-error"
-                              : product.stock <= 5
-                              ? "text-brand-warning"
-                              : "text-brand-success"
-                          }`}
-                        >
-                          {product.stock}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3.5 hidden lg:table-cell">
-                        <span
-                          className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border ${
-                            product.active
-                              ? "text-brand-success bg-brand-success/10 border-brand-success/30"
-                              : "text-brand-muted bg-brand-border border-brand-border"
-                          }`}
-                        >
-                          {product.active ? (
-                            <><Eye className="w-3 h-3" /> Visible</>
-                          ) : (
-                            <><EyeOff className="w-3 h-3" /> Masqué</>
-                          )}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <ProductActions productId={product.id} productSlug={product.slug} />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+        <div className="flex flex-col gap-2">
+          {products.map((product) => {
+            const images = parseJsonField<string[]>(product.images, []);
+            const imgSrc = images[0] ?? null;
+            const badge  = TYPE_BADGE[product.category.slug] ?? { label: product.category.name, color: "bg-brand-border text-brand-muted border-brand-border" };
+
+            return (
+              <Link
+                key={product.id}
+                href={`/admin/products/${product.id}/edit`}
+                className="flex items-center gap-4 px-4 py-3.5 rounded-2xl bg-brand-card border border-brand-border hover:border-brand-gold/30 hover:bg-brand-gold/3 transition-all group"
+              >
+                {/* Thumbnail */}
+                <div className="w-14 h-14 rounded-xl shrink-0 overflow-hidden bg-brand-darker border border-brand-border">
+                  {imgSrc ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={imgSrc} alt={product.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Package className="w-5 h-5 text-brand-muted/40" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Name + type */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="font-semibold text-brand-text truncate">{product.name}</p>
+                    <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border ${badge.color}`}>
+                      {badge.label}
+                    </span>
+                  </div>
+                  <p className="text-xs text-brand-muted mt-0.5">
+                    {product.volume && <span>{product.volume} · </span>}
+                    Stock : <span className={
+                      product.stock === 0 ? "text-brand-error font-semibold"
+                      : product.stock <= 5 ? "text-brand-warning font-semibold"
+                      : "text-brand-success font-semibold"
+                    }>{product.stock}</span>
+                  </p>
+                </div>
+
+                {/* Price */}
+                <div className="text-right shrink-0">
+                  <p className="font-bold text-brand-gold">{formatPrice(product.price)}</p>
+                  {product.comparePrice && (
+                    <p className="text-xs text-brand-muted line-through">{formatPrice(product.comparePrice)}</p>
+                  )}
+                </div>
+
+                {/* Status */}
+                <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+                  <span className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border font-medium ${
+                    product.active
+                      ? "text-brand-success bg-brand-success/10 border-brand-success/30"
+                      : "text-brand-muted bg-brand-border/50 border-brand-border"
+                  }`}>
+                    {product.active ? <><Eye className="w-3 h-3" /> Visible</> : <><EyeOff className="w-3 h-3" /> Masqué</>}
+                  </span>
+                </div>
+
+                {/* Edit icon */}
+                <Pencil className="w-4 h-4 text-brand-muted/40 group-hover:text-brand-gold shrink-0 transition-colors" />
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
