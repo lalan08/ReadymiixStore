@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ShoppingBag, MapPin, Flame, Candy, Package, Star, ChevronRight, MessageCircle } from "lucide-react";
+import { ArrowRight, ShoppingBag, MapPin, Flame, Candy, Package, Star, ChevronRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 
@@ -30,8 +30,6 @@ async function getCategories() {
     return [];
   }
 }
-
-const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP ?? "594694369615";
 
 export default async function HomePage() {
   const [featuredProducts, categories] = await Promise.all([
