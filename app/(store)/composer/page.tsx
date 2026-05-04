@@ -40,10 +40,10 @@ const INSPIRATIONS = [
 /* ─── Ingredient list row ───────────────────────────────────── */
 function IngredientRow({ num, icon, label, accent }: { num: number; icon: string; label: string; accent: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="font-display text-2xl leading-none shrink-0" style={{ color: accent }}>{num}</span>
-      <span className="text-lg shrink-0">{icon === "/" ? "🥤" : icon}</span>
-      <span className="text-xs font-bold text-white uppercase tracking-wide">{label}</span>
+    <div className="flex items-center gap-1 md:gap-3">
+      <span className="font-display text-sm md:text-2xl leading-none shrink-0 w-3 md:w-auto" style={{ color: accent }}>{num}</span>
+      <span className="text-xs md:text-lg shrink-0">{icon === "/" ? "🥤" : icon}</span>
+      <span className="text-[7px] md:text-xs font-bold text-white uppercase tracking-wide leading-tight">{label}</span>
     </div>
   );
 }
@@ -77,11 +77,11 @@ function ProductCard({
       }}
     >
       {/* Header */}
-      <div className="px-5 pt-5 pb-3">
+      <div className="px-2 md:px-5 pt-3 md:pt-5 pb-2 md:pb-3">
         <h2 className="leading-none mb-1">
-          <span className="font-display text-4xl text-white uppercase tracking-wider">COCKTAIL </span>
+          <span className="font-display text-lg md:text-4xl text-white uppercase tracking-wider block">COCKTAIL</span>
           <span
-            className="text-4xl font-bold"
+            className="text-2xl md:text-4xl font-bold block"
             style={{
               fontFamily: "'Dancing Script', cursive",
               color: accent,
@@ -92,14 +92,14 @@ function ProductCard({
           </span>
         </h2>
 
-        <p className="text-xs font-bold uppercase tracking-[0.2em] mt-2 mb-1" style={{ color: accent }}>
+        <p className="text-[9px] md:text-xs font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] mt-1 mb-0.5 md:mb-1" style={{ color: accent }}>
           — {doses} —
         </p>
-        <p className="text-xs text-white/70 uppercase tracking-wide leading-relaxed">{description}</p>
+        <p className="hidden md:block text-xs text-white/70 uppercase tracking-wide leading-relaxed">{description}</p>
       </div>
 
       {/* Ingredients list */}
-      <div className="px-5 py-3 flex flex-col gap-2.5 border-t border-white/5">
+      <div className="px-2 md:px-5 py-2 md:py-3 flex flex-col gap-1.5 md:gap-2.5 border-t border-white/5">
         {ingredients.map((ing) => (
           <IngredientRow key={ing.num} accent={accent} {...ing} />
         ))}
@@ -107,18 +107,18 @@ function ProductCard({
 
       {/* Product images */}
       <div
-        className="mx-4 rounded-xl overflow-hidden flex items-end justify-center gap-2 px-4 pt-4 pb-2"
+        className="mx-1.5 md:mx-4 rounded-xl overflow-hidden flex items-end justify-center gap-1 md:gap-2 px-1.5 md:px-4 pt-2 md:pt-4 pb-1 md:pb-2"
         style={{ background: `linear-gradient(180deg, ${accent}08 0%, ${accent}18 100%)`, border: `1px solid ${accent}20` }}
       >
         {bottleImg2 && (
-          <div className="relative w-20 h-28 shrink-0">
+          <div className="relative w-9 h-14 md:w-20 md:h-28 shrink-0">
             <Image src={bottleImg2} alt="Hennessy" fill className="object-contain drop-shadow-lg" />
           </div>
         )}
-        <div className="relative w-20 h-28 shrink-0">
+        <div className="relative w-9 h-14 md:w-20 md:h-28 shrink-0">
           <Image src={bottleImg} alt="Hennessy" fill className="object-contain drop-shadow-lg" />
         </div>
-        <div className="relative w-20 h-28 shrink-0">
+        <div className="relative w-9 h-14 md:w-20 md:h-28 shrink-0">
           <Image
             src="https://images.unsplash.com/photo-1544145945-f90425340c7e?w=300&q=80"
             alt="Cup ReadyMiix"
@@ -126,7 +126,7 @@ function ProductCard({
             className="object-contain drop-shadow-lg"
           />
         </div>
-        <div className="relative w-12 h-20 shrink-0">
+        <div className="relative w-6 h-10 md:w-12 md:h-20 shrink-0">
           <Image
             src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=200&q=80"
             alt="Sirop"
@@ -137,7 +137,7 @@ function ProductCard({
       </div>
 
       {/* Candy image */}
-      <div className="mx-4 mt-2 rounded-xl overflow-hidden relative h-28">
+      <div className="mx-1.5 md:mx-4 mt-1.5 md:mt-2 rounded-xl overflow-hidden relative h-14 md:h-28">
         <Image
           src={candyImg}
           alt="Bonbons & surprises"
@@ -145,27 +145,27 @@ function ProductCard({
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="absolute bottom-2 left-3 right-3">
-          <span className="text-xs text-white/60 uppercase tracking-wide">Bonbons & surprises inclus</span>
+        <div className="absolute bottom-1 md:bottom-2 left-2 md:left-3 right-2 md:right-3">
+          <span className="text-[7px] md:text-xs text-white/60 uppercase tracking-wide">Bonbons inclus</span>
         </div>
       </div>
 
       {/* Tagline */}
       <div
-        className="mx-4 mt-3 rounded-xl px-4 py-3 flex items-center gap-3"
+        className="mx-1.5 md:mx-4 mt-1.5 md:mt-3 rounded-xl px-2 md:px-4 py-1.5 md:py-3 flex items-center gap-1.5 md:gap-3"
         style={{ border: `1px solid ${accent}40`, background: `${accent}10` }}
       >
-        <span className="text-xl shrink-0">{taglineIcon}</span>
-        <p className="text-xs font-bold uppercase tracking-wide leading-snug" style={{ color: accent }}>
+        <span className="text-sm md:text-xl shrink-0">{taglineIcon}</span>
+        <p className="text-[7px] md:text-xs font-bold uppercase tracking-wide leading-snug" style={{ color: accent }}>
           {tagline}
         </p>
       </div>
 
       {/* CTA */}
-      <div className="px-4 pt-3 pb-5">
+      <div className="px-1.5 md:px-4 pt-2 md:pt-3 pb-3 md:pb-5">
         <button
           onClick={onCompose}
-          className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white uppercase tracking-wider text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+          className="w-full flex items-center justify-center gap-1 md:gap-2 py-2.5 md:py-4 rounded-xl font-bold text-white uppercase tracking-wider text-[9px] md:text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
           style={{
             background: type === "hard"
               ? `linear-gradient(135deg, #C5006A, #F72585)`
@@ -173,9 +173,10 @@ function ProductCard({
             boxShadow: `0 0 25px ${accent}50`,
           }}
         >
-          <Sparkles className="w-4 h-4" />
-          Composer mon cocktail
-          <ChevronRight className="w-4 h-4" />
+          <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
+          <span className="hidden sm:inline">Composer mon cocktail</span>
+          <span className="sm:hidden">Composer</span>
+          <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
         </button>
       </div>
     </div>
@@ -193,7 +194,7 @@ export default function ComposerPage() {
       <div className="container-custom">
 
         {/* ── Split product section ── */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-start mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-[1fr_auto_1fr] gap-3 md:gap-4 items-start mb-16">
 
           {/* Cocktail Light */}
           <ProductCard
@@ -203,7 +204,7 @@ export default function ComposerPage() {
             doses="1 DOSE DE HENNESSY"
             description="LÉGER, ÉQUILIBRÉ, PARFAIT POUR CHILLER."
             taglineIcon="⚖️"
-            tagline="1 DOSE, TON STYLE, TON COCKTAIL. À TOI DE COMPOSER TON EXPÉRIENCE."
+            tagline="1 DOSE, TON STYLE, TON COCKTAIL."
             ingredients={INGREDIENTS_LIGHT}
             bottleImg="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&q=80"
             candyImg="https://images.unsplash.com/photo-1582058091922-40a5dedc7a40?w=600&q=80"
@@ -227,7 +228,7 @@ export default function ComposerPage() {
             doses="2 DOSES DE HENNESSY"
             description="PLUS INTENSE, PLUS PUISSANT. À TOI DE CRÉER UNE EXPÉRIENCE UNIQUE."
             taglineIcon="🔥"
-            tagline="2 DOSES, TON STYLE, TON COCKTAIL. À TOI DE POUSSER L'EXPÉRIENCE PLUS LOIN."
+            tagline="2 DOSES, TON STYLE, TON COCKTAIL."
             ingredients={INGREDIENTS_HARD}
             bottleImg="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&q=80"
             bottleImg2="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&q=80"
