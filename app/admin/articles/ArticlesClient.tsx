@@ -4,8 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  Package, Plus, Eye, EyeOff, Pencil, RefreshCw,
-  Search, ChevronDown, X, Trash2,
+  ShoppingBag, Plus, Eye, EyeOff, Pencil,
+  RefreshCw, Search, ChevronDown, X, Trash2,
 } from "lucide-react";
 import { formatPrice, parseJsonField } from "@/lib/utils";
 
@@ -19,13 +19,7 @@ interface Product {
   createdAt: string;
 }
 
-const TYPE_BADGE: Record<string, { label: string; color: string }> = {
-  light: { label: "Light", color: "bg-[#00D2C8]/15 text-[#00D2C8] border-[#00D2C8]/30" },
-  hard:  { label: "Hard",  color: "bg-[#F72585]/15 text-[#F72585] border-[#F72585]/30" },
-  packs: { label: "Pack",  color: "bg-brand-gold/15 text-brand-gold border-brand-gold/30" },
-};
-
-export default function ProductsClient({
+export default function ArticlesClient({
   initialProducts,
   categories,
 }: {
@@ -43,7 +37,9 @@ export default function ProductsClient({
   const [isAdding, setIsAdding] = useState(false);
 
   const filtered = search.trim()
-    ? products.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
+    ? products.filter((p) =>
+        p.name.toLowerCase().includes(search.toLowerCase())
+      )
     : products;
 
   async function handleQuickAdd(e?: React.FormEvent) {
@@ -93,18 +89,18 @@ export default function ProductsClient({
     });
     if (!res.ok) {
       setProducts((prev) =>
-        prev.map((p) => (p.id === product.id ? { ...p, active: product.active } : p))
+        prev.map((p) =>
+          p.id === product.id ? { ...p, active: product.active } : p
+        )
       );
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Supprimer ce produit définitivement ?")) return;
+    if (!confirm("Supprimer cet article définitivement ?")) return;
     setProducts((prev) => prev.filter((p) => p.id !== id));
     const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
-    if (!res.ok) {
-      startTransition(() => router.refresh());
-    }
+    if (!res.ok) startTransition(() => router.refresh());
   }
 
   return (
@@ -112,9 +108,11 @@ export default function ProductsClient({
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="font-display text-3xl font-bold text-brand-text">Cocktails Composer</h1>
+          <h1 className="font-display text-3xl font-bold text-brand-text">
+            Articles Boutique
+          </h1>
           <p className="text-brand-muted text-sm mt-0.5">
-            {products.length} produit{products.length !== 1 ? "s" : ""} (Light · Hard · Packs)
+            {products.length} article{products.length !== 1 ? "s" : ""}
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -122,37 +120,44 @@ export default function ProductsClient({
             onClick={() => startTransition(() => router.refresh())}
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-brand-border text-brand-muted text-sm hover:text-brand-text hover:border-brand-gold/30 transition-all"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isPending ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${isPending ? "animate-spin" : ""}`}
+            />
             Actualiser
           </button>
-          <button
-            onClick={() => setShowQuickAdd((v) => !v)}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-brand-darker font-bold px-4 py-2 rounded-xl text-sm shadow-gold-sm hover:opacity-90 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Nouvel article
-            <ChevronDown
-              className={`w-3.5 h-3.5 transition-transform ${showQuickAdd ? "rotate-180" : ""}`}
-            />
-          </button>
-          <Link
-            href="/admin/products/new"
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-brand-border text-brand-muted text-sm hover:text-brand-text hover:border-brand-gold/30 transition-all"
-          >
-            <Pencil className="w-3.5 h-3.5" />
-            Formulaire complet
-          </Link>
+          {categories.length > 0 ? (
+            <button
+              onClick={() => setShowQuickAdd((v) => !v)}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-brand-darker font-bold px-4 py-2 rounded-xl text-sm shadow-gold-sm hover:opacity-90 transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Nouvel article
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform ${showQuickAdd ? "rotate-180" : ""}`}
+              />
+            </button>
+          ) : (
+            <Link
+              href="/admin/categories"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-brand-darker font-bold px-4 py-2 rounded-xl text-sm shadow-gold-sm hover:opacity-90 transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Créer une catégorie d&apos;abord
+            </Link>
+          )}
         </div>
       </div>
 
       {/* Création rapide panel */}
-      {showQuickAdd && (
+      {showQuickAdd && categories.length > 0 && (
         <form
           onSubmit={handleQuickAdd}
           className="bg-brand-card border border-brand-gold/30 rounded-2xl p-5 flex flex-col gap-4"
         >
           <div className="flex items-center justify-between">
-            <p className="font-semibold text-brand-text text-sm">Création rapide</p>
+            <p className="font-semibold text-brand-text text-sm">
+              Création rapide
+            </p>
             <button
               type="button"
               onClick={() => setShowQuickAdd(false)}
@@ -164,7 +169,7 @@ export default function ProductsClient({
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
-              placeholder="Nom du produit *"
+              placeholder="Nom de l'article *"
               value={qName}
               onChange={(e) => setQName(e.target.value)}
               autoFocus
@@ -216,7 +221,7 @@ export default function ProductsClient({
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-muted pointer-events-none" />
         <input
           type="text"
-          placeholder="Rechercher un produit…"
+          placeholder="Rechercher un article…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full bg-brand-card border border-brand-border rounded-xl pl-9 pr-9 py-2.5 text-sm text-brand-text placeholder:text-brand-muted/50 outline-none focus:border-brand-gold/50 transition-colors"
@@ -233,18 +238,29 @@ export default function ProductsClient({
 
       {/* Empty state */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-4 rounded-2xl bg-brand-card border border-brand-border">
-          <Package className="w-12 h-12 text-brand-muted" />
-          <div className="text-center">
+        <div className="flex flex-col items-center justify-center py-20 gap-4 rounded-2xl bg-brand-card border border-brand-border text-center">
+          <ShoppingBag className="w-12 h-12 text-brand-muted" />
+          <div>
             <p className="font-display font-bold text-brand-text mb-1">
-              {search ? "Aucun résultat" : "Aucun produit"}
+              {search ? "Aucun résultat" : "Aucun article"}
             </p>
             <p className="text-brand-muted text-sm">
               {search
-                ? `Aucun produit ne correspond à "${search}"`
-                : "Commencez par ajouter votre premier produit."}
+                ? `Aucun article ne correspond à "${search}"`
+                : categories.length === 0
+                ? "Créez d'abord des catégories boutique (ex : Cocktails, Softs, Accessoires)."
+                : "Ajoutez votre premier article boutique via le bouton ci-dessus."}
             </p>
           </div>
+          {categories.length === 0 && (
+            <Link
+              href="/admin/categories"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-brand-darker font-bold px-5 py-2.5 rounded-xl text-sm"
+            >
+              <Plus className="w-4 h-4" />
+              Gérer les catégories
+            </Link>
+          )}
         </div>
       ) : (
         <div className="rounded-2xl bg-brand-card border border-brand-border overflow-hidden">
@@ -252,10 +268,14 @@ export default function ProductsClient({
             <thead>
               <tr className="border-b border-brand-border text-brand-muted text-xs uppercase tracking-wide">
                 <th className="w-14 px-4 py-3.5" />
-                <th className="text-left px-4 py-3.5">Nom</th>
-                <th className="text-left px-4 py-3.5 hidden md:table-cell">Type</th>
+                <th className="text-left px-4 py-3.5">Article</th>
+                <th className="text-left px-4 py-3.5 hidden md:table-cell">
+                  Catégorie
+                </th>
                 <th className="text-right px-4 py-3.5">Prix</th>
-                <th className="text-center px-4 py-3.5 hidden sm:table-cell">Statut</th>
+                <th className="text-center px-4 py-3.5 hidden sm:table-cell">
+                  Statut
+                </th>
                 <th className="text-right px-4 py-3.5 w-24">Actions</th>
               </tr>
             </thead>
@@ -263,11 +283,6 @@ export default function ProductsClient({
               {filtered.map((product) => {
                 const images = parseJsonField<string[]>(product.images, []);
                 const imgSrc = images[0] ?? null;
-                const badge =
-                  TYPE_BADGE[product.category.slug] ?? {
-                    label: product.category.name,
-                    color: "bg-brand-border text-brand-muted border-brand-border",
-                  };
 
                 return (
                   <tr
@@ -286,7 +301,7 @@ export default function ProductsClient({
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <Package className="w-4 h-4 text-brand-muted/40" />
+                            <ShoppingBag className="w-4 h-4 text-brand-muted/40" />
                           </div>
                         )}
                       </div>
@@ -298,22 +313,19 @@ export default function ProductsClient({
                         {product.name}
                       </p>
                       {product.volume && (
-                        <p className="text-xs text-brand-muted">{product.volume}</p>
+                        <p className="text-xs text-brand-muted">
+                          {product.volume}
+                        </p>
                       )}
-                      {/* Badge shown inline on small screens */}
-                      <span
-                        className={`md:hidden mt-1 inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${badge.color}`}
-                      >
-                        {badge.label}
-                      </span>
+                      <p className="text-xs text-brand-muted md:hidden mt-0.5">
+                        {product.category.name}
+                      </p>
                     </td>
 
-                    {/* Type badge */}
+                    {/* Category */}
                     <td className="px-4 py-3 hidden md:table-cell">
-                      <span
-                        className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border ${badge.color}`}
-                      >
-                        {badge.label}
+                      <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border bg-brand-border/50 text-brand-muted border-brand-border">
+                        {product.category.name}
                       </span>
                     </td>
 
@@ -377,6 +389,15 @@ export default function ProductsClient({
           </table>
         </div>
       )}
+
+      {/* Info banner */}
+      <p className="text-xs text-brand-muted text-center pb-2">
+        Ces articles apparaissent dans la{" "}
+        <a href="/shop" target="_blank" className="text-brand-gold hover:underline">
+          Boutique
+        </a>{" "}
+        — distinct du Composer cocktail.
+      </p>
     </div>
   );
 }

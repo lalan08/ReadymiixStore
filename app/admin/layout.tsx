@@ -1,23 +1,33 @@
 import Link from "next/link";
 import {
   Sparkles, LayoutDashboard, Package, ShoppingBag, Tag,
-  LogOut, Droplets, Coffee, Settings, Image as ImageIcon, Users,
+  LogOut, Droplets, Coffee, Settings, Image as ImageIcon,
+  Users, Store,
 } from "lucide-react";
 
 const NAV_GROUPS = [
   {
     items: [
-      { href: "/admin",   icon: LayoutDashboard, label: "Accueil" },
+      { href: "/admin", icon: LayoutDashboard, label: "Accueil" },
     ],
   },
   {
-    label: "CATALOGUE",
+    label: "BOUTIQUE",
     items: [
-      { href: "/admin/products",   icon: Package,   label: "Produits" },
-      { href: "/admin/categories", icon: Tag,        label: "Catégories" },
+      { href: "/admin/articles",   icon: Store, label: "Articles" },
+      { href: "/admin/categories", icon: Tag,   label: "Catégories" },
     ],
   },
   {
+    label: "COMPOSER",
+    items: [
+      { href: "/admin/products", icon: Package,  label: "Cocktails" },
+      { href: "/admin/sirops",   icon: Droplets, label: "Sirops" },
+      { href: "/admin/softs",    icon: Coffee,   label: "Softs" },
+    ],
+  },
+  {
+    label: "COMMANDES",
     items: [
       { href: "/admin/orders",  icon: ShoppingBag, label: "Commandes" },
       { href: "/admin/clients", icon: Users,       label: "Clients" },
@@ -32,9 +42,7 @@ const NAV_GROUPS = [
   {
     label: "SYSTÈME",
     items: [
-      { href: "/admin/sirops",    icon: Droplets, label: "Sirops" },
-      { href: "/admin/softs",     icon: Coffee,   label: "Softs" },
-      { href: "/admin/settings",  icon: Settings, label: "Paramètres" },
+      { href: "/admin/settings", icon: Settings, label: "Paramètres" },
     ],
   },
 ];
