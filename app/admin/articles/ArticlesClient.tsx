@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useCallback } from "react";
+import { useState, useTransition, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -50,6 +50,8 @@ export default function ArticlesClient({
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [qName, setQName] = useState("");
   const [qPrice, setQPrice] = useState("");
   const [qCategoryId, setQCategoryId] = useState(categories[0]?.id ?? "");
@@ -410,43 +412,73 @@ export default function ArticlesClient({
                         />
                       </td>
 
-                      {/* Thumbnail — click to preview */}
+                      {/* Thumbnail — hover: popover preview · click: lightbox */}
                       <td className="px-3 py-3">
-                        <button
-                          onClick={() => imgSrc && setPreviewSrc(imgSrc)}
-                          className={`w-12 h-12 rounded-xl overflow-hidden bg-brand-darker border border-brand-border flex items-center justify-center shrink-0 transition-all ${
-                            imgSrc
-                              ? "cursor-zoom-in hover:opacity-80 hover:border-brand-gold/40 hover:shadow-md"
-                              : "cursor-default"
-                          }`}
-                          title={imgSrc ? "Cliquer pour agrandir" : "Pas d'image"}
-                        >
-                          {imgSrc ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={imgSrc}
-                              alt={product.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <ImageIcon className="w-5 h-5 text-brand-muted/25" strokeWidth={1.5} />
+                        <div className="relative">
+                          <button
+                            onClick={() => imgSrc && setPreviewSrc(imgSrc)}
+                            onMouseEnter={() => {
+                              if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+                              setHoveredId(product.id);
+                            }}
+                            onMouseLeave={() => {
+                              hoverTimeout.current = setTimeout(() => setHoveredId(null), 150);
+                            }}
+                            className={`w-12 h-12 rounded-xl overflow-hidden bg-brand-darker border border-brand-border flex items-center justify-center shrink-0 transition-all ${
+                              imgSrc
+                                ? "cursor-zoom-in hover:opacity-80 hover:border-brand-gold/40"
+                                : "cursor-default"
+                            }`}
+                            title={imgSrc ? "Cliquer pour agrandir" : "Pas d'image"}
+                          >
+                            {imgSrc ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={imgSrc} alt={product.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <ImageIcon className="w-5 h-5 text-brand-muted/25" strokeWidth={1.5} />
+                            )}
+                          </button>
+
+                          {/* Hover popover */}
+                          {hoveredId === product.id && imgSrc && (
+                            <div
+                              className="absolute left-14 top-1/2 -translate-y-1/2 z-40 w-52 rounded-2xl overflow-hidden bg-brand-card border border-brand-border shadow-2xl pointer-events-none"
+                              style={{ filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.5))" }}
+                            >
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={imgSrc} alt={product.name} className="w-full aspect-square object-cover" />
+                              <div className="px-3 py-2.5">
+                                <p className="text-sm font-semibold text-brand-text leading-snug">{product.name}</p>
+                                {(product.description || product.volume) && (
+                                  <p className="text-xs text-brand-muted mt-0.5 line-clamp-2">
+                                    {product.description ?? product.volume}
+                                  </p>
+                                )}
+                                <p className="text-xs font-bold text-brand-gold mt-1">{formatPrice(product.price)}</p>
+                              </div>
+                            </div>
                           )}
-                        </button>
+                        </div>
                       </td>
 
-                      {/* Nom + description */}
+                      {/* Nom + description — clic → édition */}
                       <td className="px-3 py-3.5 min-w-0">
-                        <p className="font-semibold text-brand-text leading-snug">
-                          {product.name}
-                        </p>
-                        {product.description && (
-                          <p className="text-xs text-brand-muted mt-0.5 line-clamp-1">
-                            {product.description}
+                        <Link
+                          href={`/admin/articles/${product.id}/edit`}
+                          className="group/name block"
+                        >
+                          <p className="font-semibold text-brand-text leading-snug group-hover/name:text-brand-gold transition-colors">
+                            {product.name}
                           </p>
-                        )}
-                        {!product.description && product.volume && (
-                          <p className="text-xs text-brand-muted mt-0.5">{product.volume}</p>
-                        )}
+                          {product.description && (
+                            <p className="text-xs text-brand-muted mt-0.5 line-clamp-1">
+                              {product.description}
+                            </p>
+                          )}
+                          {!product.description && product.volume && (
+                            <p className="text-xs text-brand-muted mt-0.5">{product.volume}</p>
+                          )}
+                        </Link>
                         {/* Category shown inline on small screens */}
                         <span className={`md:hidden mt-1 inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border ${color}`}>
                           {product.category.name}
@@ -503,7 +535,7 @@ export default function ArticlesClient({
                           </button>
                           {/* Edit */}
                           <Link
-                            href={`/admin/products/${product.id}/edit`}
+                            href={`/admin/articles/${product.id}/edit`}
                             title="Modifier"
                             className="p-2 rounded-lg text-brand-muted hover:text-brand-gold hover:bg-brand-gold/10 transition-all"
                           >
