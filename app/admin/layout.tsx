@@ -1,14 +1,22 @@
 import Link from "next/link";
 import {
-  Sparkles, LayoutDashboard, Package, ShoppingBag, Tag,
-  LogOut, Droplets, Coffee, Settings, Image as ImageIcon,
-  Users, Store, CalendarDays,
+  Sparkles, LayoutDashboard, ShoppingBag, Tag,
+  LogOut, Droplets, Coffee, Settings,
+  Store, CalendarDays,
 } from "lucide-react";
 
 const NAV_GROUPS = [
   {
     items: [
-      { href: "/admin", icon: LayoutDashboard, label: "Accueil" },
+      { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
+    ],
+  },
+  {
+    label: "COMPOSER",
+    items: [
+      { href: "/admin/composer", icon: Sparkles,  label: "Cartes cocktail" },
+      { href: "/admin/sirops",   icon: Droplets,  label: "Sirops" },
+      { href: "/admin/softs",    icon: Coffee,    label: "Softs" },
     ],
   },
   {
@@ -19,25 +27,15 @@ const NAV_GROUPS = [
     ],
   },
   {
-    label: "COMPOSER",
-    items: [
-      { href: "/admin/products", icon: Package,  label: "Cocktails" },
-      { href: "/admin/sirops",   icon: Droplets, label: "Sirops" },
-      { href: "/admin/softs",    icon: Coffee,   label: "Softs" },
-    ],
-  },
-  {
     label: "COMMANDES",
     items: [
-      { href: "/admin/orders",  icon: ShoppingBag, label: "Commandes" },
-      { href: "/admin/clients", icon: Users,       label: "Clients" },
+      { href: "/admin/orders", icon: ShoppingBag, label: "Commandes" },
     ],
   },
   {
-    label: "MARKETING",
+    label: "ÉVÉNEMENTS",
     items: [
       { href: "/admin/events", icon: CalendarDays, label: "Événements" },
-      { href: "/admin/media",  icon: ImageIcon,    label: "Médias & Visuels" },
     ],
   },
   {

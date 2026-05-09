@@ -10,6 +10,16 @@ const PUBLIC_KEYS = [
   "light_card_image",
   "hard_card_image",
   "promo_banner",
+  "light_title",
+  "light_accent",
+  "light_highlights",
+  "light_detail",
+  "light_base_price",
+  "hard_title",
+  "hard_accent",
+  "hard_highlights",
+  "hard_detail",
+  "hard_base_price",
 ];
 
 export async function GET() {
