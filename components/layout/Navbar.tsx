@@ -20,9 +20,12 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled]   = useState(false);
   const [menuOpen, setMenuOpen]   = useState(false);
+  const [mounted, setMounted]     = useState(false);
   const pathname                  = usePathname();
   const { itemCount, openCart }   = useCartStore();
   const count                     = itemCount();
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -90,7 +93,7 @@ export default function Navbar() {
                 className="relative flex items-center justify-center w-10 h-10 rounded-xl border border-brand-border/50 hover:border-brand-gold/40 hover:bg-brand-gold/5 transition-all"
               >
                 <ShoppingCart className="w-5 h-5 text-brand-muted" />
-                {count > 0 && (
+                {mounted && count > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-brand-gold text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-fade-in">
                     {count}
                   </span>

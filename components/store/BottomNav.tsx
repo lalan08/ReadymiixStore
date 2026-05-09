@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ShoppingBag, Sparkles, ShoppingCart, User } from "lucide-react";
@@ -14,8 +15,11 @@ const TABS = [
 ];
 
 export default function BottomNav() {
-  const pathname   = usePathname();
-  const itemCount  = useCartStore((s) => s.itemCount());
+  const pathname  = usePathname();
+  const itemCount = useCartStore((s) => s.itemCount());
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   if (pathname.startsWith("/admin")) return null;
 
@@ -41,7 +45,7 @@ export default function BottomNav() {
               ) : (
                 <div className="relative">
                   <Icon className="w-5 h-5" />
-                  {isCart && itemCount > 0 && (
+                  {isCart && mounted && itemCount > 0 && (
                     <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 rounded-full bg-brand-gold text-white text-[9px] font-bold flex items-center justify-center px-0.5">
                       {itemCount > 9 ? "9+" : itemCount}
                     </span>
