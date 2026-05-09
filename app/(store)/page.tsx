@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ArrowRight, ShoppingBag, MapPin, Flame, Candy, Package, Star, ChevronRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
+import EventsSlider from "@/components/store/EventsSlider";
 
 export const dynamic = "force-dynamic";
 
@@ -31,10 +32,22 @@ async function getCategories() {
   }
 }
 
+async function getEvents() {
+  try {
+    return await prisma.event.findMany({
+      where:   { active: true },
+      orderBy: { date: "asc" },
+    });
+  } catch {
+    return [];
+  }
+}
+
 export default async function HomePage() {
-  const [featuredProducts, categories] = await Promise.all([
+  const [featuredProducts, categories, events] = await Promise.all([
     getFeaturedProducts(),
     getCategories(),
+    getEvents(),
   ]);
 
   return (
@@ -201,6 +214,35 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ══════════════════════════════════════
+          ÉVÉNEMENTS DU MOMENT
+      ══════════════════════════════════════ */}
+      {events.length > 0 && (
+        <section className="section-padding">
+          <div className="container-custom">
+            {/* Section header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-brand-gold/15 border border-brand-gold/25 flex items-center justify-center">
+                  <span className="text-base leading-none">🎉</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-brand-gold uppercase tracking-[0.2em]">Nightlife & Events</p>
+                  <h2 className="font-display text-xl font-bold text-brand-text uppercase tracking-wide leading-none">
+                    Événements du moment
+                  </h2>
+                </div>
+              </div>
+              <span className="text-xs text-brand-muted font-semibold">
+                VOIR TOUS <ChevronRight className="inline w-3.5 h-3.5" />
+              </span>
+            </div>
+
+            <EventsSlider events={events.map((e) => ({ ...e, date: e.date.toISOString() }))} />
+          </div>
+        </section>
+      )}
 
       {/* ══════════════════════════════════════
           PRODUITS VEDETTES

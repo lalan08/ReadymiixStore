@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   Sparkles, LayoutDashboard, Package, ShoppingBag, Tag,
   LogOut, Droplets, Coffee, Settings, Image as ImageIcon,
-  Users, Store,
+  Users, Store, CalendarDays,
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -36,7 +36,8 @@ const NAV_GROUPS = [
   {
     label: "MARKETING",
     items: [
-      { href: "/admin/media", icon: ImageIcon, label: "Médias & Visuels" },
+      { href: "/admin/events", icon: CalendarDays, label: "Événements" },
+      { href: "/admin/media",  icon: ImageIcon,    label: "Médias & Visuels" },
     ],
   },
   {

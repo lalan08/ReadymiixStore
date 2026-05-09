@@ -384,6 +384,27 @@ export async function GET() {
       );
     `);
 
+    // ── Event table ──────────────────────────────────────────
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "Event" (
+        "id" TEXT NOT NULL,
+        "title" TEXT NOT NULL,
+        "type" TEXT NOT NULL DEFAULT 'ÉVÉNEMENT',
+        "description" TEXT,
+        "image" TEXT NOT NULL DEFAULT '',
+        "date" TIMESTAMP(3) NOT NULL,
+        "timeRange" TEXT,
+        "location" TEXT NOT NULL,
+        "price" DOUBLE PRECISION,
+        "bookingUrl" TEXT,
+        "active" BOOLEAN NOT NULL DEFAULT true,
+        "featured" BOOLEAN NOT NULL DEFAULT false,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
+      );
+    `);
+
     // ── Seed site config ─────────────────────────────────────
     const configs = [
       { key: "bonbons_text", value: "Sélection variable selon le stock du jour — Haribo, Jitty Shocks, popping candy et bien d'autres surprises dans ton cup !" },
