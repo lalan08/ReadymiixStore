@@ -67,8 +67,12 @@ export default function AdminEventsPage() {
 
   useEffect(() => {
     fetch("/api/admin/events")
-      .then((r) => r.json())
-      .then(setEvents)
+      .then(async (r) => {
+        if (r.status === 401) { window.location.href = "/admin/login"; return; }
+        const data = await r.json();
+        if (Array.isArray(data)) setEvents(data);
+        else toast.error("Erreur de chargement");
+      })
       .catch(() => toast.error("Erreur de chargement"))
       .finally(() => setLoading(false));
   }, []);
