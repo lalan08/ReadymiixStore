@@ -114,6 +114,10 @@ export default function AdminEventsPage() {
           method: "PATCH", headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error ?? `Erreur ${res.status}`);
+        }
         const updated = await res.json();
         setEvents((prev) => prev.map((e) => e.id === editing.id ? updated : e));
         toast.success("Événement mis à jour");
@@ -122,13 +126,17 @@ export default function AdminEventsPage() {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error ?? `Erreur ${res.status}`);
+        }
         const created = await res.json();
         setEvents((prev) => [...prev, created]);
         toast.success("Événement créé !");
       }
       setShowForm(false);
-    } catch {
-      toast.error("Erreur lors de la sauvegarde");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur lors de la sauvegarde");
     } finally {
       setSaving(false);
     }

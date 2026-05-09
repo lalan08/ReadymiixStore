@@ -404,6 +404,14 @@ export async function GET() {
         CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
       );
     `);
+    // Migrate: add maxTickets if table existed without it (bookingUrl era)
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE IF EXISTS "Event" ADD COLUMN IF NOT EXISTS "maxTickets" INTEGER;
+    `);
+    // Migrate: remove bookingUrl if it still exists from old schema
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE IF EXISTS "Event" DROP COLUMN IF EXISTS "bookingUrl";
+    `);
 
     // ── Seed site config ─────────────────────────────────────
     const configs = [
