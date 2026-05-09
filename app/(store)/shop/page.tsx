@@ -1,121 +1,174 @@
 import { prisma } from "@/lib/prisma";
 import ShopCard from "@/components/store/ShopCard";
 import Link from "next/link";
-import { ShoppingBag } from "lucide-react";
+import { Search, ShoppingBag } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Boutique — ReadyMiix" };
 
-// Categories reserved for the cocktail Composer — excluded from the boutique
 const COMPOSER_SLUGS = ["light", "hard"];
 
-interface Props {
-  searchParams: { cat?: string };
-}
+// Emoji per category slug
+const CAT_EMOJI: Record<string, string> = {
+  cocktails:   "🍹",
+  softs:       "🥤",
+  kids:        "🧃",
+  accessoires: "🎁",
+  packs:       "📦",
+  food:        "🍟",
+};
+
+interface Props { searchParams: { cat?: string; view?: string } }
 
 export default async function ShopPage({ searchParams }: Props) {
-  const activeCat = searchParams.cat;
+  const { cat: activeCat, view } = searchParams;
 
-  const [products, categories] = await Promise.all([
+  const [allProducts, categories] = await Promise.all([
     prisma.product.findMany({
       where: {
         active: true,
-        category: {
-          slug: { notIn: COMPOSER_SLUGS },
-          ...(activeCat ? { slug: activeCat } : {}),
-        },
+        category: { slug: { notIn: COMPOSER_SLUGS } },
       },
       include: { category: true },
       orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
     }).catch(() => []),
     prisma.category.findMany({
-      where: {
-        active: true,
-        slug: { notIn: COMPOSER_SLUGS },
-      },
+      where: { active: true, slug: { notIn: COMPOSER_SLUGS } },
       orderBy: { sortOrder: "asc" },
-      include: {
-        _count: { select: { products: { where: { active: true } } } },
-      },
+      include: { _count: { select: { products: { where: { active: true } } } } },
     }).catch(() => []),
   ]);
 
-  const totalActive = categories.reduce((s, c) => s + c._count.products, 0);
+  // Filter products based on active tab
+  let products = allProducts;
+  if (activeCat) {
+    products = allProducts.filter((p) => p.category.slug === activeCat);
+  } else if (view === "populaires") {
+    products = allProducts.filter((p) => p.featured);
+  } else if (view === "nouveautes") {
+    products = [...allProducts].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    ).slice(0, 12);
+  }
+
+  const activeLabel =
+    activeCat
+      ? categories.find((c) => c.slug === activeCat)?.name ?? activeCat
+      : view === "populaires" ? "Populaires"
+      : view === "nouveautes" ? "Nouveautés"
+      : "Tout";
+
+  // Build tab list
+  const specialTabs = [
+    { key: "populaires", label: "Populaires", emoji: "🔥", href: "/shop?view=populaires" },
+    { key: "nouveautes", label: "Nouveautés", emoji: "⭐", href: "/shop?view=nouveautes" },
+  ];
 
   return (
-    <div className="pt-24 pb-16 min-h-screen">
-      <div className="container-custom">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-brand-text">
-            Boutique
-          </h1>
-          <p className="text-brand-muted text-sm mt-1">
-            {activeCat ? `${products.length} article${products.length !== 1 ? "s" : ""}` : `${totalActive} article${totalActive !== 1 ? "s" : ""} disponibles`}
-          </p>
-        </div>
+    <div className="min-h-screen bg-brand-darker">
+      {/* ── Header ── */}
+      <div className="sticky top-0 z-30 bg-brand-darker/95 backdrop-blur-xl border-b border-brand-border pt-20 md:pt-24 pb-0">
+        <div className="container-custom">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="font-display text-2xl font-bold text-brand-text tracking-wide">
+              Boutique
+            </h1>
+            <button className="w-9 h-9 flex items-center justify-center rounded-full bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text transition-colors">
+              <Search className="w-4 h-4" />
+            </button>
+          </div>
 
-        {/* Category tabs */}
-        {categories.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+          {/* ── Category tabs ── */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-3 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+            {/* Tout */}
             <Link
               href="/shop"
-              className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                !activeCat
-                  ? "bg-brand-gold text-brand-darker shadow-gold-sm"
+              className={`shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
+                !activeCat && !view
+                  ? "bg-brand-gold text-white shadow-gold-sm"
                   : "bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text hover:border-brand-gold/30"
               }`}
             >
-              Tout voir
+              <span>🛍️</span> Tout
             </Link>
-            {categories.map((cat) => (
+
+            {/* DB categories */}
+            {categories.filter((c) => c._count.products > 0).map((cat) => (
               <Link
                 key={cat.id}
                 href={`/shop?cat=${cat.slug}`}
-                className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                className={`shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
                   activeCat === cat.slug
-                    ? "bg-brand-gold text-brand-darker shadow-gold-sm"
+                    ? "bg-brand-gold text-white shadow-gold-sm"
                     : "bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text hover:border-brand-gold/30"
                 }`}
               >
+                <span>{CAT_EMOJI[cat.slug] ?? "🎯"}</span>
                 {cat.name}
-                <span className="text-xs opacity-60">
-                  {cat._count.products}
-                </span>
+              </Link>
+            ))}
+
+            {/* Special tabs */}
+            {specialTabs.map((t) => (
+              <Link
+                key={t.key}
+                href={t.href}
+                className={`shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
+                  view === t.key
+                    ? "bg-brand-gold text-white shadow-gold-sm"
+                    : "bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text hover:border-brand-gold/30"
+                }`}
+              >
+                <span>{t.emoji}</span>
+                {t.label}
               </Link>
             ))}
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* Empty state */}
+      {/* ── Products ── */}
+      <div className="container-custom py-6">
+        {/* Section header */}
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h2 className="font-display text-lg font-bold text-brand-text">
+              {activeCat || view ? activeLabel : "Nos articles"}
+            </h2>
+            <p className="text-xs text-brand-muted mt-0.5">
+              {products.length} article{products.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+          {(activeCat || view) && (
+            <Link href="/shop" className="text-xs text-brand-gold font-semibold hover:underline">
+              Voir tout →
+            </Link>
+          )}
+        </div>
+
+        {/* Empty */}
         {products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+          <div className="flex flex-col items-center justify-center py-24 gap-5 text-center">
             <div className="w-20 h-20 rounded-full bg-brand-card border border-brand-border flex items-center justify-center">
-              <ShoppingBag className="w-8 h-8 text-brand-muted" />
+              <ShoppingBag className="w-8 h-8 text-brand-muted/40" />
             </div>
             <div>
               <p className="font-display text-xl font-bold text-brand-text mb-1">
-                {activeCat
-                  ? "Aucun article dans cette catégorie"
-                  : "La boutique arrive bientôt !"}
+                {activeCat ? "Aucun article dans cette catégorie" : "Boutique bientôt disponible"}
               </p>
               <p className="text-brand-muted text-sm">
-                {activeCat
-                  ? "Essayez une autre catégorie."
-                  : "Revenez prochainement pour découvrir notre catalogue."}
+                {activeCat ? "Essaie une autre catégorie." : "Reviens prochainement !"}
               </p>
             </div>
             {activeCat && (
-              <Link
-                href="/shop"
-                className="text-brand-gold text-sm font-semibold hover:underline"
-              >
-                Voir tous les articles
+              <Link href="/shop" className="px-6 py-3 rounded-full bg-brand-gold text-white font-bold text-sm">
+                Voir tout
               </Link>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+          /* ── Grid 2 cols mobile, 3 tablet, 4 desktop ── */
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 md:gap-5">
             {products.map((product) => (
               <ShopCard key={product.id} product={product} />
             ))}

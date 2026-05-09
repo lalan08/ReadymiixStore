@@ -1,13 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, Minus, Plus, ChevronRight, Star, Wine, Info, Check } from "lucide-react";
+import { ChevronLeft, Plus, Minus, ShoppingCart, Check, Sparkles } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { formatPrice, parseJsonField } from "@/lib/utils";
 import toast from "react-hot-toast";
-import Badge from "@/components/ui/Badge";
+
+interface Soft {
+  id: string;
+  name: string;
+  slug: string;
+  emoji: string;
+  surcharge: number;
+}
 
 interface Product {
   id: string;
@@ -25,221 +31,337 @@ interface Product {
   category: { name: string; slug: string };
 }
 
-export default function ProductDetail({ product }: { product: Product }) {
+interface Props {
+  product: Product;
+  softs: Soft[];
+  related: Product[];
+}
+
+const COMPOSER_SLUGS = ["light", "hard"];
+
+export default function ProductDetail({ product, softs, related }: Props) {
   const [qty, setQty]           = useState(1);
   const [activeImg, setActiveImg] = useState(0);
-  const { addItem, openCart }   = useCartStore();
+  const [selectedSoft, setSelectedSoft] = useState<Soft | null>(null);
+  const { addItem, openCart } = useCartStore();
 
   const images = parseJsonField<string[]>(product.images, []);
-  const tags   = parseJsonField<string[]>(product.tags, []);
+  const mainImage = images[activeImg] ?? null;
+
+  const isComposer = COMPOSER_SLUGS.includes(product.category.slug);
+  const showSofts  = softs.length > 0;
+
   const discount = product.comparePrice
     ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
     : null;
 
+  const finalPrice = product.price + (selectedSoft?.surcharge ?? 0);
+
   function handleAdd() {
+    if (isComposer) return;
     addItem({
       id:     product.id,
       name:   product.name,
       slug:   product.slug,
-      price:  product.price,
+      price:  finalPrice,
       image:  images[0] ?? "",
       volume: product.volume ?? undefined,
       quantity: qty,
+      options: selectedSoft ? { soft: selectedSoft.name } : undefined,
     });
-    toast.success(`${product.name} ajouté au panier !`);
+    toast.success(`${product.name} ajouté !`, {
+      icon: "🛒",
+      style: { background: "#0E0E1C", color: "#F0F0F8", border: "1px solid #1E1E32" },
+    });
     openCart();
   }
 
   return (
-    <div>
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-brand-muted mb-8">
-        <Link href="/" className="hover:text-brand-text transition-colors">Accueil</Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <Link href="/shop" className="hover:text-brand-text transition-colors">Boutique</Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <Link href={`/shop?category=${product.category.slug}`} className="hover:text-brand-text transition-colors">
-          {product.category.name}
+    <div className="min-h-screen bg-brand-darker pb-32 md:pb-16">
+      {/* ── Hero image ── */}
+      <div className="relative w-full aspect-[4/3] md:aspect-[16/7] overflow-hidden bg-brand-card">
+        {mainImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={mainImage}
+            alt={product.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-brand-purple/40 via-brand-card to-brand-gold/10" />
+        )}
+
+        {/* Gradient overlay bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-darker via-brand-darker/20 to-transparent" />
+
+        {/* Back button */}
+        <Link
+          href="/shop"
+          className="absolute top-20 left-4 md:top-28 md:left-8 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-white transition-all hover:bg-black/80 active:scale-90"
+        >
+          <ChevronLeft className="w-5 h-5" />
         </Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-brand-text truncate">{product.name}</span>
-      </nav>
 
-      <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
-        {/* Images */}
-        <div className="flex flex-col gap-4">
-          <div className="relative aspect-square rounded-2xl overflow-hidden bg-brand-card border border-brand-border">
-            {images[activeImg] ? (
-              <Image
-                src={images[activeImg]}
-                alt={product.name}
-                fill
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-brand-purple/30 to-brand-gold/20 flex items-center justify-center">
-                <Wine className="w-20 h-20 text-brand-gold/30" />
-              </div>
-            )}
-            {discount && (
-              <div className="absolute top-4 left-4">
-                <Badge variant="pink">-{discount}%</Badge>
-              </div>
-            )}
-          </div>
-
-          {images.length > 1 && (
-            <div className="flex gap-3">
-              {images.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveImg(i)}
-                  className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
-                    i === activeImg
-                      ? "border-brand-gold shadow-gold-sm"
-                      : "border-brand-border hover:border-brand-gold/40"
-                  }`}
-                >
-                  <Image src={img} alt={`Vue ${i + 1}`} fill className="object-cover" />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Info */}
-        <div className="flex flex-col gap-5">
-          {/* Category */}
-          <div className="flex items-center gap-2">
-            <Badge variant="muted">{product.category.name}</Badge>
-            {product.featured && <Badge variant="gold"><Star className="w-3 h-3" /> Vedette</Badge>}
-          </div>
-
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-brand-text leading-tight">
-            {product.name}
-          </h1>
-
-          {/* Tags */}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <span key={tag} className="text-xs px-2.5 py-1 rounded-full bg-brand-card border border-brand-border text-brand-muted">
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Price */}
-          <div className="flex items-baseline gap-3">
-            <span className="font-display text-3xl font-bold text-brand-gold">
-              {formatPrice(product.price)}
+        {/* Discount badge */}
+        {discount && (
+          <div className="absolute top-20 right-4 md:top-28">
+            <span className="text-xs font-bold bg-brand-gold text-white px-3 py-1 rounded-full uppercase shadow-gold-sm">
+              -{discount}%
             </span>
-            {product.comparePrice && (
-              <span className="text-xl text-brand-muted line-through">
-                {formatPrice(product.comparePrice)}
-              </span>
-            )}
-            {discount && (
-              <span className="text-sm font-semibold text-brand-pink">
-                Économisez {discount}%
-              </span>
-            )}
           </div>
+        )}
 
-          {/* Specs */}
-          {(product.volume || product.alcohol) && (
-            <div className="flex gap-4">
-              {product.volume && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-brand-card border border-brand-border">
-                  <Wine className="w-4 h-4 text-brand-gold" />
-                  <span className="text-sm text-brand-text font-medium">{product.volume}</span>
-                </div>
-              )}
-              {product.alcohol && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-brand-card border border-brand-border">
-                  <Info className="w-4 h-4 text-brand-gold" />
-                  <span className="text-sm text-brand-text font-medium">{product.alcohol} alc.</span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Description */}
-          {product.description && (
-            <p className="text-brand-muted leading-relaxed text-sm">
-              {product.description}
-            </p>
-          )}
-
-          {/* Stock */}
-          <div className="flex items-center gap-2">
-            {product.stock > 0 ? (
-              <>
-                <Check className="w-4 h-4 text-brand-success" />
-                <span className="text-sm text-brand-success font-medium">
-                  En stock {product.stock < 10 && `— Plus que ${product.stock} unités !`}
-                </span>
-              </>
-            ) : (
-              <span className="text-sm text-brand-error font-medium">Rupture de stock</span>
-            )}
-          </div>
-
-          {/* Quantity + Add to cart */}
-          {product.stock > 0 && (
-            <div className="flex flex-col gap-4 pt-2">
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-brand-text">Quantité :</span>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setQty(Math.max(1, qty - 1))}
-                    className="w-9 h-9 flex items-center justify-center rounded-xl border border-brand-border hover:border-brand-gold/40 text-brand-muted hover:text-brand-text transition-colors"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="font-bold text-brand-text text-lg w-8 text-center">{qty}</span>
-                  <button
-                    onClick={() => setQty(Math.min(product.stock, qty + 1))}
-                    className="w-9 h-9 flex items-center justify-center rounded-xl border border-brand-border hover:border-brand-gold/40 text-brand-muted hover:text-brand-text transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
+        {/* Thumbnail strip */}
+        {images.length > 1 && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+            {images.map((img, i) => (
               <button
-                onClick={handleAdd}
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-brand-darker font-bold px-8 py-4 rounded-xl shadow-gold hover:shadow-gold transition-all active:scale-[0.98] text-base w-full"
-              >
-                <ShoppingCart className="w-5 h-5" />
-                Ajouter au panier · {formatPrice(product.price * qty)}
-              </button>
-            </div>
-          )}
-
-          {/* Trust badges */}
-          <div className="grid grid-cols-3 gap-3 pt-2 border-t border-brand-border mt-2">
-            {[
-              { icon: "🚚", label: "Livraison Guyane" },
-              { icon: "🌿", label: "100% Naturel" },
-              { icon: "⭐", label: "Qualité Premium" },
-            ].map((badge) => (
-              <div key={badge.label} className="flex flex-col items-center gap-1 text-center">
-                <span className="text-xl">{badge.icon}</span>
-                <span className="text-[10px] text-brand-muted">{badge.label}</span>
-              </div>
+                key={i}
+                onClick={() => setActiveImg(i)}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  i === activeImg ? "bg-brand-gold scale-125" : "bg-white/40"
+                }`}
+              />
             ))}
           </div>
-
-          {/* Legal notice */}
-          <p className="text-[10px] text-brand-muted italic border-t border-brand-border pt-3">
-            L&apos;abus d&apos;alcool est dangereux pour la santé. À consommer avec modération.
-            Interdit aux personnes de moins de 18 ans.
-          </p>
-        </div>
+        )}
       </div>
+
+      {/* ── Content ── */}
+      <div className="relative -mt-6 md:mt-0 px-4 md:container-custom md:pt-8 max-w-2xl md:max-w-none mx-auto">
+        <div className="md:grid md:grid-cols-2 md:gap-12">
+
+          {/* Left: info */}
+          <div className="flex flex-col gap-5">
+            {/* Category + badge */}
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-[11px] font-bold text-brand-gold uppercase tracking-widest">
+                {product.category.name}
+              </span>
+              {product.featured && (
+                <span className="flex items-center gap-1 text-[10px] font-bold text-brand-teal bg-brand-teal/10 border border-brand-teal/20 px-2 py-0.5 rounded-full">
+                  <Sparkles className="w-3 h-3" /> Populaire
+                </span>
+              )}
+            </div>
+
+            {/* Name */}
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-brand-text uppercase tracking-wide leading-tight">
+              {product.name}
+            </h1>
+
+            {/* Volume */}
+            {product.volume && (
+              <p className="text-sm text-brand-muted">{product.volume}</p>
+            )}
+
+            {/* Description */}
+            {product.description && (
+              <p className="text-sm text-brand-muted leading-relaxed">
+                {product.description}
+              </p>
+            )}
+
+            {/* Price */}
+            <div className="flex items-baseline gap-3">
+              <span className="font-display text-3xl font-bold text-brand-gold">
+                {formatPrice(finalPrice * qty)}
+              </span>
+              {product.comparePrice && (
+                <span className="text-lg text-brand-muted line-through">
+                  {formatPrice(product.comparePrice)}
+                </span>
+              )}
+            </div>
+
+            {/* Stock */}
+            {product.stock > 0 ? (
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-brand-success" />
+                <span className="text-xs text-brand-success font-semibold">
+                  En stock{product.stock < 5 ? ` — Plus que ${product.stock} !` : ""}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-brand-error" />
+                <span className="text-xs text-brand-error font-semibold">Épuisé</span>
+              </div>
+            )}
+
+            {/* ── Soft chooser ── */}
+            {showSofts && product.stock > 0 && !isComposer && (
+              <div className="flex flex-col gap-3 rounded-2xl bg-brand-card border border-brand-border p-4">
+                <p className="text-xs font-bold text-brand-text uppercase tracking-widest">
+                  🥤 Choisis ton soft
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {/* No soft option */}
+                  <button
+                    onClick={() => setSelectedSoft(null)}
+                    className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all active:scale-95 ${
+                      selectedSoft === null
+                        ? "border-brand-gold bg-brand-gold/10 text-brand-gold"
+                        : "border-brand-border bg-brand-darker text-brand-muted hover:border-brand-gold/30"
+                    }`}
+                  >
+                    {selectedSoft === null && <Check className="w-3.5 h-3.5 shrink-0" />}
+                    <span>Sans soft</span>
+                  </button>
+
+                  {softs.map((soft) => (
+                    <button
+                      key={soft.id}
+                      onClick={() => setSelectedSoft(soft)}
+                      className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all active:scale-95 ${
+                        selectedSoft?.id === soft.id
+                          ? "border-brand-gold bg-brand-gold/10 text-brand-gold"
+                          : "border-brand-border bg-brand-darker text-brand-muted hover:border-brand-gold/30"
+                      }`}
+                    >
+                      {selectedSoft?.id === soft.id
+                        ? <Check className="w-3.5 h-3.5 shrink-0" />
+                        : <span className="text-base leading-none">{soft.emoji}</span>
+                      }
+                      <span className="truncate">{soft.name}</span>
+                      {soft.surcharge > 0 && (
+                        <span className="text-[10px] text-brand-gold ml-auto">+{formatPrice(soft.surcharge)}</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right: quantity + CTA (desktop) */}
+          <div className="hidden md:flex flex-col gap-6 pt-4">
+            {product.stock > 0 && !isComposer && (
+              <>
+                {/* Quantity */}
+                <div className="flex flex-col gap-3">
+                  <p className="text-xs font-bold text-brand-text uppercase tracking-widest">Quantité</p>
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => setQty(Math.max(1, qty - 1))}
+                      className="w-10 h-10 flex items-center justify-center rounded-xl bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text hover:border-brand-gold/40 transition-colors"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <span className="font-bold text-brand-text text-xl w-8 text-center">{qty}</span>
+                    <button
+                      onClick={() => setQty(Math.min(product.stock, qty + 1))}
+                      className="w-10 h-10 flex items-center justify-center rounded-xl bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text hover:border-brand-gold/40 transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleAdd}
+                  className="flex items-center justify-center gap-2 bg-brand-gold text-white font-bold py-4 px-8 rounded-2xl shadow-gold hover:opacity-90 transition-all active:scale-[0.98] text-sm uppercase tracking-widest"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  Ajouter au panier · {formatPrice(finalPrice * qty)}
+                </button>
+
+                <p className="text-[10px] text-brand-muted/60 text-center">
+                  Paiement sécurisé · Livraison en Guyane
+                </p>
+              </>
+            )}
+
+            {isComposer && (
+              <Link
+                href="/composer"
+                className="flex items-center justify-center gap-2 bg-brand-gold text-white font-bold py-4 px-8 rounded-2xl shadow-gold hover:opacity-90 transition-all active:scale-[0.98] text-sm uppercase tracking-widest"
+              >
+                <Sparkles className="w-5 h-5" />
+                Créer mon cocktail
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* ── Related products ── */}
+        {related.length > 0 && (
+          <div className="mt-10">
+            <h2 className="font-display text-xl font-bold text-brand-text uppercase tracking-wide mb-4">
+              Tu aimeras aussi
+            </h2>
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-4">
+              {related.map((p) => {
+                const imgs = parseJsonField<string[]>(p.images, []);
+                return (
+                  <Link
+                    key={p.id}
+                    href={`/product/${p.slug}`}
+                    className="shrink-0 w-36 md:w-auto rounded-2xl overflow-hidden bg-brand-card border border-brand-border hover:border-brand-gold/40 transition-all"
+                  >
+                    <div className="aspect-square bg-brand-darker">
+                      {imgs[0] ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={imgs[0]} alt={p.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-brand-purple/30 to-brand-gold/10" />
+                      )}
+                    </div>
+                    <div className="p-2.5">
+                      <p className="font-display font-bold text-brand-text text-xs uppercase leading-snug line-clamp-1">
+                        {p.name}
+                      </p>
+                      <p className="text-brand-gold font-bold text-xs mt-0.5">{formatPrice(p.price)}</p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Mobile sticky CTA ── */}
+      {product.stock > 0 && !isComposer && (
+        <div className="md:hidden fixed bottom-16 left-0 right-0 p-4 bg-brand-darker/95 backdrop-blur-xl border-t border-brand-border flex items-center gap-3 z-40">
+          {/* Quantity compact */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setQty(Math.max(1, qty - 1))}
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-brand-card border border-brand-border text-brand-muted"
+            >
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+            <span className="font-bold text-brand-text w-5 text-center">{qty}</span>
+            <button
+              onClick={() => setQty(Math.min(product.stock, qty + 1))}
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-brand-card border border-brand-border text-brand-muted"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <button
+            onClick={handleAdd}
+            className="flex-1 flex items-center justify-center gap-2 bg-brand-gold text-white font-bold py-3.5 rounded-2xl shadow-gold hover:opacity-90 transition-all active:scale-[0.98] text-sm uppercase tracking-widest"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Ajouter · {formatPrice(finalPrice * qty)}
+          </button>
+        </div>
+      )}
+
+      {isComposer && (
+        <div className="md:hidden fixed bottom-16 left-0 right-0 p-4 bg-brand-darker/95 backdrop-blur-xl border-t border-brand-border z-40">
+          <Link
+            href="/composer"
+            className="flex items-center justify-center gap-2 bg-brand-gold text-white font-bold py-4 rounded-2xl shadow-gold text-sm uppercase tracking-widest w-full"
+          >
+            <Sparkles className="w-4 h-4" />
+            Créer mon cocktail
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
