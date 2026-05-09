@@ -9,22 +9,28 @@ const DEFAULT_HARD_IMG  = "https://images.unsplash.com/photo-1569529465841-dfecd
 
 /* ─── Data ─────────────────────────────────────────────────── */
 
-const BASE_CARDS = [
-  {
-    type: "light" as const,
+const CARD_DEFAULTS = {
+  light: {
     accent: "#00D2C8",
     title: "Light",
+    base_price: 5,
     highlights: ["Léger & équilibré", "1 dose de Hennessy", "Surprises incluses 🍬"],
     detail: ["🍾 1 bouteille de Hennessy", "💧 Sirop au choix", "🍬 Bonbons & surprises", "🥤 1 gobelet ReadyMiix", "🥤 1 paille"],
   },
-  {
-    type: "hard" as const,
+  hard: {
     accent: "#F72585",
     title: "Hard",
+    base_price: 7,
     highlights: ["Plus intense 🔥", "2 doses de Hennessy", "Surprises incluses 🍬"],
     detail: ["🍾 2 bouteilles de Hennessy", "💧 Sirop au choix", "🍬 Bonbons & surprises", "🥤 1 gobelet ReadyMiix", "🥤 1 paille"],
   },
-] as const;
+};
+
+function parseList(raw: string | undefined, fallback: string[]): string[] {
+  if (!raw) return fallback;
+  try { const p = JSON.parse(raw); return Array.isArray(p) ? p : fallback; }
+  catch { return fallback; }
+}
 
 const FEATURES = [
   { Icon: Truck,     label: "LIVRAISON RAPIDE", sub: "EN 24/48H",       color: "#F72585" },
@@ -143,23 +149,36 @@ export default function ComposerPage() {
   const [cfg, setCfg] = useState<{ open: boolean; type: "light" | "hard" }>({
     open: false, type: "light",
   });
-  const [lightImg, setLightImg] = useState(DEFAULT_LIGHT_IMG);
-  const [hardImg,  setHardImg]  = useState(DEFAULT_HARD_IMG);
+  const [siteCfg, setSiteCfg] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetch("/api/config")
       .then((r) => r.ok ? r.json() : {})
-      .then((cfg: Record<string, string>) => {
-        if (cfg.light_card_image) setLightImg(cfg.light_card_image);
-        if (cfg.hard_card_image)  setHardImg(cfg.hard_card_image);
-      })
+      .then((data: Record<string, string>) => setSiteCfg(data))
       .catch(() => {});
   }, []);
 
   const CARDS = [
-    { ...BASE_CARDS[0], heroImg: lightImg },
-    { ...BASE_CARDS[1], heroImg: hardImg  },
+    {
+      type: "light" as const,
+      accent:     siteCfg.light_accent    || CARD_DEFAULTS.light.accent,
+      title:      siteCfg.light_title     || CARD_DEFAULTS.light.title,
+      highlights: parseList(siteCfg.light_highlights, CARD_DEFAULTS.light.highlights),
+      detail:     parseList(siteCfg.light_detail,     CARD_DEFAULTS.light.detail),
+      heroImg:    siteCfg.light_card_image || DEFAULT_LIGHT_IMG,
+    },
+    {
+      type: "hard" as const,
+      accent:     siteCfg.hard_accent    || CARD_DEFAULTS.hard.accent,
+      title:      siteCfg.hard_title     || CARD_DEFAULTS.hard.title,
+      highlights: parseList(siteCfg.hard_highlights, CARD_DEFAULTS.hard.highlights),
+      detail:     parseList(siteCfg.hard_detail,     CARD_DEFAULTS.hard.detail),
+      heroImg:    siteCfg.hard_card_image || DEFAULT_HARD_IMG,
+    },
   ];
+
+  const lightPrice = parseFloat(siteCfg.light_base_price || "") || CARD_DEFAULTS.light.base_price;
+  const hardPrice  = parseFloat(siteCfg.hard_base_price  || "") || CARD_DEFAULTS.hard.base_price;
 
   return (
     <div className="min-h-screen bg-[#050510] pt-24 pb-20 overflow-x-hidden">
@@ -250,7 +269,7 @@ export default function ComposerPage() {
         isOpen={cfg.open}
         onClose={() => setCfg((c) => ({ ...c, open: false }))}
         type={cfg.type}
-        basePrice={cfg.type === "light" ? 5 : 7}
+        basePrice={cfg.type === "light" ? lightPrice : hardPrice}
       />
     </div>
   );
