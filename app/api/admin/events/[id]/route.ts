@@ -20,7 +20,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       ...(body.timeRange   !== undefined && { timeRange: body.timeRange }),
       ...(body.location    !== undefined && { location: body.location }),
       ...(body.price       !== undefined && { price: body.price != null ? Number(body.price) : null }),
-      ...(body.bookingUrl  !== undefined && { bookingUrl: body.bookingUrl }),
+      ...(body.maxTickets  !== undefined && { maxTickets: body.maxTickets != null ? Number(body.maxTickets) : null }),
       ...(body.active      !== undefined && { active: body.active }),
       ...(body.featured    !== undefined && { featured: body.featured }),
     },

@@ -14,7 +14,7 @@ interface Event {
   timeRange: string | null;
   location: string;
   price: number | null;
-  bookingUrl: string | null;
+  maxTickets: number | null;
   active: boolean;
   featured: boolean;
 }
@@ -24,7 +24,7 @@ const EVENT_TYPES = ["ÉVÉNEMENT", "SOIRÉE", "CONCERT", "FESTIVAL", "BRUNCH", 
 const BLANK: Omit<Event, "id"> = {
   title: "", type: "ÉVÉNEMENT", description: null,
   image: "", date: "", timeRange: "22H00 - 04H00",
-  location: "", price: null, bookingUrl: null,
+  location: "", price: null, maxTickets: null,
   active: true, featured: false,
 };
 
@@ -84,7 +84,7 @@ export default function AdminEventsPage() {
     setForm({
       title: ev.title, type: ev.type, description: ev.description,
       image: ev.image, date: formatDateLocal(ev.date), timeRange: ev.timeRange,
-      location: ev.location, price: ev.price, bookingUrl: ev.bookingUrl,
+      location: ev.location, price: ev.price, maxTickets: ev.maxTickets,
       active: ev.active, featured: ev.featured,
     });
     setShowForm(true);
@@ -249,13 +249,15 @@ export default function AdminEventsPage() {
               />
             </div>
 
-            {/* Booking URL */}
-            <div className="sm:col-span-2 flex flex-col gap-1">
-              <label className="text-[11px] font-bold text-brand-muted uppercase tracking-wider">Lien de réservation</label>
+            {/* Max tickets */}
+            <div className="flex flex-col gap-1">
+              <label className="text-[11px] font-bold text-brand-muted uppercase tracking-wider">Places max (vide = illimité)</label>
               <input
-                value={form.bookingUrl ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, bookingUrl: e.target.value || null }))}
-                placeholder="https://..."
+                type="number"
+                value={form.maxTickets ?? ""}
+                onChange={(e) => setForm((f) => ({ ...f, maxTickets: e.target.value ? Number(e.target.value) : null }))}
+                placeholder="100"
+                min="1"
                 className="px-3 py-2.5 rounded-xl bg-brand-darker border border-brand-border text-brand-text text-sm focus:border-brand-gold/60 outline-none"
               />
             </div>

@@ -239,7 +239,11 @@ export default async function HomePage() {
               </span>
             </div>
 
-            <EventsSlider events={events.map((e) => ({ ...e, date: e.date.toISOString() }))} />
+            <EventsSlider events={events.map((e) => ({
+              id: e.id, title: e.title, type: e.type, description: e.description,
+              image: e.image, date: e.date.toISOString(), timeRange: e.timeRange,
+              location: e.location, price: e.price, maxTickets: e.maxTickets,
+            }))} />
           </div>
         </section>
       )}

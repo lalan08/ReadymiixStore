@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       timeRange:   body.timeRange  ?? null,
       location:    body.location,
       price:       body.price      != null ? Number(body.price) : null,
-      bookingUrl:  body.bookingUrl ?? null,
+      maxTickets:  body.maxTickets != null ? Number(body.maxTickets) : null,
       active:      body.active     ?? true,
       featured:    body.featured   ?? false,
     },

@@ -396,7 +396,7 @@ export async function GET() {
         "timeRange" TEXT,
         "location" TEXT NOT NULL,
         "price" DOUBLE PRECISION,
-        "bookingUrl" TEXT,
+        "maxTickets" INTEGER,
         "active" BOOLEAN NOT NULL DEFAULT true,
         "featured" BOOLEAN NOT NULL DEFAULT false,
         "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -128,7 +128,7 @@ model Event {
   timeRange   String?
   location    String
   price       Float?
-  bookingUrl  String?
+  maxTickets  Int?
   active      Boolean  @default(true)
   featured    Boolean  @default(false)
   createdAt   DateTime @default(now())
