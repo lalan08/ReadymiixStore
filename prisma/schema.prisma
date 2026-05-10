@@ -33,12 +33,14 @@ model Product {
   stock        Int         @default(0)
   featured     Boolean     @default(false)
   active       Boolean     @default(true)
-  volume       String?
-  alcohol      String?
-  tags         String      @default("[]")
-  orderItems   OrderItem[]
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  volume        String?
+  alcohol       String?
+  tags          String      @default("[]")
+  productType   String      @default("simple")
+  hasSoftChoice Boolean     @default(false)
+  orderItems    OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model Order {

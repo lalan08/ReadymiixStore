@@ -19,7 +19,7 @@ export async function PUT(req: Request, { params }: Params) {
     const {
       name, slug, description, price, comparePrice,
       images, categoryId, stock, featured, active,
-      volume, alcohol, tags,
+      volume, alcohol, tags, productType, hasSoftChoice,
     } = body;
 
     const product = await prisma.product.update({
@@ -34,6 +34,8 @@ export async function PUT(req: Request, { params }: Params) {
         volume: volume || null,
         alcohol: alcohol || null,
         tags: tags ?? "[]",
+        ...(productType !== undefined && { productType }),
+        ...(hasSoftChoice !== undefined && { hasSoftChoice }),
         slug: slug || slugify(name),
       },
       include: { category: true },

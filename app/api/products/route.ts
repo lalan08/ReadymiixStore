@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     const {
       name, slug, description, price, comparePrice,
       images, categoryId, stock, featured, active,
-      volume, alcohol, tags,
+      volume, alcohol, tags, productType, hasSoftChoice,
     } = body;
 
     if (!name || !price || !categoryId) {
@@ -49,6 +49,8 @@ export async function POST(req: Request) {
         stock: stock ?? 0, featured: featured ?? false,
         active: active ?? true, volume: volume || null,
         alcohol: alcohol || null, tags: tags ?? "[]",
+        productType: productType ?? "simple",
+        hasSoftChoice: hasSoftChoice ?? false,
         slug: finalSlug,
       },
       include: { category: true },

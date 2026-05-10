@@ -28,6 +28,8 @@ interface Product {
   volume: string | null;
   alcohol: string | null;
   tags: string;
+  productType: string;
+  hasSoftChoice: boolean;
   category: { name: string; slug: string };
 }
 
@@ -49,7 +51,7 @@ export default function ProductDetail({ product, softs, related }: Props) {
   const mainImage = images[activeImg] ?? null;
 
   const isComposer = COMPOSER_SLUGS.includes(product.category.slug);
-  const showSofts  = softs.length > 0;
+  const showSofts  = softs.length > 0 && product.hasSoftChoice;
 
   const discount = product.comparePrice
     ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
