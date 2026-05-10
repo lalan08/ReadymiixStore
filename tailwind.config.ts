@@ -55,6 +55,9 @@ const config: Config = {
         "fade-in":      "fadeIn 0.5s ease-out",
         "slide-up":     "slideUp 0.5s ease-out",
         "spin-slow":    "spin 8s linear infinite",
+        "glow-breathe": "glowBreathe 4s ease-in-out infinite",
+        "marquee":      "marquee 35s linear infinite",
+        "slide-in-up":  "slideInUp 0.7s cubic-bezier(0.16,1,0.3,1) both",
       },
       keyframes: {
         float:   { "0%,100%": { transform: "translateY(0px)" }, "50%": { transform: "translateY(-20px)" } },
@@ -62,6 +65,18 @@ const config: Config = {
         shimmer: { "0%": { "background-position": "-200% 0" }, "100%": { "background-position": "200% 0" } },
         fadeIn:  { "from": { opacity: "0" }, "to": { opacity: "1" } },
         slideUp: { "from": { opacity: "0", transform: "translateY(20px)" }, "to": { opacity: "1", transform: "translateY(0)" } },
+        glowBreathe: {
+          "0%,100%": { opacity: "0.3",  transform: "scale(1)" },
+          "50%":     { opacity: "0.65", transform: "scale(1.15)" },
+        },
+        marquee: {
+          "from": { transform: "translateX(0)" },
+          "to":   { transform: "translateX(-50%)" },
+        },
+        slideInUp: {
+          "from": { opacity: "0", transform: "translateY(28px)" },
+          "to":   { opacity: "1", transform: "translateY(0)" },
+        },
       },
     },
   },
