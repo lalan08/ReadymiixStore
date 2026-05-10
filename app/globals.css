@@ -164,4 +164,19 @@
       linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
     background-size: 32px 32px;
   }
+
+  /* Hero animated orb — uses --dur CSS custom property for per-orb speed */
+  .hero-orb {
+    animation: orbDrift var(--dur, 14s) ease-in-out infinite;
+    will-change: transform;
+  }
+}
+
+/* ── Hero keyframes (outside @layer so they're always available) ── */
+@keyframes orbDrift {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  25%  { transform: translate(4%,  -5%)   scale(1.06); }
+  50%  { transform: translate(-3%,  7%)   scale(0.94); }
+  75%  { transform: translate(5%,   1%)   scale(1.04); }
+  100% { transform: translate(0,    0)    scale(1);    }
 }
