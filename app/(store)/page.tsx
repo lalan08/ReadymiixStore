@@ -56,33 +56,59 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════
           HERO — Immersive aurora full-screen
       ══════════════════════════════════════ */}
-      <section className="relative h-[100svh] min-h-[600px] md:min-h-[680px] lg:min-h-[750px] flex flex-col items-center justify-center bg-brand-darker overflow-hidden">
+      <section className="relative h-[100svh] min-h-[600px] md:min-h-[680px] lg:min-h-[750px] flex flex-col items-center justify-center bg-[#020208] overflow-hidden">
 
-        {/* ── Aurora background ── */}
+        {/* ── Cocktail background — cinematic mood ── */}
+        <Image
+          src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=1920&q=80&auto=format"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+          style={{ filter: "brightness(0.32) saturate(1.25)" }}
+        />
+
+        {/* ── Cinematic overlay stack ── */}
+        {/* 1. Brand gradient — purple top, dark bottom */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0D003A]/65 via-transparent to-brand-darker/95" />
+        {/* 2. Edge vignette — focuses on centre */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(ellipse 75% 90% at 50% 50%, transparent 25%, rgba(5,2,15,0.52) 100%)" }}
+        />
+        {/* 3. Smoke mist at base */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-52 pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse 110% 100% at 50% 100%, rgba(247,37,133,0.055) 0%, rgba(123,47,190,0.03) 45%, transparent 70%)",
+            filter: "blur(22px)",
+          }}
+        />
+
+        {/* ── Aurora orbs — on top of photo, neon atmosphere ── */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {/* Orb 1 — purple, top-left */}
           <div
-            className="hero-orb absolute -top-[280px] -left-[200px] w-[750px] h-[750px] rounded-full bg-brand-purple/22 blur-[130px]"
+            className="hero-orb absolute -top-[280px] -left-[200px] w-[750px] h-[750px] rounded-full bg-brand-purple/28 blur-[120px]"
             style={{ "--dur": "15s" } as React.CSSProperties}
           />
           {/* Orb 2 — pink, top-right */}
           <div
-            className="hero-orb absolute -top-[150px] -right-[260px] w-[700px] h-[700px] rounded-full bg-brand-gold/18 blur-[120px]"
+            className="hero-orb absolute -top-[150px] -right-[260px] w-[700px] h-[700px] rounded-full bg-brand-gold/22 blur-[110px]"
             style={{ "--dur": "11s", animationDelay: "-5s" } as React.CSSProperties}
           />
-          {/* Orb 3 — teal, bottom-center */}
+          {/* Orb 3 — teal, bottom-centre */}
           <div
-            className="hero-orb absolute -bottom-[260px] left-1/2 -translate-x-1/2 w-[900px] h-[650px] rounded-full bg-brand-teal/10 blur-[150px]"
+            className="hero-orb absolute -bottom-[260px] left-1/2 -translate-x-1/2 w-[900px] h-[650px] rounded-full bg-brand-teal/12 blur-[140px]"
             style={{ "--dur": "19s", animationDelay: "-9s" } as React.CSSProperties}
           />
-          {/* Deep purple center depth */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full bg-[#1A004A]/45 blur-[90px]" />
-          {/* Grid */}
-          <div className="absolute inset-0 bg-grid opacity-[0.06]" />
-          {/* Top pink accent line */}
+          {/* Deep purple depth — centre */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full bg-[#1A004A]/50 blur-[90px]" />
+          {/* Grid texture */}
+          <div className="absolute inset-0 bg-grid opacity-[0.05]" />
+          {/* Top accent line */}
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/70 to-transparent" />
-          {/* Top fade */}
-          <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-brand-purple/8 to-transparent" />
         </div>
 
         {/* ── Ambient light particles — premium nightlife ── */}
