@@ -46,7 +46,8 @@ export default function Navbar() {
         )}
       >
         <div className="container-custom">
-          <nav className="flex items-center justify-between h-16 md:h-20">
+          {/* mobile: h-16 | tablet: h-[66px] | desktop: h-20 */}
+          <nav className="flex items-center justify-between h-16 md:h-[66px] lg:h-20">
 
             {/* Logo */}
             <Link href="/" className="flex items-center group" aria-label="ReadyMiix Store — Accueil">
@@ -55,19 +56,19 @@ export default function Navbar() {
                 alt="ReadyMiix Store"
                 width={56}
                 height={56}
-                className="object-contain"
+                className="w-10 h-10 md:w-11 md:h-11 lg:w-14 lg:h-14 object-contain"
                 priority
               />
             </Link>
 
-            {/* Desktop links */}
-            <ul className="hidden md:flex items-center gap-8">
+            {/* Tablet + desktop links — gap tighter on tablet */}
+            <ul className="hidden md:flex items-center md:gap-5 lg:gap-7">
               {navLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
                     className={cn(
-                      "text-sm font-medium transition-colors relative group",
+                      "md:text-xs lg:text-sm font-medium transition-colors relative group",
                       pathname === link.href
                         ? "text-brand-gold"
                         : "text-brand-muted hover:text-brand-text"
@@ -102,7 +103,7 @@ export default function Navbar() {
 
               <Link
                 href="/shop"
-                className="group hidden md:inline-flex items-center gap-2 relative text-white text-sm font-bold px-5 py-2.5 rounded-xl active:scale-[0.97] uppercase tracking-wide overflow-hidden transition-transform duration-150"
+                className="group hidden md:inline-flex items-center gap-2 relative text-white md:text-[11px] lg:text-sm font-bold md:px-4 md:py-2 lg:px-5 lg:py-2.5 rounded-xl active:scale-[0.97] uppercase tracking-wide overflow-hidden transition-transform duration-150"
                 style={{
                   background: "linear-gradient(135deg, #C5006A, #F72585)",
                   boxShadow: "0 0 20px rgba(247,37,133,0.4)",

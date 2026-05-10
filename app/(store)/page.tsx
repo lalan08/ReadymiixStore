@@ -56,7 +56,7 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════
           HERO — Immersive aurora full-screen
       ══════════════════════════════════════ */}
-      <section className="relative h-[100svh] min-h-[650px] flex flex-col items-center justify-center bg-brand-darker overflow-hidden">
+      <section className="relative h-[100svh] min-h-[600px] md:min-h-[680px] lg:min-h-[750px] flex flex-col items-center justify-center bg-brand-darker overflow-hidden">
 
         {/* ── Aurora background ── */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -92,7 +92,7 @@ export default async function HomePage() {
         <span className="pointer-events-none select-none absolute right-[5%] bottom-[30%] text-2xl opacity-[0.08] animate-float [animation-delay:-1.5s] [animation-duration:12s]">✨</span>
 
         {/* ── Hero content ── */}
-        <div className="relative z-10 flex flex-col items-center text-center px-5 gap-5 md:gap-6">
+        <div className="relative z-10 flex flex-col items-center text-center px-5 md:px-8 lg:px-5 gap-4 md:gap-5 lg:gap-7">
 
           {/* Logo */}
           <div className="relative animate-slide-in-up [animation-delay:0ms]">
@@ -103,7 +103,7 @@ export default async function HomePage() {
               alt="ReadyMiix"
               width={200}
               height={200}
-              className="relative z-10 w-[140px] h-[140px] sm:w-[165px] sm:h-[165px] md:w-[190px] md:h-[190px] object-contain"
+              className="relative z-10 w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] md:w-[148px] md:h-[148px] lg:w-[190px] lg:h-[190px] object-contain"
               style={{ filter: "drop-shadow(0 0 70px rgba(247,37,133,0.85)) drop-shadow(0 0 25px rgba(247,37,133,0.45))" }}
               priority
             />
@@ -121,40 +121,39 @@ export default async function HomePage() {
           <div className="animate-slide-in-up [animation-delay:160ms]">
             <h1 className="font-display uppercase leading-[0.88] tracking-tight">
               <span
-                className="block text-[clamp(4.2rem,17vw,10rem)] text-white"
+                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-white"
                 style={{ textShadow: "0 0 80px rgba(255,255,255,0.1)" }}
               >
                 BIEN FRAIS
               </span>
               <span
-                className="block text-[clamp(4.2rem,17vw,10rem)] text-gold-gradient"
+                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-gold-gradient"
                 style={{ filter: "drop-shadow(0 0 50px rgba(247,37,133,0.55))" }}
               >
                 TOUJOURS PRÊT
               </span>
             </h1>
-            <p className="text-3xl mt-1 opacity-70">🍹</p>
+            <p className="text-2xl md:text-3xl mt-1 opacity-70">🍹</p>
           </div>
 
           {/* CTAs */}
-          <div className="animate-slide-in-up [animation-delay:260ms] flex flex-col sm:flex-row gap-3 w-full max-w-[420px]">
+          <div className="animate-slide-in-up [animation-delay:260ms] flex flex-col sm:flex-row gap-3 w-full max-w-[380px] md:max-w-[440px] lg:max-w-[480px]">
             {/* Primary — Composer */}
             <Link
               href="/composer"
-              className="group relative flex-1 flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#C5006A] to-[#F72585] text-white font-bold px-6 py-4 rounded-2xl text-sm uppercase tracking-widest shadow-[0_0_40px_rgba(247,37,133,0.45)] hover:shadow-[0_0_65px_rgba(247,37,133,0.7)] hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.97] overflow-hidden"
+              className="group relative flex-1 flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#C5006A] to-[#F72585] text-white font-bold px-5 py-3.5 md:py-3 lg:py-4 rounded-2xl text-xs md:text-[11px] lg:text-sm uppercase tracking-widest shadow-[0_0_40px_rgba(247,37,133,0.45)] hover:shadow-[0_0_65px_rgba(247,37,133,0.7)] hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.97] overflow-hidden"
             >
               <span className="relative z-10 flex items-center gap-2">
                 <span>🍹</span>
                 <span>Composer mon cocktail</span>
               </span>
-              {/* Shimmer sweep on hover */}
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
             </Link>
 
             {/* Secondary — Boutique */}
             <Link
               href="/shop"
-              className="flex-1 flex items-center justify-center gap-2.5 border border-white/15 bg-white/[0.05] backdrop-blur-sm text-white font-bold px-6 py-4 rounded-2xl text-sm uppercase tracking-widest hover:border-brand-teal/60 hover:bg-white/[0.09] hover:shadow-[0_0_28px_rgba(0,210,200,0.22)] hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.97]"
+              className="flex-1 flex items-center justify-center gap-2.5 border border-white/15 bg-white/[0.05] backdrop-blur-sm text-white font-bold px-5 py-3.5 md:py-3 lg:py-4 rounded-2xl text-xs md:text-[11px] lg:text-sm uppercase tracking-widest hover:border-brand-teal/60 hover:bg-white/[0.09] hover:shadow-[0_0_28px_rgba(0,210,200,0.22)] hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.97]"
             >
               <span>🛒</span>
               <span>Voir la boutique</span>
@@ -196,9 +195,9 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════
           GAMMES BAND
       ══════════════════════════════════════ */}
-      <section className="py-14 bg-brand-card/50 border-b border-brand-border">
+      <section className="py-10 md:py-11 lg:py-14 bg-brand-card/50 border-b border-brand-border">
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4 lg:gap-5">
 
             {/* Hard */}
             <Link
@@ -265,17 +264,17 @@ export default async function HomePage() {
           ÉVÉNEMENTS DU MOMENT
       ══════════════════════════════════════ */}
       {events.length > 0 && (
-        <section className="py-16 md:py-20 overflow-hidden">
+        <section className="py-12 md:py-14 lg:py-20 overflow-hidden">
           <div className="container-custom">
 
             {/* Section header */}
-            <div className="flex items-end justify-between mb-8">
+            <div className="flex items-end justify-between mb-6 md:mb-7 lg:mb-8">
               <div>
                 <p className="flex items-center gap-2.5 text-[10px] font-black text-brand-gold uppercase tracking-[0.28em] mb-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse" />
                   Nightlife & Events
                 </p>
-                <h2 className="font-display text-[clamp(2rem,7vw,4rem)] text-white uppercase tracking-wide leading-none">
+                <h2 className="font-display text-[clamp(1.8rem,5vw,4rem)] md:text-[clamp(2rem,4.5vw,3.5rem)] lg:text-[clamp(2rem,6vw,4rem)] text-white uppercase tracking-wide leading-none">
                   Événements du moment
                 </h2>
               </div>
@@ -301,14 +300,14 @@ export default async function HomePage() {
           PRODUITS VEDETTES
       ══════════════════════════════════════ */}
       {featuredProducts.length > 0 && (
-        <section className="section-padding">
+        <section className="py-12 md:py-14 lg:py-20">
           <div className="container-custom">
-            <div className="flex items-end justify-between mb-10">
+            <div className="flex items-end justify-between mb-8 md:mb-8 lg:mb-10">
               <div>
                 <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.2em] mb-2">
                   — Nos créations
                 </p>
-                <h2 className="font-display text-4xl md:text-5xl font-bold text-white uppercase tracking-wide">
+                <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-white uppercase tracking-wide">
                   Produits vedettes
                 </h2>
               </div>
@@ -320,7 +319,8 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* mobile: 1 col | tablet: 2 col | desktop: 4 col */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
               {featuredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -342,11 +342,11 @@ export default async function HomePage() {
           CATEGORIES GRID
       ══════════════════════════════════════ */}
       {categories.length > 0 && (
-        <section className="section-padding bg-brand-card/40">
+        <section className="py-12 md:py-14 lg:py-20 bg-brand-card/40">
           <div className="container-custom">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8 md:mb-9 lg:mb-12">
               <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.2em] mb-2">— Collections</p>
-              <h2 className="font-display text-4xl md:text-5xl font-bold text-white uppercase tracking-wide">
+              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-white uppercase tracking-wide">
                 Explorez nos gammes
               </h2>
             </div>
@@ -394,9 +394,9 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════
           BRAND STORY
       ══════════════════════════════════════ */}
-      <section className="section-padding">
+      <section className="py-12 md:py-14 lg:py-20">
         <div className="container-custom">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-10 lg:gap-12 items-center">
             <div className="relative">
               <div className="aspect-[4/3] rounded-3xl overflow-hidden">
                 <Image
@@ -415,7 +415,7 @@ export default async function HomePage() {
 
             <div className="flex flex-col gap-6">
               <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.2em]">— Notre histoire</p>
-              <h2 className="font-display text-4xl md:text-5xl font-bold text-white uppercase leading-tight">
+              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-white uppercase leading-tight">
                 Nés en Guyane,{" "}
                 <span className="text-gold-gradient">pour la Guyane</span>
               </h2>
@@ -458,7 +458,7 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════
           POINTS DE VENTE BAND
       ══════════════════════════════════════ */}
-      <section className="py-14 bg-brand-card border-y border-brand-border">
+      <section className="py-10 md:py-12 lg:py-14 bg-brand-card border-y border-brand-border">
         <div className="container-custom">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
             <div className="shrink-0">
