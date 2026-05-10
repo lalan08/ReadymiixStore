@@ -16,10 +16,10 @@ import Image from "next/image";
 
 type Phase = "black" | "trace" | "lit" | "out" | "done";
 
-// Equilateral triangle — viewBox 200×200, circumradius 82, centroid at (100,106)
-// Pointing upward, proportioned to match the ReadyMiix triangle logo
-const TRI  = "M 100 18 L 171 152 L 29 152 Z";
-const PERI = 424; // ≈ perimeter of the above triangle
+// Inverted triangle (pointing DOWN) — matches the ReadyMiix logo shield shape
+// Top-left → Top-right → Bottom point → close
+const TRI  = "M 26 58 L 174 58 L 100 184 Z";
+const PERI = 440; // ≈ perimeter: top edge 148 + two sides ~146 each
 
 export default function CinematicIntro() {
   const [mounted, setMounted] = useState(false);

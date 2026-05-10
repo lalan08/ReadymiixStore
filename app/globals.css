@@ -195,8 +195,8 @@
 
 /* ── Cinematic intro keyframes ── */
 
-/* Triangle neon trace — stroke-dashoffset 416→0 over the triangle perimeter */
+/* Triangle neon trace — stroke-dashoffset 440→0 over the triangle perimeter */
 @keyframes rmTrace {
-  from { stroke-dashoffset: 416; }
+  from { stroke-dashoffset: 440; }
   to   { stroke-dashoffset: 0;   }
 }
