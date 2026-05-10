@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ShoppingBag, MapPin, Flame, Candy, Package, Star, ChevronRight } from "lucide-react";
+import { ArrowRight, ShoppingBag, MapPin, Flame, Candy, Package, Star, ChevronRight, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 import EventsSlider from "@/components/store/EventsSlider";
@@ -85,11 +85,52 @@ export default async function HomePage() {
           <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-brand-purple/8 to-transparent" />
         </div>
 
-        {/* ── Floating emoji decorations ── */}
-        <span className="pointer-events-none select-none absolute left-[5%] top-[20%] text-5xl opacity-[0.18] animate-float [animation-delay:0s]">🍹</span>
-        <span className="pointer-events-none select-none absolute right-[7%] top-[26%] text-4xl opacity-[0.13] animate-float [animation-delay:-3s] [animation-duration:9s]">🍬</span>
-        <span className="pointer-events-none select-none absolute left-[11%] bottom-[18%] text-3xl opacity-[0.12] animate-float [animation-delay:-5s] [animation-duration:8s]">🔥</span>
-        <span className="pointer-events-none select-none absolute right-[5%] bottom-[30%] text-2xl opacity-[0.08] animate-float [animation-delay:-1.5s] [animation-duration:12s]">✨</span>
+        {/* ── Ambient light particles — premium nightlife ── */}
+
+        {/* Cross flare — top left — neon pink */}
+        <div className="pointer-events-none select-none absolute left-[5%] top-[20%] opacity-30 animate-float [animation-delay:0s]">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <line x1="14" y1="2" x2="14" y2="26" stroke="#F72585" strokeWidth="1.4" strokeLinecap="round"/>
+            <line x1="2" y1="14" x2="26" y2="14" stroke="#F72585" strokeWidth="1.4" strokeLinecap="round"/>
+            <circle cx="14" cy="14" r="2.5" fill="#F72585"/>
+          </svg>
+          <div className="absolute inset-[-4px] blur-[8px] bg-[#F72585]/25 rounded-full" />
+        </div>
+
+        {/* Glowing ring — top right — violet */}
+        <div className="pointer-events-none select-none absolute right-[7%] top-[26%] animate-float [animation-delay:-3s] [animation-duration:9s]">
+          <div
+            className="w-11 h-11 rounded-full border border-[#7B2FBE]/55"
+            style={{ boxShadow: "0 0 16px rgba(123,47,190,0.45), inset 0 0 10px rgba(123,47,190,0.18)" }}
+          />
+        </div>
+
+        {/* Ice diamond — bottom left — teal */}
+        <div className="pointer-events-none select-none absolute left-[11%] bottom-[18%] opacity-30 animate-float [animation-delay:-5s] [animation-duration:8s]">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M11 1L21 11L11 21L1 11Z" stroke="#00D2C8" strokeWidth="1.2" strokeLinejoin="round"/>
+            <circle cx="11" cy="11" r="2" fill="#00D2C8" opacity="0.7"/>
+          </svg>
+          <div className="absolute inset-[-6px] blur-[8px] bg-[#00D2C8]/20 rounded-full" />
+        </div>
+
+        {/* 4-point star flare — bottom right — pink */}
+        <div className="pointer-events-none select-none absolute right-[5%] bottom-[30%] opacity-20 animate-float [animation-delay:-1.5s] [animation-duration:12s]">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 0L12 8L20 10L12 12L10 20L8 12L0 10L8 8Z" fill="#F72585"/>
+          </svg>
+          <div className="absolute inset-[-4px] blur-[7px] bg-[#F72585]/20 rounded-full" />
+        </div>
+
+        {/* Extra: small violet dot cluster — mid right */}
+        <div className="pointer-events-none select-none absolute right-[12%] top-[55%] opacity-20 animate-float [animation-delay:-7s] [animation-duration:14s]">
+          <div className="w-2 h-2 rounded-full bg-[#7B2FBE]" style={{ boxShadow: "0 0 10px 3px rgba(123,47,190,0.6)" }} />
+        </div>
+
+        {/* Extra: pink micro-dot — left center */}
+        <div className="pointer-events-none select-none absolute left-[8%] top-[52%] opacity-20 animate-float [animation-delay:-10s] [animation-duration:16s]">
+          <div className="w-1.5 h-1.5 rounded-full bg-[#F72585]" style={{ boxShadow: "0 0 8px 3px rgba(247,37,133,0.55)" }} />
+        </div>
 
         {/* ── Hero content ── */}
         <div className="relative z-10 flex flex-col items-center text-center px-5 md:px-8 lg:px-5 gap-4 md:gap-5 lg:gap-7">
@@ -133,7 +174,6 @@ export default async function HomePage() {
                 TOUJOURS PRÊT
               </span>
             </h1>
-            <p className="text-2xl md:text-3xl mt-1 opacity-70">🍹</p>
           </div>
 
           {/* CTAs */}
@@ -144,7 +184,7 @@ export default async function HomePage() {
               className="group relative flex-1 flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#C5006A] to-[#F72585] text-white font-bold px-5 py-3.5 md:py-3 lg:py-4 rounded-2xl text-xs md:text-[11px] lg:text-sm uppercase tracking-widest shadow-[0_0_40px_rgba(247,37,133,0.45)] hover:shadow-[0_0_65px_rgba(247,37,133,0.7)] hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.97] overflow-hidden"
             >
               <span className="relative z-10 flex items-center gap-2">
-                <span>🍹</span>
+                <Sparkles className="w-4 h-4 shrink-0" />
                 <span>Composer mon cocktail</span>
               </span>
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
@@ -155,7 +195,7 @@ export default async function HomePage() {
               href="/shop"
               className="flex-1 flex items-center justify-center gap-2.5 border border-white/15 bg-white/[0.05] backdrop-blur-sm text-white font-bold px-5 py-3.5 md:py-3 lg:py-4 rounded-2xl text-xs md:text-[11px] lg:text-sm uppercase tracking-widest hover:border-brand-teal/60 hover:bg-white/[0.09] hover:shadow-[0_0_28px_rgba(0,210,200,0.22)] hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.97]"
             >
-              <span>🛒</span>
+              <ShoppingBag className="w-4 h-4 shrink-0" />
               <span>Voir la boutique</span>
             </Link>
           </div>
@@ -205,8 +245,8 @@ export default async function HomePage() {
               className="group relative flex items-center gap-5 p-5 rounded-2xl border border-brand-gold/20 bg-gradient-to-br from-brand-gold/6 to-brand-darker hover:border-brand-gold/50 hover:shadow-[0_0_40px_rgba(247,37,133,0.15)] transition-all duration-400 overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative w-14 h-14 rounded-2xl bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center shrink-0 text-3xl group-hover:scale-110 group-hover:bg-brand-gold/20 group-hover:border-brand-gold/40 transition-all duration-300">
-                🔥
+              <div className="relative w-14 h-14 rounded-2xl bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-brand-gold/20 group-hover:border-brand-gold/40 transition-all duration-300">
+                <Flame className="w-7 h-7 text-brand-gold" />
               </div>
               <div className="relative flex flex-col gap-0.5">
                 <h3 className="font-display text-xl text-brand-text uppercase tracking-wide group-hover:text-brand-gold transition-colors duration-200">Hard</h3>
@@ -224,8 +264,8 @@ export default async function HomePage() {
               className="group relative flex items-center gap-5 p-5 rounded-2xl border border-brand-teal/20 bg-gradient-to-br from-brand-teal/6 to-brand-darker hover:border-brand-teal/50 hover:shadow-[0_0_40px_rgba(0,210,200,0.12)] transition-all duration-400 overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-brand-teal/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative w-14 h-14 rounded-2xl bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center shrink-0 text-3xl group-hover:scale-110 group-hover:bg-brand-teal/20 group-hover:border-brand-teal/40 transition-all duration-300">
-                🍬
+              <div className="relative w-14 h-14 rounded-2xl bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-brand-teal/20 group-hover:border-brand-teal/40 transition-all duration-300">
+                <Candy className="w-7 h-7 text-brand-teal" />
               </div>
               <div className="relative flex flex-col gap-0.5">
                 <h3 className="font-display text-xl text-brand-text uppercase tracking-wide group-hover:text-brand-teal transition-colors duration-200">Light</h3>
@@ -243,8 +283,8 @@ export default async function HomePage() {
               className="group relative flex items-center gap-5 p-5 rounded-2xl border border-brand-purple/20 bg-gradient-to-br from-brand-purple/6 to-brand-darker hover:border-brand-purple/50 hover:shadow-[0_0_40px_rgba(123,47,190,0.15)] transition-all duration-400 overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative w-14 h-14 rounded-2xl bg-brand-purple/10 border border-brand-purple/20 flex items-center justify-center shrink-0 text-3xl group-hover:scale-110 group-hover:bg-brand-purple/20 group-hover:border-brand-purple/40 transition-all duration-300">
-                🎁
+              <div className="relative w-14 h-14 rounded-2xl bg-brand-purple/10 border border-brand-purple/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-brand-purple/20 group-hover:border-brand-purple/40 transition-all duration-300">
+                <Package className="w-7 h-7 text-brand-purple-light" />
               </div>
               <div className="relative flex flex-col gap-0.5">
                 <h3 className="font-display text-xl text-brand-text uppercase tracking-wide group-hover:text-brand-purple-light transition-colors duration-200">Packs</h3>
