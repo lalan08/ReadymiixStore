@@ -8,16 +8,6 @@ export const metadata = { title: "Boutique — ReadyMiix" };
 
 const COMPOSER_SLUGS = ["light", "hard"];
 
-// Emoji per category slug
-const CAT_EMOJI: Record<string, string> = {
-  cocktails:   "🍹",
-  softs:       "🥤",
-  kids:        "🧃",
-  accessoires: "🎁",
-  packs:       "📦",
-  food:        "🍟",
-};
-
 interface Props { searchParams: { cat?: string; view?: string } }
 
 export default async function ShopPage({ searchParams }: Props) {
