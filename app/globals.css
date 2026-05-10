@@ -172,6 +172,18 @@
   }
 }
 
+/* ── Respect user motion preferences ── */
+@media (prefers-reduced-motion: reduce) {
+  .hero-orb,
+  .animate-marquee,
+  .animate-float,
+  .animate-bounce,
+  .animate-glow-breathe {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ── Hero keyframes (outside @layer so they're always available) ── */
 @keyframes orbDrift {
   0%   { transform: translate(0,    0)    scale(1);    }

@@ -67,13 +67,24 @@ export default async function ShopPage({ searchParams }: Props) {
   return (
     <div className="min-h-screen bg-brand-darker">
       {/* ── Header ── */}
-      <div className="sticky top-0 z-30 bg-brand-darker/95 backdrop-blur-xl border-b border-brand-border pt-20 md:pt-24 pb-0">
+      <div className="sticky top-0 z-30 bg-brand-darker/95 backdrop-blur-2xl border-b border-white/[0.06] pt-20 md:pt-24 pb-0">
+        {/* Subtle top accent */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/25 to-transparent" />
+
         <div className="container-custom">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="font-display text-2xl font-bold text-brand-text tracking-wide">
-              Boutique
-            </h1>
-            <button className="w-9 h-9 flex items-center justify-center rounded-full bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text transition-colors">
+            <div>
+              <p className="text-[10px] font-bold text-brand-gold uppercase tracking-[0.25em] mb-0.5">
+                ReadyMiix
+              </p>
+              <h1 className="font-display text-2xl text-brand-text tracking-wide">
+                Boutique
+              </h1>
+            </div>
+            <button
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-white/[0.04] border border-white/[0.08] text-brand-muted hover:text-brand-text hover:border-brand-gold/30 transition-all duration-200 cursor-pointer"
+              aria-label="Rechercher"
+            >
               <Search className="w-4 h-4" />
             </button>
           </div>
@@ -83,13 +94,17 @@ export default async function ShopPage({ searchParams }: Props) {
             {/* Tout */}
             <Link
               href="/shop"
-              className={`shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
+              className={`shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-bold transition-all duration-200 whitespace-nowrap cursor-pointer ${
                 !activeCat && !view
-                  ? "bg-brand-gold text-white shadow-gold-sm"
-                  : "bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text hover:border-brand-gold/30"
+                  ? "text-white"
+                  : "bg-white/[0.05] border border-white/[0.08] text-brand-muted hover:text-brand-text hover:border-brand-gold/30"
               }`}
+              style={!activeCat && !view ? {
+                background: "linear-gradient(135deg, #C5006A, #F72585)",
+                boxShadow: "0 0 16px rgba(247,37,133,0.45)",
+              } : {}}
             >
-              <span>🛍️</span> Tout
+              Tout
             </Link>
 
             {/* DB categories */}
@@ -97,13 +112,16 @@ export default async function ShopPage({ searchParams }: Props) {
               <Link
                 key={cat.id}
                 href={`/shop?cat=${cat.slug}`}
-                className={`shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
+                className={`shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-bold transition-all duration-200 whitespace-nowrap cursor-pointer ${
                   activeCat === cat.slug
-                    ? "bg-brand-gold text-white shadow-gold-sm"
-                    : "bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text hover:border-brand-gold/30"
+                    ? "text-white"
+                    : "bg-white/[0.05] border border-white/[0.08] text-brand-muted hover:text-brand-text hover:border-brand-gold/30"
                 }`}
+                style={activeCat === cat.slug ? {
+                  background: "linear-gradient(135deg, #C5006A, #F72585)",
+                  boxShadow: "0 0 16px rgba(247,37,133,0.45)",
+                } : {}}
               >
-                <span>{CAT_EMOJI[cat.slug] ?? "🎯"}</span>
                 {cat.name}
               </Link>
             ))}
@@ -113,13 +131,16 @@ export default async function ShopPage({ searchParams }: Props) {
               <Link
                 key={t.key}
                 href={t.href}
-                className={`shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
+                className={`shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-bold transition-all duration-200 whitespace-nowrap cursor-pointer ${
                   view === t.key
-                    ? "bg-brand-gold text-white shadow-gold-sm"
-                    : "bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text hover:border-brand-gold/30"
+                    ? "text-white"
+                    : "bg-white/[0.05] border border-white/[0.08] text-brand-muted hover:text-brand-text hover:border-brand-gold/30"
                 }`}
+                style={view === t.key ? {
+                  background: "linear-gradient(135deg, #C5006A, #F72585)",
+                  boxShadow: "0 0 16px rgba(247,37,133,0.45)",
+                } : {}}
               >
-                <span>{t.emoji}</span>
                 {t.label}
               </Link>
             ))}
@@ -132,15 +153,18 @@ export default async function ShopPage({ searchParams }: Props) {
         {/* Section header */}
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="font-display text-lg font-bold text-brand-text">
+            <h2 className="font-display text-lg text-brand-text tracking-wide">
               {activeCat || view ? activeLabel : "Nos articles"}
             </h2>
-            <p className="text-xs text-brand-muted mt-0.5">
+            <p className="text-xs text-brand-muted/70 mt-0.5">
               {products.length} article{products.length !== 1 ? "s" : ""}
             </p>
           </div>
           {(activeCat || view) && (
-            <Link href="/shop" className="text-xs text-brand-gold font-semibold hover:underline">
+            <Link
+              href="/shop"
+              className="text-xs text-brand-gold font-bold hover:text-brand-gold-light transition-colors duration-200 cursor-pointer"
+            >
               Voir tout →
             </Link>
           )}

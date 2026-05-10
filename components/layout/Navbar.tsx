@@ -102,9 +102,14 @@ export default function Navbar() {
 
               <Link
                 href="/shop"
-                className="hidden md:inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold hover:from-brand-gold hover:to-brand-gold-light text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-gold-sm hover:shadow-gold transition-all active:scale-[0.98] uppercase tracking-wide"
+                className="group hidden md:inline-flex items-center gap-2 relative text-white text-sm font-bold px-5 py-2.5 rounded-xl active:scale-[0.97] uppercase tracking-wide overflow-hidden transition-transform duration-150"
+                style={{
+                  background: "linear-gradient(135deg, #C5006A, #F72585)",
+                  boxShadow: "0 0 20px rgba(247,37,133,0.4)",
+                }}
               >
-                Commander
+                <span className="relative z-10">Commander</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
               </Link>
 
               {/* Mobile menu button */}
