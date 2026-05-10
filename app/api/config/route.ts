@@ -29,8 +29,12 @@ export async function GET() {
     });
     const result: Record<string, string> = {};
     for (const c of configs) result[c.key] = c.value;
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: { "Cache-Control": "no-store, must-revalidate" },
+    });
   } catch {
-    return NextResponse.json({});
+    return NextResponse.json({}, {
+      headers: { "Cache-Control": "no-store, must-revalidate" },
+    });
   }
 }

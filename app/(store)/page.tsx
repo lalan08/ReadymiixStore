@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 import EventsSlider from "@/components/store/EventsSlider";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 async function getFeaturedProducts() {
   try {
