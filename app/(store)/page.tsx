@@ -343,7 +343,7 @@ export default async function HomePage() {
 
             {/* ── FROZEN CAIPI portal ── */}
             <Link
-              href="/frozen-caipi"
+              href="/shop?category=frozen-caipi"
               className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
               style={{ background: "linear-gradient(145deg, #001320 0%, #000A12 100%)", minHeight: 148 }}
             >
