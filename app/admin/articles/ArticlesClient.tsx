@@ -17,6 +17,7 @@ interface Product {
   categoryId: string; category: Category;
   stock: number; featured: boolean; active: boolean;
   volume: string | null; alcohol: string | null; tags: string;
+  productType: string; hasSoftChoice: boolean;
   createdAt: string;
 }
 
@@ -467,8 +468,13 @@ export default function ArticlesClient({
                           href={`/admin/articles/${product.id}/edit`}
                           className="group/name block"
                         >
-                          <p className="font-semibold text-brand-text leading-snug group-hover/name:text-brand-gold transition-colors">
+                          <p className="font-semibold text-brand-text leading-snug group-hover/name:text-brand-gold transition-colors flex items-center gap-2">
                             {product.name}
+                            {product.hasSoftChoice && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-brand-teal/15 text-brand-teal border border-brand-teal/25 uppercase tracking-wide shrink-0">
+                                Soft
+                              </span>
+                            )}
                           </p>
                           {product.description && (
                             <p className="text-xs text-brand-muted mt-0.5 line-clamp-1">

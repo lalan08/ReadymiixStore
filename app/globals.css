@@ -164,4 +164,57 @@
       linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
     background-size: 32px 32px;
   }
+
+  /* Hero animated orb — uses --dur CSS custom property for per-orb speed */
+  .hero-orb {
+    animation: orbDrift var(--dur, 14s) ease-in-out infinite;
+    will-change: transform;
+  }
+}
+
+/* ── Respect user motion preferences ── */
+@media (prefers-reduced-motion: reduce) {
+  .hero-orb,
+  .animate-marquee,
+  .animate-float,
+  .animate-bounce,
+  .animate-glow-breathe {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Hero keyframes (outside @layer so they're always available) ── */
+@keyframes orbDrift {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  25%  { transform: translate(4%,  -5%)   scale(1.06); }
+  50%  { transform: translate(-3%,  7%)   scale(0.94); }
+  75%  { transform: translate(5%,   1%)   scale(1.04); }
+  100% { transform: translate(0,    0)    scale(1);    }
+}
+
+/* ── Locks page to pure black while the intro is active ── */
+/* Set by inline sync script in (store)/layout; removed by CinematicIntro on done */
+html[data-intro] body {
+  background: #000 !important;
+}
+
+/* ── Cinematic intro fog drift — very slow, barely perceptible movement ── */
+@keyframes ciDrift1 {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  35%  { transform: translate(-3%,  5%)   scale(1.06); }
+  70%  { transform: translate( 5%, -2%)   scale(0.96); }
+  100% { transform: translate(0,    0)    scale(1);    }
+}
+@keyframes ciDrift2 {
+  0%   { transform: translate(0,   0)    scale(1);    }
+  40%  { transform: translate(4%,  4%)   scale(1.08); }
+  75%  { transform: translate(-3%, 2%)   scale(0.94); }
+  100% { transform: translate(0,   0)    scale(1);    }
+}
+@keyframes ciDrift3 {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  30%  { transform: translate( 3%, -4%)   scale(1.05); }
+  65%  { transform: translate(-4%,  3%)   scale(0.97); }
+  100% { transform: translate(0,    0)    scale(1);    }
 }

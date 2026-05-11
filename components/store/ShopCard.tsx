@@ -56,8 +56,11 @@ export default function ShopCard({ product }: { product: Product }) {
   }
 
   return (
-    <Link href={`/product/${product.slug}`} className="group block">
-      <div className="relative flex flex-col rounded-2xl overflow-hidden bg-brand-card border border-brand-border transition-all duration-300 group-hover:border-brand-gold/40 group-hover:-translate-y-1 group-hover:shadow-[0_12px_40px_rgba(247,37,133,0.15)]">
+    <Link href={`/product/${product.slug}`} className="group block cursor-pointer">
+      <div className="relative flex flex-col rounded-2xl overflow-hidden bg-gradient-to-b from-brand-card to-brand-darker border border-white/[0.06] transition-all duration-300 group-hover:-translate-y-1 group-hover:border-brand-gold/40 group-hover:shadow-[0_16px_48px_rgba(247,37,133,0.2),0_4px_16px_rgba(0,0,0,0.5)]">
+
+        {/* Neon top line on hover */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
 
         {/* ── Image ── */}
         <div className="relative aspect-[3/4] overflow-hidden bg-brand-darker">
@@ -66,7 +69,7 @@ export default function ShopCard({ product }: { product: Product }) {
             <img
               src={mainImage}
               alt={product.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-purple/40 via-brand-card to-brand-gold/10">
@@ -74,12 +77,18 @@ export default function ShopCard({ product }: { product: Product }) {
             </div>
           )}
 
-          {/* Bottom gradient so text stays readable */}
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-card via-brand-card/0 to-transparent" />
+          {/* Cinematic bottom fade */}
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-darker via-brand-darker/20 to-transparent" />
 
-          {/* Out of stock overlay */}
+          {/* Hover warm glow */}
+          <div
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            style={{ background: "radial-gradient(ellipse at bottom, rgba(247,37,133,0.1) 0%, transparent 65%)" }}
+          />
+
+          {/* Out of stock */}
           {isOut && (
-            <div className="absolute inset-0 bg-brand-darker/70 flex items-center justify-center">
+            <div className="absolute inset-0 bg-brand-darker/75 backdrop-blur-[1px] flex items-center justify-center z-10">
               <span className="text-xs font-bold text-brand-muted px-3 py-1.5 rounded-full border border-brand-border bg-brand-card/80 uppercase tracking-wider">
                 Épuisé
               </span>
@@ -88,8 +97,14 @@ export default function ShopCard({ product }: { product: Product }) {
 
           {/* Discount badge */}
           {discount && (
-            <div className="absolute top-2.5 left-2.5">
-              <span className="text-[10px] font-bold bg-brand-gold text-white px-2 py-0.5 rounded-full uppercase">
+            <div className="absolute top-2.5 left-2.5 z-10">
+              <span
+                className="text-[10px] font-bold text-white px-2.5 py-1 rounded-full uppercase tracking-wide"
+                style={{
+                  background: "linear-gradient(135deg, #C5006A, #F72585)",
+                  boxShadow: "0 0 10px rgba(247,37,133,0.55)",
+                }}
+              >
                 -{discount}%
               </span>
             </div>
@@ -99,37 +114,40 @@ export default function ShopCard({ product }: { product: Product }) {
           <button
             onClick={handleLike}
             aria-label="Ajouter aux favoris"
-            className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all hover:bg-black/70 active:scale-90"
+            className="absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all hover:bg-black/60 active:scale-90 cursor-pointer"
           >
             <Heart
-              className={`w-3.5 h-3.5 transition-all ${
-                liked ? "fill-brand-gold text-brand-gold" : "text-white"
+              className={`w-3.5 h-3.5 transition-all duration-200 ${
+                liked ? "fill-brand-gold text-brand-gold scale-110" : "text-white"
               }`}
             />
           </button>
         </div>
 
         {/* ── Info ── */}
-        <div className="px-3 pb-3 pt-2 flex flex-col gap-1">
-          <p className="text-[10px] font-semibold text-brand-muted uppercase tracking-wider">
+        <div className="px-3 pb-3 pt-2.5 flex flex-col gap-1.5">
+          <p className="text-[10px] font-bold text-brand-muted/60 uppercase tracking-[0.15em]">
             {product.category.name}
           </p>
-          <p className="font-display font-bold text-brand-text text-sm leading-snug line-clamp-1 tracking-wide">
+          <p className="font-display font-bold text-brand-text text-sm leading-snug line-clamp-1 tracking-wide group-hover:text-brand-gold transition-colors duration-200">
             {product.name}
           </p>
           {product.description && (
-            <p className="text-[11px] text-brand-muted leading-snug line-clamp-2">
+            <p className="text-[11px] text-brand-muted/70 leading-snug line-clamp-2">
               {product.description}
             </p>
           )}
 
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center justify-between mt-2.5">
             <div>
-              <p className="font-bold text-brand-gold text-base leading-none">
+              <p
+                className="font-bold text-brand-gold text-base leading-none"
+                style={{ textShadow: "0 0 12px rgba(247,37,133,0.35)" }}
+              >
                 {formatPrice(product.price)}
               </p>
               {product.comparePrice && (
-                <p className="text-[10px] text-brand-muted line-through leading-none mt-0.5">
+                <p className="text-[10px] text-brand-muted/50 line-through leading-none mt-0.5">
                   {formatPrice(product.comparePrice)}
                 </p>
               )}
@@ -139,11 +157,15 @@ export default function ShopCard({ product }: { product: Product }) {
               onClick={handleAdd}
               disabled={isOut}
               aria-label={`Ajouter ${product.name}`}
-              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90 shrink-0 ${
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shrink-0 cursor-pointer ${
                 isOut
-                  ? "bg-brand-border/50 text-brand-muted cursor-not-allowed"
-                  : "bg-brand-gold text-white shadow-gold-sm hover:opacity-90"
+                  ? "bg-brand-border/30 text-brand-muted cursor-not-allowed"
+                  : "text-white hover:scale-110"
               }`}
+              style={isOut ? {} : {
+                background: "linear-gradient(135deg, #C5006A, #F72585)",
+                boxShadow: "0 0 14px rgba(247,37,133,0.4)",
+              }}
             >
               <Plus className="w-4 h-4" />
             </button>

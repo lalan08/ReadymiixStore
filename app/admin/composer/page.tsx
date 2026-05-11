@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Save, Check, Plus, X, Upload, Sparkles } from "lucide-react";
 
 /* ─── Image compression ─────────────────────────────────────── */
@@ -25,8 +25,8 @@ async function compressImage(file: File, maxW = 1200): Promise<string> {
 
 /* ─── Image upload zone ─────────────────────────────────────── */
 function ImageUploadZone({
-  value, accent, onChange,
-}: { value: string; accent: string; onChange: (v: string) => void }) {
+  value, accent, objectFit = "cover", onChange,
+}: { value: string; accent: string; objectFit?: string; onChange: (v: string) => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -57,7 +57,8 @@ function ImageUploadZone({
       {value ? (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="Aperçu" className="absolute inset-0 w-full h-full object-cover" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={value} alt="Aperçu" className="absolute inset-0 w-full h-full" style={{ objectFit: objectFit as React.CSSProperties["objectFit"], objectPosition: "center" }} />
           <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
             <div className="flex flex-col items-center gap-2 text-white">
               <Upload className="w-6 h-6" />
@@ -210,8 +211,21 @@ function CardSection({
           <ImageUploadZone
             value={image}
             accent={accent}
+            objectFit={cfg[`${cardKey}_card_fit`] || "cover"}
             onChange={(v) => onCfg(`${cardKey}_card_image`, v)}
           />
+          {/* Image fit option */}
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-[10px] text-white/40 shrink-0">Ajustement</span>
+            <select
+              className="flex-1 bg-white/5 rounded-lg px-2 py-1.5 text-xs text-white border border-white/10 focus:border-white/30 outline-none transition-colors cursor-pointer"
+              value={cfg[`${cardKey}_card_fit`] || "cover"}
+              onChange={(e) => onCfg(`${cardKey}_card_fit`, e.target.value)}
+            >
+              <option value="cover">Remplir le cadre</option>
+              <option value="contain">Voir l&apos;image entière</option>
+            </select>
+          </div>
         </div>
 
         {/* Title + Price */}

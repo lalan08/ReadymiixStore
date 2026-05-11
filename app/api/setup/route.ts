@@ -51,6 +51,14 @@ export async function GET() {
       CREATE UNIQUE INDEX IF NOT EXISTS "Product_slug_key" ON "Product"("slug");
     `);
 
+    // Ensure columns added in later migrations exist
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "productType" TEXT NOT NULL DEFAULT 'simple';
+    `);
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "hasSoftChoice" BOOLEAN NOT NULL DEFAULT false;
+    `);
+
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Order" (
         "id" TEXT NOT NULL,

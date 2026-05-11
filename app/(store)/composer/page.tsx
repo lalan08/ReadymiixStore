@@ -48,7 +48,7 @@ const INSPIRATIONS = [
 
 /* ─── Product card ──────────────────────────────────────────── */
 function ProductCard({
-  type, accent, title, highlights, detail, heroImg, onCompose,
+  type, accent, title, highlights, detail, heroImg, objectFit = "cover", onCompose,
 }: {
   type: "light" | "hard";
   accent: string;
@@ -56,6 +56,7 @@ function ProductCard({
   highlights: readonly string[];
   detail: readonly string[];
   heroImg: string;
+  objectFit?: "cover" | "contain";
   onCompose: () => void;
 }) {
   const [showDetail, setShowDetail] = useState(false);
@@ -81,9 +82,17 @@ function ProductCard({
       </div>
 
       {/* Hero image */}
-      <div className="relative mx-2 md:mx-4 rounded-xl overflow-hidden" style={{ aspectRatio: "4/3" }}>
+      <div
+        className="relative mx-2 md:mx-4 overflow-hidden"
+        style={{ aspectRatio: "4/3", borderRadius: 16, background: "#050510" }}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={heroImg} alt={`Cocktail ${title}`} className="absolute inset-0 w-full h-full object-cover" />
+        <img
+          src={heroImg}
+          alt={`Cocktail ${title}`}
+          className="absolute inset-0 w-full h-full"
+          style={{ objectFit, objectPosition: "center" }}
+        />
         <div
           className="absolute inset-0"
           style={{ background: `linear-gradient(to top, ${accent}30 0%, transparent 60%)` }}
@@ -166,6 +175,7 @@ export default function ComposerPage() {
       highlights: parseList(siteCfg.light_highlights, CARD_DEFAULTS.light.highlights),
       detail:     parseList(siteCfg.light_detail,     CARD_DEFAULTS.light.detail),
       heroImg:    siteCfg.light_card_image || DEFAULT_LIGHT_IMG,
+      objectFit:  (siteCfg.light_card_fit || "cover") as "cover" | "contain",
     },
     {
       type: "hard" as const,
@@ -174,6 +184,7 @@ export default function ComposerPage() {
       highlights: parseList(siteCfg.hard_highlights, CARD_DEFAULTS.hard.highlights),
       detail:     parseList(siteCfg.hard_detail,     CARD_DEFAULTS.hard.detail),
       heroImg:    siteCfg.hard_card_image || DEFAULT_HARD_IMG,
+      objectFit:  (siteCfg.hard_card_fit || "cover") as "cover" | "contain",
     },
   ];
 

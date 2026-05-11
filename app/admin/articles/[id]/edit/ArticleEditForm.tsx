@@ -17,6 +17,7 @@ interface Product {
   categoryId: string; category: Category;
   stock: number; featured: boolean; active: boolean;
   volume: string | null; alcohol: string | null; tags: string;
+  productType: string; hasSoftChoice: boolean;
 }
 
 const TABS = [
@@ -74,6 +75,8 @@ export default function ArticleEditForm({
   const [comparePrice, setComparePrice] = useState(product.comparePrice?.toString() ?? "");
   const [active,       setActive]       = useState(product.active);
   const [featured,     setFeatured]     = useState(product.featured);
+  const [productType,  setProductType]  = useState(product.productType ?? "simple");
+  const [hasSoftChoice, setHasSoftChoice] = useState(product.hasSoftChoice ?? false);
 
   /* ---------- image ---------- */
   const existingImages = parseJsonField<string[]>(product.images, []);
@@ -129,6 +132,8 @@ export default function ArticleEditForm({
         volume:  subtitle.trim() || null,
         alcohol: product.alcohol,
         tags:    product.tags,
+        productType,
+        hasSoftChoice,
       }),
     });
     if (res.ok) {
@@ -488,6 +493,46 @@ export default function ArticleEditForm({
               <p className="text-[11px] text-brand-muted/60">
                 Affiché barré à côté du prix actuel
               </p>
+            </div>
+
+            {/* Type de produit */}
+            <div className="flex flex-col gap-1.5 border-t border-brand-border/50 pt-4">
+              <label className="text-xs font-semibold text-brand-muted uppercase tracking-wide">
+                Type de produit
+              </label>
+              <select
+                value={productType}
+                onChange={(e) => setProductType(e.target.value)}
+                className="bg-brand-darker border border-brand-border rounded-xl px-3.5 py-2.5 text-sm text-brand-text outline-none focus:border-brand-gold/50 transition-colors"
+              >
+                <option value="simple">Simple</option>
+                <option value="soft">Avec soft</option>
+                <option value="pack">Pack</option>
+                <option value="with_options">Avec options</option>
+              </select>
+              <p className="text-[11px] text-brand-muted/60">
+                Catégorisation interne du produit
+              </p>
+            </div>
+
+            {/* Choix du soft */}
+            <div className="flex items-center justify-between py-1 border-t border-brand-border/50">
+              <div>
+                <p className="font-semibold text-brand-text text-sm">Choix du soft</p>
+                <p className="text-xs text-brand-muted mt-0.5">
+                  Affiche le sélecteur de soft sur la fiche produit
+                </p>
+              </div>
+              <button
+                onClick={() => setHasSoftChoice((v) => !v)}
+                className={`w-11 h-6 rounded-full transition-all relative ${
+                  hasSoftChoice ? "bg-brand-teal" : "bg-brand-border"
+                }`}
+              >
+                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all ${
+                  hasSoftChoice ? "left-5" : "left-0.5"
+                }`} />
+              </button>
             </div>
           </section>
         </div>

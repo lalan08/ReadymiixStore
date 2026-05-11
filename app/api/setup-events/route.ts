@@ -20,7 +20,7 @@ export async function GET() {
     CREATE TABLE IF NOT EXISTS "Event" (
       "id" TEXT NOT NULL,
       "title" TEXT NOT NULL,
-      "type" TEXT NOT NULL DEFAULT 'EVÉNEMENT',
+      "type" TEXT NOT NULL DEFAULT 'ÉVÉNEMENT',
       "description" TEXT,
       "image" TEXT NOT NULL DEFAULT '',
       "date" TIMESTAMP(3) NOT NULL,
@@ -43,6 +43,15 @@ export async function GET() {
   await run("Drop bookingUrl column (migration)", `
     ALTER TABLE "Event" DROP COLUMN IF EXISTS "bookingUrl";
   `);
+
+  await run("Add productType column to Product", `
+    ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "productType" TEXT NOT NULL DEFAULT 'simple';
+  `);
+
+  await run("Add hasSoftChoice column to Product", `
+    ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "hasSoftChoice" BOOLEAN NOT NULL DEFAULT false;
+  `);
+
 
   // Verify table exists
   let tableExists = false;

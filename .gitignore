@@ -1,3 +1,7 @@
+# Python bytecode (skill scripts)
+__pycache__/
+*.pyc
+
 # dependencies
 /node_modules
 /.pnp
@@ -37,3 +41,7 @@ next-env.d.ts
 *.db
 *.db-journal
 prisma/migrations/
+
+# Python cache
+__pycache__/
+*.pyc

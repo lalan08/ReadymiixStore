@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300; // 5 minutes — config changes infrequently
 
 const PUBLIC_KEYS = [
   "bonbons_text",
@@ -9,6 +9,8 @@ const PUBLIC_KEYS = [
   "soft_supplement",
   "light_card_image",
   "hard_card_image",
+  "light_card_fit",
+  "hard_card_fit",
   "promo_banner",
   "light_title",
   "light_accent",
@@ -29,8 +31,12 @@ export async function GET() {
     });
     const result: Record<string, string> = {};
     for (const c of configs) result[c.key] = c.value;
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60" },
+    });
   } catch {
-    return NextResponse.json({});
+    return NextResponse.json({}, {
+      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30" },
+    });
   }
 }
