@@ -9,6 +9,8 @@ const PUBLIC_KEYS = [
   "soft_supplement",
   "light_card_image",
   "hard_card_image",
+  "light_card_fit",
+  "hard_card_fit",
   "promo_banner",
   "light_title",
   "light_accent",
