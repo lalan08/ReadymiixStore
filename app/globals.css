@@ -199,4 +199,10 @@ html[data-intro] body {
   background: #000 !important;
 }
 
-/* ── Cinematic intro keyframes (reserved for future use) ── */
+/* ── Cinematic intro keyframes ── */
+
+/* Very subtle glow breath + scale pulse on the logo */
+@keyframes rmLogoPulse {
+  0%, 100% { transform: scale(1.000); }
+  50%      { transform: scale(1.018); }
+}

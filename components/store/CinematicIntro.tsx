@@ -1,29 +1,19 @@
 "use client";
 
 /**
- * Cinematic brand intro — the real logo illuminates itself
- *
- * No SVG triangle is drawn on screen. The logo PNG is the only visual.
- * A neon point travels an invisible triangle path while the logo
- * brightens from black — creating the illusion the light is energising
- * the triangle border that already exists inside the logo.
+ * Cinematic brand intro — fade in, glow, subtle pulse, fade out.
  *
  * Phases:
- *  black  0 ms   — pure black / SSR (prevents flash)
- *  trace  200ms  — logo brightens 0→dim over 1 300ms, neon dot travels 1 200ms
- *  lit    1 500ms — logo snaps to full color + pink/violet neon glow
- *  out    2 100ms — overlay fades out
- *  done   2 750ms — unmount, remove data-intro from <html>
+ *  black  0 ms   — pure black (SSR-rendered to prevent flash)
+ *  in     150ms  — logo fades in with neon glow (950ms ease)
+ *  out    1 700ms — overlay fades out (600ms)
+ *  done   2 350ms — unmount + remove data-intro from <html>
  */
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
-type Phase = "black" | "trace" | "lit" | "out" | "done";
-
-// Motion path for the dot — matches the ReadyMiix inverted triangle.
-// This path is NEVER rendered on screen; it only guides the animateMotion.
-const MOTION_PATH = "M 8 12 L 192 12 L 100 188 Z";
+type Phase = "black" | "in" | "out" | "done";
 
 export default function CinematicIntro() {
   const [phase, setPhase] = useState<Phase>("black");
@@ -49,18 +39,16 @@ export default function CinematicIntro() {
     const ids = timers.current;
     const at  = (fn: () => void, ms: number) => { ids.push(setTimeout(fn, ms)); };
 
-    at(() => setPhase("trace"), 200);
-    at(() => setPhase("lit"),   1500);
-    at(() => setPhase("out"),   2100);
-    at(() => { unlockPage(); setPhase("done"); }, 2750);
+    at(() => setPhase("in"),  150);
+    at(() => setPhase("out"), 1700);
+    at(() => { unlockPage(); setPhase("done"); }, 2350);
 
     return () => ids.forEach(clearTimeout);
   }, []);
 
   if (phase === "done") return null;
 
-  const tracing = phase === "trace";
-  const lit     = phase === "lit" || phase === "out";
+  const visible = phase === "in" || phase === "out";
   const out     = phase === "out";
 
   return (
@@ -75,96 +63,43 @@ export default function CinematicIntro() {
         transition: out ? "opacity 600ms ease-in-out" : "none",
       }}
     >
+      {/*
+        Wrapper: carries the pulse animation (starts after fade-in completes).
+        Image:   carries the fade-in transition.
+        Separating them avoids animation/transition conflicts on the same property.
+      */}
       <div style={{
-        position: "relative",
-        width:  "clamp(220px, 55vw, 300px)",
-        height: "clamp(220px, 55vw, 300px)",
+        animation: visible
+          ? "rmLogoPulse 2.8s ease-in-out 980ms infinite"
+          : "none",
       }}>
-
-        {/* ── The real logo — only visual element on screen ──
-            black : invisible
-            trace : rises from pure black to dim (logo becomes faintly visible
-                    as the neon dot travels, like it's being energised)
-            lit   : full color + pink/violet neon glow
-        ── */}
         <Image
           src="/logo.png"
           alt="ReadyMiix"
-          fill
+          width={280}
+          height={280}
           priority
           style={{
-            objectFit: "contain",
-            opacity: phase === "black" ? 0 : 1,
-            filter: tracing
-              ? "brightness(0.18)"
-              : lit
+            width:   "clamp(190px, 52vw, 280px)",
+            height:  "auto",
+            display: "block",
+            opacity:   visible ? 1 : 0,
+            transform: visible ? "scale(1)" : "scale(1.07)",
+            filter: visible
               ? [
-                  "brightness(1)",
-                  "drop-shadow(0 0 34px rgba(247,37,133,1))",
-                  "drop-shadow(0 0 80px rgba(247,37,133,0.60))",
-                  "drop-shadow(0 0 160px rgba(123,47,190,0.42))",
+                  "drop-shadow(0 0 30px rgba(247,37,133,0.95))",
+                  "drop-shadow(0 0 70px rgba(247,37,133,0.55))",
+                  "drop-shadow(0 0 140px rgba(123,47,190,0.40))",
+                  "drop-shadow(0 0 220px rgba(0,200,220,0.18))",
                 ].join(" ")
-              : "brightness(0)",
-            // trace: logo eases from brightness(0) → brightness(0.18) over 1 300ms
-            //        in sync with the dot travel (1 200ms)
-            // lit:   snaps to full brightness in 750ms
-            transition: phase === "black"
-              ? "none"
-              : tracing
-              ? "opacity 60ms, filter 1300ms linear"
-              : "filter 750ms ease-out",
+              : "brightness(0) blur(10px)",
+            transition: [
+              "opacity 950ms ease-out",
+              "transform 950ms cubic-bezier(0.22,1,0.36,1)",
+              "filter 950ms ease-out",
+            ].join(", "),
           }}
         />
-
-        {/* ── Neon traveling dot — only active during trace ──
-            Uses an invisible SVG path as the motion guide.
-            The dot itself is a bright bloomed point that creates
-            the impression it is "lighting up" the triangle border.
-        ── */}
-        {tracing && (
-          <svg
-            viewBox="0 0 200 200"
-            style={{
-              position: "absolute", inset: 0,
-              width: "100%", height: "100%",
-              overflow: "visible",
-            }}
-          >
-            <defs>
-              {/* Large soft bloom — simulates a hot neon spark */}
-              <filter id="rm-spark" x="-600%" y="-600%" width="1300%" height="1300%">
-                <feGaussianBlur stdDeviation="9" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-
-            {/* Hidden guide path — invisible, only drives animateMotion */}
-            <path id="rm-guide" d={MOTION_PATH} fill="none" stroke="none" />
-
-            {/* Outer pink bloom */}
-            <circle r="6" fill="rgba(247,37,133,0.7)" filter="url(#rm-spark)">
-              <animateMotion
-                dur="1.2s" fill="freeze"
-                calcMode="spline" keyTimes="0;1" keySplines="0.4 0 0.2 1"
-              >
-                <mpath href="#rm-guide" />
-              </animateMotion>
-            </circle>
-
-            {/* Bright white core */}
-            <circle r="2.5" fill="white">
-              <animateMotion
-                dur="1.2s" fill="freeze"
-                calcMode="spline" keyTimes="0;1" keySplines="0.4 0 0.2 1"
-              >
-                <mpath href="#rm-guide" />
-              </animateMotion>
-            </circle>
-          </svg>
-        )}
       </div>
     </div>
   );
