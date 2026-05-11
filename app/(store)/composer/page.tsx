@@ -48,7 +48,7 @@ const INSPIRATIONS = [
 
 /* ─── Product card ──────────────────────────────────────────── */
 function ProductCard({
-  type, accent, title, highlights, detail, heroImg, objectFit = "cover", onCompose,
+  type, accent, title, highlights, detail, heroImg, onCompose,
 }: {
   type: "light" | "hard";
   accent: string;
@@ -56,7 +56,6 @@ function ProductCard({
   highlights: readonly string[];
   detail: readonly string[];
   heroImg: string;
-  objectFit?: "cover" | "contain";
   onCompose: () => void;
 }) {
   const [showDetail, setShowDetail] = useState(false);
@@ -91,7 +90,7 @@ function ProductCard({
           src={heroImg}
           alt={`Cocktail ${title}`}
           className="absolute inset-0 w-full h-full"
-          style={{ objectFit, objectPosition: "center" }}
+          style={{ objectFit: "cover", objectPosition: "center", transform: "scale(0.92)" }}
         />
         <div
           className="absolute inset-0"
@@ -175,7 +174,6 @@ export default function ComposerPage() {
       highlights: parseList(siteCfg.light_highlights, CARD_DEFAULTS.light.highlights),
       detail:     parseList(siteCfg.light_detail,     CARD_DEFAULTS.light.detail),
       heroImg:    siteCfg.light_card_image || DEFAULT_LIGHT_IMG,
-      objectFit:  (siteCfg.light_card_fit || "cover") as "cover" | "contain",
     },
     {
       type: "hard" as const,
@@ -184,7 +182,6 @@ export default function ComposerPage() {
       highlights: parseList(siteCfg.hard_highlights, CARD_DEFAULTS.hard.highlights),
       detail:     parseList(siteCfg.hard_detail,     CARD_DEFAULTS.hard.detail),
       heroImg:    siteCfg.hard_card_image || DEFAULT_HARD_IMG,
-      objectFit:  (siteCfg.hard_card_fit || "cover") as "cover" | "contain",
     },
   ];
 
