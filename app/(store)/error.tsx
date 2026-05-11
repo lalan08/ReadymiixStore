@@ -1,10 +1,9 @@
 "use client";
 
 export default function StoreError({
-  error,
   reset,
 }: {
-  error: Error & { digest?: string };
+  error?: Error & { digest?: string };
   reset: () => void;
 }) {
   return (
