@@ -136,16 +136,13 @@ export default function CinematicIntro() {
             </filter>
           </defs>
 
-          {/* Ghost outline — barely visible reference */}
-          <path d={TRI} fill="none" stroke="rgba(247,37,133,0.06)" strokeWidth="1" />
-
-          {/* Animated neon stroke */}
+          {/* Animated neon stroke — fades OUT as the logo fades IN (cross-dissolve) */}
           {(tracing || lit) && (
             <path
               d={TRI}
               fill="none"
-              stroke={lit ? "rgba(247,37,133,0.30)" : "#F72585"}
-              strokeWidth={lit ? 1.5 : 2.5}
+              stroke="#F72585"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
               filter="url(#rm-neon)"
@@ -153,7 +150,11 @@ export default function CinematicIntro() {
                 strokeDasharray: PERI,
                 ...(tracing
                   ? { animation: "rmTrace 1200ms cubic-bezier(0.4,0,0.2,1) forwards" }
-                  : { strokeDashoffset: 0, transition: "stroke 500ms ease-out, stroke-width 500ms ease-out" }),
+                  : {
+                      strokeDashoffset: 0,
+                      opacity: 0,
+                      transition: "opacity 700ms ease-out",
+                    }),
               }}
             />
           )}
