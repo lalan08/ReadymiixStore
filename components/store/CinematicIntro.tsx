@@ -1,18 +1,19 @@
 "use client";
 
 /**
- * Cinematic brand intro — light-from-darkness reveal.
+ * Cinematic brand intro — atmosphere-first, light-from-darkness reveal.
  *
- * The logo is always present but invisible in the black.
- * A light source slowly intensifies (brightness 0→1), like a spotlight
- * warming up on stage — no opacity fade, which feels web-like.
- * The premium comes from the black, the silence and the slow timing.
+ * Deep black silence → organic fog slowly rises → logo materialises via
+ * brightness (no opacity — opacity feels digital, brightness feels physical).
+ * A blurred radial halo behind the logo replaces drop-shadow, giving a real
+ * light-source feel instead of a CSS glow. Film grain and a vignette add
+ * depth without motion.
  *
  * Phases:
- *  black  0 ms   — deep black silence (SSR-rendered, prevents flash)
- *  in     400ms  — brightness builds over 1 600ms
- *  out    2 100ms — overlay dissolves over 550ms
- *  done   2 680ms — unmount + data-intro removed
+ *  black   0ms  — pure silence
+ *  in    600ms  — fog + halo + logo all begin building
+ *  out  3400ms  — full overlay dissolves over 1100ms
+ *  done 4500ms  — unmount + data-intro removed
  */
 
 import { useState, useEffect, useRef } from "react";
@@ -44,9 +45,9 @@ export default function CinematicIntro() {
     const ids = timers.current;
     const at  = (fn: () => void, ms: number) => { ids.push(setTimeout(fn, ms)); };
 
-    at(() => setPhase("in"),  350);   // 350ms black silence
-    at(() => setPhase("out"), 2550);  // logo fully lit from ~1750ms → 2550ms = 800ms of presence
-    at(() => { unlockPage(); setPhase("done"); }, 3250); // 700ms slow dissolve
+    at(() => setPhase("in"),  600);   // 600ms of pure black silence
+    at(() => setPhase("out"), 3400);  // logo fully lit ~1400ms → holds until 3400ms
+    at(() => { unlockPage(); setPhase("done"); }, 4500); // 1100ms slow dissolve
 
     return () => ids.forEach(clearTimeout);
   }, []);
@@ -61,31 +62,78 @@ export default function CinematicIntro() {
       aria-hidden="true"
       style={{
         position: "fixed", inset: 0, zIndex: 200,
-        background: "#000000",
+        background: "#000",
         display: "flex", alignItems: "center", justifyContent: "center",
         pointerEvents: "none",
         opacity:    out ? 0 : 1,
-        transition: out ? "opacity 700ms ease-in-out" : "none",
+        transition: out ? "opacity 1100ms cubic-bezier(0.4, 0, 0.2, 1)" : "none",
       }}
     >
-      {/* Atmospheric ambient — a barely-there glow in the background.
-          Builds very slowly (2s) so it never feels like a flash. */}
+      {/* Film grain — static fractal noise adds organic, analogue texture */}
+      <svg
+        aria-hidden="true"
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.048 }}
+      >
+        <filter id="ci-grain">
+          <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch" />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#ci-grain)" />
+      </svg>
+
+      {/* Vignette — darkened corners push eye to centre, classic cinema look */}
       <div style={{
         position: "absolute", inset: 0,
-        background: [
-          "radial-gradient(ellipse 55% 45% at 50% 50%,",
-          "  rgba(247,37,133,0.07) 0%,",
-          "  rgba(123,47,190,0.04) 45%,",
-          "  transparent 70%)",
-        ].join(""),
-        opacity:    lit ? 1 : 0,
-        transition: "opacity 2200ms ease-out",
+        background: "radial-gradient(ellipse 68% 68% at 50% 50%, transparent 32%, rgba(0,0,0,0.82) 100%)",
       }} />
 
-      {/* Logo — brightness-only reveal, no opacity animation.
-          The easing (0.04,0.62,0.23,0.98) keeps the logo nearly
-          invisible for the first ~600ms then lets brightness build,
-          mimicking a real light source warming up. */}
+      {/* Atmospheric fog — 3 large, slow-drifting clouds of coloured haze.
+          Opacity transition is very long so they materialise like real smoke. */}
+      <div style={{
+        position: "absolute", inset: 0,
+        opacity: lit ? 1 : 0,
+        transition: "opacity 3400ms ease-out",
+      }}>
+        <div style={{
+          position: "absolute",
+          top: "26%", left: "12%",
+          width: "58vw", height: "46vw",
+          background: "radial-gradient(ellipse, rgba(247,37,133,0.048) 0%, transparent 65%)",
+          filter: "blur(52px)",
+          animation: "ciDrift1 14s ease-in-out infinite",
+        }} />
+        <div style={{
+          position: "absolute",
+          top: "30%", left: "40%",
+          width: "52vw", height: "38vw",
+          background: "radial-gradient(ellipse, rgba(123,47,190,0.038) 0%, transparent 65%)",
+          filter: "blur(60px)",
+          animation: "ciDrift2 19s ease-in-out infinite",
+        }} />
+        <div style={{
+          position: "absolute",
+          top: "36%", left: "26%",
+          width: "46vw", height: "36vw",
+          background: "radial-gradient(ellipse, rgba(200,18,95,0.028) 0%, transparent 68%)",
+          filter: "blur(68px)",
+          animation: "ciDrift3 24s ease-in-out infinite",
+        }} />
+      </div>
+
+      {/* Logo halo — blurred radial gradient BEHIND the logo simulates a real
+          physical light source; far softer and more organic than drop-shadow. */}
+      <div style={{
+        position: "absolute",
+        width: "clamp(310px, 74vw, 460px)",
+        height: "clamp(310px, 74vw, 460px)",
+        background: "radial-gradient(ellipse, rgba(247,37,133,0.09) 0%, rgba(123,47,190,0.045) 48%, transparent 72%)",
+        filter: "blur(44px)",
+        opacity: lit ? 1 : 0,
+        transition: "opacity 2800ms cubic-bezier(0.04, 0.62, 0.23, 0.98)",
+      }} />
+
+      {/* Logo — brightness-only reveal (no opacity), mimics stage light warming up.
+          Cubic-bezier keeps it near-invisible for ~700ms then builds deliberately. */}
       <Image
         src="/logo.png"
         alt="ReadyMiix"
@@ -93,31 +141,31 @@ export default function CinematicIntro() {
         height={320}
         priority
         style={{
-          width:    "clamp(220px, 55vw, 320px)",
+          width:    "clamp(196px, 44vw, 284px)",
           height:   "auto",
           display:  "block",
           position: "relative",
-          transform: lit ? "scale(1)" : "scale(1.04)",
+          transform: lit ? "scale(1)" : "scale(1.07)",
           filter: lit
             ? [
                 "brightness(1)",
-                "saturate(1.05)",   // slight colour boost, stays natural
+                "saturate(1.02)",
                 "blur(0px)",
-                "drop-shadow(0 0 16px rgba(247,37,133,0.38))",   // softer close glow
-                "drop-shadow(0 0 50px rgba(247,37,133,0.15))",   // soft mid haze
-                "drop-shadow(0 0 130px rgba(123,47,190,0.10))",  // very faint violet depth
+                "drop-shadow(0 0 8px rgba(247,37,133,0.20))",
+                "drop-shadow(0 0 28px rgba(247,37,133,0.06))",
+                "drop-shadow(0 0 80px rgba(123,47,190,0.04))",
               ].join(" ")
             : [
                 "brightness(0)",
                 "saturate(0)",
-                "blur(4px)",  // less initial blur → sharpens faster
+                "blur(7px)",
                 "drop-shadow(0 0 0px rgba(247,37,133,0))",
                 "drop-shadow(0 0 0px rgba(247,37,133,0))",
                 "drop-shadow(0 0 0px rgba(123,47,190,0))",
               ].join(" "),
           transition: [
-            "filter    1400ms cubic-bezier(0.04, 0.62, 0.23, 0.98)",
-            "transform 1200ms cubic-bezier(0.25, 1, 0.5, 1)",
+            "filter    1950ms cubic-bezier(0.04, 0.62, 0.23, 0.98)",
+            "transform 1750ms cubic-bezier(0.25, 1, 0.5, 1)",
           ].join(", "),
         }}
       />
