@@ -22,13 +22,12 @@ const TRI  = "M 26 58 L 174 58 L 100 184 Z";
 const PERI = 440; // ≈ perimeter: top edge 148 + two sides ~146 each
 
 export default function CinematicIntro() {
-  const [mounted, setMounted] = useState(false);
-  const [phase, setPhase]     = useState<Phase>("black");
-  const timers                = useRef<ReturnType<typeof setTimeout>[]>([]);
+  // Start as "black" — renders the overlay on SSR too, so no flash of site content.
+  // The useEffect decides to play or skip; for returning users it resolves in one frame.
+  const [phase, setPhase] = useState<Phase>("black");
+  const timers            = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
-    setMounted(true);
-
     try {
       if (sessionStorage.getItem("rm_intro")) { setPhase("done"); return; }
       sessionStorage.setItem("rm_intro", "1");
@@ -49,7 +48,7 @@ export default function CinematicIntro() {
     return () => ids.forEach(clearTimeout);
   }, []);
 
-  if (!mounted || phase === "done") return null;
+  if (phase === "done") return null;
 
   const tracing = phase === "trace";
   const lit     = phase === "lit" || phase === "out";
