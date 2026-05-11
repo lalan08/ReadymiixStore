@@ -22,10 +22,10 @@ import Image from "next/image";
 
 type Phase = "black" | "trace" | "lit" | "out" | "done";
 
-// Inverted triangle matching the ReadyMiix logo — spans nearly full image area
+// Inverted triangle — calibrated to the ReadyMiix logo outline
 // M top-left  L top-right  L bottom-center  Z
-const TRI  = "M 10 15 L 190 15 L 100 185 Z";
-const PERI = 565; // top 180 + left ~192 + right ~192
+const TRI  = "M 8 12 L 192 12 L 100 188 Z";
+const PERI = 576; // top 184 + left ~196 + right ~196
 
 export default function CinematicIntro() {
   const [phase, setPhase] = useState<Phase>("black");
@@ -90,11 +90,7 @@ export default function CinematicIntro() {
         height: "clamp(200px, 45vw, 260px)",
       }}>
 
-        {/* ── Logo PNG ──
-            black phase:  invisible
-            trace phase:  very dim (brightness 0.10) — reveals the shape as a reference
-            lit phase:    full color + neon glow
-        ── */}
+        {/* ── Logo PNG — invisible during trace, reveals only after outline is complete ── */}
         <Image
           src="/logo.png"
           alt="ReadyMiix"
@@ -102,19 +98,15 @@ export default function CinematicIntro() {
           priority
           style={{
             objectFit: "contain",
-            opacity: lit ? 1 : tracing ? 0.85 : 0,
+            opacity: lit ? 1 : 0,
             filter: lit
               ? [
-                  "drop-shadow(0 0 30px rgba(247,37,133,0.90))",
-                  "drop-shadow(0 0 70px rgba(247,37,133,0.50))",
-                  "drop-shadow(0 0 140px rgba(123,47,190,0.35))",
+                  "drop-shadow(0 0 32px rgba(247,37,133,0.95))",
+                  "drop-shadow(0 0 75px rgba(247,37,133,0.55))",
+                  "drop-shadow(0 0 150px rgba(123,47,190,0.38))",
                 ].join(" ")
-              : tracing
-              ? "brightness(0.10) saturate(0)"
               : "brightness(0)",
-            transition: tracing
-              ? "opacity 300ms ease-out, filter 300ms ease-out"
-              : "opacity 700ms ease-out, filter 700ms ease-out",
+            transition: "opacity 750ms ease-out, filter 750ms ease-out",
           }}
         />
 

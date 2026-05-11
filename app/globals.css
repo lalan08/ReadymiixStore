@@ -201,8 +201,8 @@ html[data-intro] body {
 
 /* ── Cinematic intro keyframes ── */
 
-/* Triangle neon trace — stroke-dashoffset 565→0 (perimeter of M 10 15 L 190 15 L 100 185) */
+/* Triangle neon trace — stroke-dashoffset 576→0 (perimeter of M 8 12 L 192 12 L 100 188) */
 @keyframes rmTrace {
-  from { stroke-dashoffset: 565; }
+  from { stroke-dashoffset: 576; }
   to   { stroke-dashoffset: 0;   }
 }
