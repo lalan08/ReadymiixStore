@@ -58,6 +58,9 @@ export async function GET() {
     await prisma.$executeRawUnsafe(`
       ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "hasSoftChoice" BOOLEAN NOT NULL DEFAULT false;
     `);
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "softQty" INTEGER NOT NULL DEFAULT 1;
+    `);
 
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Order" (

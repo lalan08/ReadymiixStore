@@ -30,6 +30,7 @@ interface Product {
   tags: string;
   productType: string;
   hasSoftChoice: boolean;
+  softQty: number;
   category: { name: string; slug: string };
 }
 
@@ -44,7 +45,8 @@ const COMPOSER_SLUGS = ["light", "hard"];
 export default function ProductDetail({ product, softs, related }: Props) {
   const [qty, setQty]           = useState(1);
   const [activeImg, setActiveImg] = useState(0);
-  const [selectedSoft, setSelectedSoft] = useState<Soft | null>(null);
+  const softQty = Math.max(1, product.softQty ?? 1);
+  const [selectedSofts, setSelectedSofts] = useState<(Soft | null)[]>(() => Array(softQty).fill(null));
   const { addItem, openCart } = useCartStore();
 
   const images = parseJsonField<string[]>(product.images, []);
@@ -57,10 +59,16 @@ export default function ProductDetail({ product, softs, related }: Props) {
     ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
     : null;
 
-  const finalPrice = product.price + (selectedSoft?.surcharge ?? 0);
+  const softSurcharge = selectedSofts.reduce((sum, s) => sum + (s?.surcharge ?? 0), 0);
+  const finalPrice    = product.price + softSurcharge;
+
+  function selectSoft(slotIndex: number, soft: Soft | null) {
+    setSelectedSofts((prev) => prev.map((s, i) => i === slotIndex ? soft : s));
+  }
 
   function handleAdd() {
     if (isComposer) return;
+    const softNames = selectedSofts.filter(Boolean).map((s) => s!.name);
     addItem({
       id:     product.id,
       name:   product.name,
@@ -69,7 +77,7 @@ export default function ProductDetail({ product, softs, related }: Props) {
       image:  images[0] ?? "",
       volume: product.volume ?? undefined,
       quantity: qty,
-      options: selectedSoft ? { soft: selectedSoft.name } : undefined,
+      options: softNames.length > 0 ? { softs: softNames } : undefined,
     });
     toast.success(`${product.name} ajouté !`, {
       icon: "🛒",
@@ -193,45 +201,54 @@ export default function ProductDetail({ product, softs, related }: Props) {
 
             {/* ── Soft chooser ── */}
             {showSofts && product.stock > 0 && !isComposer && (
-              <div className="flex flex-col gap-3 rounded-2xl bg-brand-card border border-brand-border p-4">
+              <div className="flex flex-col gap-4 rounded-2xl bg-brand-card border border-brand-border p-4">
                 <p className="text-xs font-bold text-brand-text uppercase tracking-widest">
-                  🥤 Choisis ton soft
+                  🥤 {softQty > 1 ? `Choisis tes ${softQty} softs` : "Choisis ton soft"}
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {/* No soft option */}
-                  <button
-                    onClick={() => setSelectedSoft(null)}
-                    className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all active:scale-95 ${
-                      selectedSoft === null
-                        ? "border-brand-gold bg-brand-gold/10 text-brand-gold"
-                        : "border-brand-border bg-brand-darker text-brand-muted hover:border-brand-gold/30"
-                    }`}
-                  >
-                    {selectedSoft === null && <Check className="w-3.5 h-3.5 shrink-0" />}
-                    <span>Sans soft</span>
-                  </button>
 
-                  {softs.map((soft) => (
-                    <button
-                      key={soft.id}
-                      onClick={() => setSelectedSoft(soft)}
-                      className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all active:scale-95 ${
-                        selectedSoft?.id === soft.id
-                          ? "border-brand-gold bg-brand-gold/10 text-brand-gold"
-                          : "border-brand-border bg-brand-darker text-brand-muted hover:border-brand-gold/30"
-                      }`}
-                    >
-                      {selectedSoft?.id === soft.id
-                        ? <Check className="w-3.5 h-3.5 shrink-0" />
-                        : <span className="text-base leading-none">{soft.emoji}</span>
-                      }
-                      <span className="truncate">{soft.name}</span>
-                      {soft.surcharge > 0 && (
-                        <span className="text-[10px] text-brand-gold ml-auto">+{formatPrice(soft.surcharge)}</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
+                {Array.from({ length: softQty }, (_, i) => (
+                  <div key={i} className={softQty > 1 ? "flex flex-col gap-2" : ""}>
+                    {softQty > 1 && (
+                      <p className="text-[11px] font-semibold text-brand-muted uppercase tracking-wide">
+                        Soft {i + 1}
+                      </p>
+                    )}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      <button
+                        onClick={() => selectSoft(i, null)}
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all active:scale-95 ${
+                          selectedSofts[i] === null
+                            ? "border-brand-gold bg-brand-gold/10 text-brand-gold"
+                            : "border-brand-border bg-brand-darker text-brand-muted hover:border-brand-gold/30"
+                        }`}
+                      >
+                        {selectedSofts[i] === null && <Check className="w-3.5 h-3.5 shrink-0" />}
+                        <span>Sans soft</span>
+                      </button>
+
+                      {softs.map((soft) => (
+                        <button
+                          key={soft.id}
+                          onClick={() => selectSoft(i, soft)}
+                          className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all active:scale-95 ${
+                            selectedSofts[i]?.id === soft.id
+                              ? "border-brand-gold bg-brand-gold/10 text-brand-gold"
+                              : "border-brand-border bg-brand-darker text-brand-muted hover:border-brand-gold/30"
+                          }`}
+                        >
+                          {selectedSofts[i]?.id === soft.id
+                            ? <Check className="w-3.5 h-3.5 shrink-0" />
+                            : <span className="text-base leading-none">{soft.emoji}</span>
+                          }
+                          <span className="truncate">{soft.name}</span>
+                          {soft.surcharge > 0 && (
+                            <span className="text-[10px] text-brand-gold ml-auto">+{formatPrice(soft.surcharge)}</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

@@ -94,7 +94,10 @@ export default function CartDrawer() {
                   {item.volume && (
                     <p className="text-xs text-brand-muted">{item.volume}</p>
                   )}
-                  {item.options?.soft && (
+                  {item.options?.softs && item.options.softs.length > 0 && (
+                    <p className="text-xs text-brand-teal">+ {item.options.softs.join(", ")}</p>
+                  )}
+                  {!item.options?.softs && item.options?.soft && (
                     <p className="text-xs text-brand-teal">+ {item.options.soft}</p>
                   )}
                   <p className="text-sm font-bold text-brand-gold mt-1">
