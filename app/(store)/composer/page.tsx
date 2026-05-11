@@ -40,10 +40,10 @@ const FEATURES = [
 ];
 
 const INSPIRATIONS = [
-  { name: "HENNY PASSION", emoji: "🍊🥃", desc: "Hennessy + sirop Passion + Freez rouge",    type: "hard"  as const },
-  { name: "HENNY GRENADE", emoji: "🌹🥃", desc: "Hennessy + sirop Grenadine + Sprite",       type: "hard"  as const },
-  { name: "LIGHT CURAÇAO", emoji: "🌊🍬", desc: "Light + sirop Curaçao + bonbons surprises", type: "light" as const },
-  { name: "FRAISE MENTHE", emoji: "🍓🌿", desc: "Light + sirop Fraise + menthe fraîche",     type: "light" as const },
+  { name: "HENNY PASSION", emoji: "🍊🥃", desc: "Hard · parfum Passion + Freez rouge",    type: "hard"  as const },
+  { name: "HENNY GRENADE", emoji: "🌹🥃", desc: "Hard · parfum Grenadine + Sprite",       type: "hard"  as const },
+  { name: "LIGHT CURAÇAO", emoji: "🌊🍬", desc: "Light · parfum Curaçao + bonbons surprises", type: "light" as const },
+  { name: "FRAISE MENTHE", emoji: "🍓🌿", desc: "Light · parfum Fraise + menthe fraîche",     type: "light" as const },
 ];
 
 /* ─── Product card ──────────────────────────────────────────── */
@@ -194,10 +194,11 @@ export default function ComposerPage() {
 
         {/* ── Hero heading ── */}
         <div className="text-center mb-8">
-          <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.25em] mb-2">— Compose ton cocktail</p>
-          <h1 className="font-display text-3xl md:text-5xl text-white uppercase tracking-wide">
-            Choisis ton style
+          <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.25em] mb-2">— ReadyMiix Cocktails</p>
+          <h1 className="font-display text-3xl md:text-5xl text-white uppercase tracking-wide mb-2">
+            Compose ton ReadyMiix 🍹
           </h1>
+          <p className="text-sm text-white/50">Choisis ton style et ton parfum.</p>
         </div>
 
         {/* ── Split product section ── */}
