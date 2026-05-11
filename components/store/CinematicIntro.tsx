@@ -84,20 +84,26 @@ export default function CinematicIntro() {
           // Lit state:    full colour, sharp, atmospheric glow settled around the mark
           opacity:   lit ? 1 : 0,
           transform: lit ? "scale(1)" : "scale(1.05)",
+
+          // Filter functions MUST match in count and order between states
+          // so the browser can interpolate each one smoothly.
           filter: lit
             ? [
-                // Blur clears as brightness rises — depth-of-field reveal
-                "blur(0px)",
-                // Colour desaturation to saturation bloom
+                "brightness(1)",
                 "saturate(1.08)",
-                // Close atmospheric glow — restrained, not neon
+                "blur(0px)",
                 "drop-shadow(0 0 22px rgba(247,37,133,0.55))",
-                // Mid-range warm haze
                 "drop-shadow(0 0 70px rgba(247,37,133,0.22))",
-                // Deep violet atmosphere — barely there, adds depth
                 "drop-shadow(0 0 180px rgba(123,47,190,0.16))",
               ].join(" ")
-            : "brightness(0) saturate(0.4) blur(10px)",
+            : [
+                "brightness(0)",
+                "saturate(0.4)",
+                "blur(10px)",
+                "drop-shadow(0 0 0px rgba(247,37,133,0))",
+                "drop-shadow(0 0 0px rgba(247,37,133,0))",
+                "drop-shadow(0 0 0px rgba(123,47,190,0))",
+              ].join(" "),
 
           // Slow ease — the slowness IS the premium
           // filter runs 100ms longer than opacity/transform for the depth-of-field lag
