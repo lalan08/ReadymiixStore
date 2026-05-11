@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 import EventsSlider from "@/components/store/EventsSlider";
 
-export const revalidate = 60;
+export const revalidate = 300; // 5 minutes
 
 async function getFeaturedProducts() {
   try {
@@ -60,11 +60,11 @@ export default async function HomePage() {
 
         {/* ── Cocktail background — cinematic mood ── */}
         <Image
-          src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=1920&q=80&auto=format"
+          src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=1200&q=75&auto=format&fm=webp"
           alt=""
           fill
           priority
-          sizes="100vw"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
           className="object-cover object-center"
           style={{ filter: "brightness(0.32) saturate(1.25)" }}
         />
@@ -466,9 +466,10 @@ export default async function HomePage() {
             <div className="relative">
               <div className="aspect-[4/3] rounded-3xl overflow-hidden">
                 <Image
-                  src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&q=80"
+                  src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&q=70&auto=format&fm=webp"
                   alt="ReadyMiix – Notre histoire"
                   fill
+                  loading="lazy"
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-darker/70 to-transparent" />
