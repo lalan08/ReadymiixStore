@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#070710",
+  themeColor: "#000000",
   width: "device-width",
   initialScale: 1,
 };
@@ -35,7 +35,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    // background:#000 inline style paints black on the very first byte,
+    // before external CSS loads — prevents the white/grey flash entirely.
+    <html lang="fr" suppressHydrationWarning style={{ background: "#000" }}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -44,7 +46,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className="font-sans">
+      <body className="font-sans" style={{ background: "#000" }}>
         {children}
         <Toaster
           position="bottom-right"

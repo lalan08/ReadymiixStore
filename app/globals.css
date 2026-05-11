@@ -193,10 +193,16 @@
   100% { transform: translate(0,    0)    scale(1);    }
 }
 
+/* ── Locks page to pure black while the intro is active ── */
+/* Set by inline sync script in (store)/layout; removed by CinematicIntro on done */
+html[data-intro] body {
+  background: #000 !important;
+}
+
 /* ── Cinematic intro keyframes ── */
 
-/* Triangle neon trace — stroke-dashoffset 440→0 over the triangle perimeter */
+/* Triangle neon trace — stroke-dashoffset 565→0 (perimeter of M 10 15 L 190 15 L 100 185) */
 @keyframes rmTrace {
-  from { stroke-dashoffset: 440; }
+  from { stroke-dashoffset: 565; }
   to   { stroke-dashoffset: 0;   }
 }
