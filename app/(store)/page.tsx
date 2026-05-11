@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ShoppingBag, MapPin, Flame, Candy, Package, Star, ChevronRight, Sparkles } from "lucide-react";
+import { ArrowRight, ShoppingBag, MapPin, Star, ChevronRight, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 import EventsSlider from "@/components/store/EventsSlider";
@@ -259,67 +259,135 @@ export default async function HomePage() {
       </div>
 
       {/* ══════════════════════════════════════
-          GAMMES BAND
+          3 UNIVERSE PORTALS
       ══════════════════════════════════════ */}
-      <section className="py-10 md:py-11 lg:py-14 bg-brand-card/50 border-b border-brand-border">
+      <section className="py-5 md:py-6" style={{ background: "#020208" }}>
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4 lg:gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
 
-            {/* Hard */}
+            {/* ── HARD portal ── */}
             <Link
-              href="/shop?category=hard"
-              className="group relative flex items-center gap-5 p-5 rounded-2xl border border-brand-gold/20 bg-gradient-to-br from-brand-gold/6 to-brand-darker hover:border-brand-gold/50 hover:shadow-[0_0_40px_rgba(247,37,133,0.15)] transition-all duration-400 overflow-hidden"
+              href="/composer?type=hard"
+              className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
+              style={{ background: "linear-gradient(145deg, #1A000D 0%, #0A0007 100%)", minHeight: 148 }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative w-14 h-14 rounded-2xl bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-brand-gold/20 group-hover:border-brand-gold/40 transition-all duration-300">
-                <Flame className="w-7 h-7 text-brand-gold" />
-              </div>
-              <div className="relative flex flex-col gap-0.5">
-                <h3 className="font-display text-xl text-brand-text uppercase tracking-wide group-hover:text-brand-gold transition-colors duration-200">Hard</h3>
-                <p className="text-sm text-brand-muted leading-snug">Hennessy + alcools forts, pour les amateurs</p>
-                <span className="mt-1.5 text-xs text-brand-gold font-bold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
-                  Voir les cups <ChevronRight className="w-3.5 h-3.5" />
+              {/* Glow orb */}
+              <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-20 group-hover:opacity-35 transition-opacity duration-500"
+                style={{ background: "#F72585" }} />
+              {/* Border default */}
+              <div className="absolute inset-0 rounded-3xl border transition-all duration-300"
+                style={{ borderColor: "rgba(247,37,133,0.15)" }} />
+              {/* Border hover */}
+              <div className="absolute inset-0 rounded-3xl border opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ borderColor: "rgba(247,37,133,0.5)", boxShadow: "inset 0 0 30px rgba(247,37,133,0.05)" }} />
+              {/* Bottom glow line */}
+              <div className="absolute bottom-0 left-6 right-6 h-px opacity-40 group-hover:opacity-90 transition-opacity"
+                style={{ background: "linear-gradient(90deg, transparent, #F72585, transparent)" }} />
+
+              {/* Tag */}
+              <p className="relative text-[9px] font-black uppercase tracking-[0.35em]"
+                style={{ color: "rgba(247,37,133,0.55)" }}>
+                Nightlife · Intense
+              </p>
+
+              {/* Bottom row */}
+              <div className="relative flex items-end justify-between">
+                <h3 className="font-display text-[64px] md:text-[72px] text-white uppercase leading-none tracking-tight"
+                  style={{ textShadow: "0 0 40px rgba(247,37,133,0.25)" }}>
+                  HARD
+                </h3>
+                <span className="flex items-center gap-1 text-[11px] font-bold mb-1.5 group-hover:gap-2 transition-all"
+                  style={{ color: "#F72585" }}>
+                  Composer <ChevronRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <Flame className="absolute right-4 top-4 w-5 h-5 text-brand-gold/15 group-hover:text-brand-gold/30 transition-colors" />
             </Link>
 
-            {/* Light */}
+            {/* ── LIGHT portal ── */}
             <Link
-              href="/shop?category=light"
-              className="group relative flex items-center gap-5 p-5 rounded-2xl border border-brand-teal/20 bg-gradient-to-br from-brand-teal/6 to-brand-darker hover:border-brand-teal/50 hover:shadow-[0_0_40px_rgba(0,210,200,0.12)] transition-all duration-400 overflow-hidden"
+              href="/composer?type=light"
+              className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
+              style={{ background: "linear-gradient(145deg, #001814 0%, #000A0A 100%)", minHeight: 148 }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-teal/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative w-14 h-14 rounded-2xl bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-brand-teal/20 group-hover:border-brand-teal/40 transition-all duration-300">
-                <Candy className="w-7 h-7 text-brand-teal" />
-              </div>
-              <div className="relative flex flex-col gap-0.5">
-                <h3 className="font-display text-xl text-brand-text uppercase tracking-wide group-hover:text-brand-teal transition-colors duration-200">Light</h3>
-                <p className="text-sm text-brand-muted leading-snug">Haribo, Jitty Shocks, popping candy & plus</p>
-                <span className="mt-1.5 text-xs text-brand-teal font-bold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
-                  Voir les cups <ChevronRight className="w-3.5 h-3.5" />
+              {/* Glow orb */}
+              <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-15 group-hover:opacity-30 transition-opacity duration-500"
+                style={{ background: "#00D2C8" }} />
+              {/* Border default */}
+              <div className="absolute inset-0 rounded-3xl border transition-all duration-300"
+                style={{ borderColor: "rgba(0,210,200,0.15)" }} />
+              {/* Border hover */}
+              <div className="absolute inset-0 rounded-3xl border opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ borderColor: "rgba(0,210,200,0.5)", boxShadow: "inset 0 0 30px rgba(0,210,200,0.05)" }} />
+              {/* Bottom glow line */}
+              <div className="absolute bottom-0 left-6 right-6 h-px opacity-40 group-hover:opacity-90 transition-opacity"
+                style={{ background: "linear-gradient(90deg, transparent, #00D2C8, transparent)" }} />
+
+              {/* Tag */}
+              <p className="relative text-[9px] font-black uppercase tracking-[0.35em]"
+                style={{ color: "rgba(0,210,200,0.55)" }}>
+                Fun · Candy · Colorful
+              </p>
+
+              {/* Bottom row */}
+              <div className="relative flex items-end justify-between">
+                <h3 className="font-display text-[64px] md:text-[72px] text-white uppercase leading-none tracking-tight"
+                  style={{ textShadow: "0 0 40px rgba(0,210,200,0.2)" }}>
+                  LIGHT
+                </h3>
+                <span className="flex items-center gap-1 text-[11px] font-bold mb-1.5 group-hover:gap-2 transition-all"
+                  style={{ color: "#00D2C8" }}>
+                  Composer <ChevronRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <Candy className="absolute right-4 top-4 w-5 h-5 text-brand-teal/15 group-hover:text-brand-teal/30 transition-colors" />
             </Link>
 
-            {/* Packs */}
+            {/* ── FROZEN CAIPI portal ── */}
             <Link
-              href="/shop?category=packs"
-              className="group relative flex items-center gap-5 p-5 rounded-2xl border border-brand-purple/20 bg-gradient-to-br from-brand-purple/6 to-brand-darker hover:border-brand-purple/50 hover:shadow-[0_0_40px_rgba(123,47,190,0.15)] transition-all duration-400 overflow-hidden"
+              href="/frozen-caipi"
+              className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
+              style={{ background: "linear-gradient(145deg, #001320 0%, #000A12 100%)", minHeight: 148 }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative w-14 h-14 rounded-2xl bg-brand-purple/10 border border-brand-purple/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-brand-purple/20 group-hover:border-brand-purple/40 transition-all duration-300">
-                <Package className="w-7 h-7 text-brand-purple-light" />
-              </div>
-              <div className="relative flex flex-col gap-0.5">
-                <h3 className="font-display text-xl text-brand-text uppercase tracking-wide group-hover:text-brand-purple-light transition-colors duration-200">Packs</h3>
-                <p className="text-sm text-brand-muted leading-snug">Pack Duo, x4 ou x10 — idéal pour soirées</p>
-                <span className="mt-1.5 text-xs text-brand-purple-light font-bold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
-                  Voir les packs <ChevronRight className="w-3.5 h-3.5" />
+              {/* Glow orb */}
+              <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-15 group-hover:opacity-30 transition-opacity duration-500"
+                style={{ background: "#00C8FF" }} />
+              {/* Second orb — tropical mint */}
+              <div className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity duration-500"
+                style={{ background: "#00F0DC" }} />
+              {/* Border default */}
+              <div className="absolute inset-0 rounded-3xl border transition-all duration-300"
+                style={{ borderColor: "rgba(0,200,255,0.12)" }} />
+              {/* Border hover */}
+              <div className="absolute inset-0 rounded-3xl border opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ borderColor: "rgba(0,200,255,0.45)", boxShadow: "inset 0 0 30px rgba(0,200,255,0.04)" }} />
+              {/* Bottom glow line */}
+              <div className="absolute bottom-0 left-6 right-6 h-px opacity-40 group-hover:opacity-90 transition-opacity"
+                style={{ background: "linear-gradient(90deg, transparent, #00C8FF, transparent)" }} />
+              {/* Ice crystal accent */}
+              <span className="absolute top-4 right-5 text-xl opacity-20 group-hover:opacity-40 transition-opacity">❄</span>
+
+              {/* Tag */}
+              <p className="relative text-[9px] font-black uppercase tracking-[0.35em]"
+                style={{ color: "rgba(0,200,255,0.55)" }}>
+                Frozen · Tropical · Premium
+              </p>
+
+              {/* Bottom row */}
+              <div className="relative flex items-end justify-between">
+                <div className="leading-none">
+                  <h3 className="font-display text-[46px] md:text-[52px] text-white uppercase leading-none tracking-tight"
+                    style={{ textShadow: "0 0 40px rgba(0,200,255,0.25)" }}>
+                    FROZEN
+                  </h3>
+                  <h3 className="font-display text-[46px] md:text-[52px] uppercase leading-none tracking-widest"
+                    style={{ color: "#00C8FF", textShadow: "0 0 30px rgba(0,200,255,0.5)" }}>
+                    CAIPI
+                  </h3>
+                </div>
+                <span className="flex items-center gap-1 text-[11px] font-bold mb-1.5 group-hover:gap-2 transition-all"
+                  style={{ color: "#00C8FF" }}>
+                  Découvrir <ChevronRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <Package className="absolute right-4 top-4 w-5 h-5 text-brand-purple/15 group-hover:text-brand-purple/30 transition-colors" />
             </Link>
 
           </div>

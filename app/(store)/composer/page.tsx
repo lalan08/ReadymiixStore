@@ -160,6 +160,15 @@ export default function ComposerPage() {
   const [siteCfg, setSiteCfg] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    // Auto-open configurator when ?type=hard or ?type=light is in the URL
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get("type");
+    if (t === "hard" || t === "light") {
+      setCfg({ open: true, type: t });
+    }
+  }, []);
+
+  useEffect(() => {
     fetch("/api/config")
       .then((r) => r.ok ? r.json() : {})
       .then((data: Record<string, string>) => setSiteCfg(data))
