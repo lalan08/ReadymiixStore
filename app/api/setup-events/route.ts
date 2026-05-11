@@ -52,6 +52,7 @@ export async function GET() {
     ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "hasSoftChoice" BOOLEAN NOT NULL DEFAULT false;
   `);
 
+
   // Verify table exists
   let tableExists = false;
   try {

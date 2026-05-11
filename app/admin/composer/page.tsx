@@ -214,7 +214,7 @@ function CardSection({
           />
         </div>
 
-        {/* Title + Color */}
+        {/* Title + Price */}
         <div className="grid grid-cols-2 gap-3">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: accent }}>
