@@ -44,9 +44,9 @@ export default function CinematicIntro() {
     const ids = timers.current;
     const at  = (fn: () => void, ms: number) => { ids.push(setTimeout(fn, ms)); };
 
-    at(() => setPhase("in"),  400);   // 400ms black silence before anything
-    at(() => setPhase("out"), 2100);  // hold the logo fully lit
-    at(() => { unlockPage(); setPhase("done"); }, 2680);
+    at(() => setPhase("in"),  350);   // 350ms black silence
+    at(() => setPhase("out"), 2550);  // logo fully lit from ~1750ms → 2550ms = 800ms of presence
+    at(() => { unlockPage(); setPhase("done"); }, 3250); // 700ms slow dissolve
 
     return () => ids.forEach(clearTimeout);
   }, []);
@@ -65,7 +65,7 @@ export default function CinematicIntro() {
         display: "flex", alignItems: "center", justifyContent: "center",
         pointerEvents: "none",
         opacity:    out ? 0 : 1,
-        transition: out ? "opacity 550ms ease-in-out" : "none",
+        transition: out ? "opacity 700ms ease-in-out" : "none",
       }}
     >
       {/* Atmospheric ambient — a barely-there glow in the background.
@@ -101,23 +101,23 @@ export default function CinematicIntro() {
           filter: lit
             ? [
                 "brightness(1)",
-                "saturate(1.10)",
+                "saturate(1.05)",   // slight colour boost, stays natural
                 "blur(0px)",
-                "drop-shadow(0 0 20px rgba(247,37,133,0.50))",
-                "drop-shadow(0 0 60px rgba(247,37,133,0.20))",
-                "drop-shadow(0 0 150px rgba(123,47,190,0.14))",
+                "drop-shadow(0 0 16px rgba(247,37,133,0.38))",   // softer close glow
+                "drop-shadow(0 0 50px rgba(247,37,133,0.15))",   // soft mid haze
+                "drop-shadow(0 0 130px rgba(123,47,190,0.10))",  // very faint violet depth
               ].join(" ")
             : [
                 "brightness(0)",
                 "saturate(0)",
-                "blur(6px)",
+                "blur(4px)",  // less initial blur → sharpens faster
                 "drop-shadow(0 0 0px rgba(247,37,133,0))",
                 "drop-shadow(0 0 0px rgba(247,37,133,0))",
                 "drop-shadow(0 0 0px rgba(123,47,190,0))",
               ].join(" "),
           transition: [
-            "filter    1600ms cubic-bezier(0.04, 0.62, 0.23, 0.98)",
-            "transform 1400ms cubic-bezier(0.25, 1, 0.5, 1)",
+            "filter    1400ms cubic-bezier(0.04, 0.62, 0.23, 0.98)",
+            "transform 1200ms cubic-bezier(0.25, 1, 0.5, 1)",
           ].join(", "),
         }}
       />
