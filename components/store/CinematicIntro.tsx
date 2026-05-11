@@ -1,18 +1,18 @@
 "use client";
 
 /**
- * Cinematic brand intro — Batman / Spider-Verse style logo reveal.
+ * Cinematic brand intro — light-from-darkness reveal.
  *
- * The logo materialises from absolute darkness: brightness and focus
- * build slowly, atmospheric glow settles around the mark, then the
- * overlay dissolves. No bouncing, no particles, no pulse.
- * The premium comes from the black, the silence and the timing.
+ * The logo is always present but invisible in the black.
+ * A light source slowly intensifies (brightness 0→1), like a spotlight
+ * warming up on stage — no opacity fade, which feels web-like.
+ * The premium comes from the black, the silence and the slow timing.
  *
  * Phases:
- *  black  0 ms   — deep black, silence (SSR-rendered, prevents flash)
- *  in     300ms  — logo emerges from shadow over 1 200ms
- *  out    1 800ms — overlay dissolves over 500ms
- *  done   2 350ms — unmount + remove data-intro
+ *  black  0 ms   — deep black silence (SSR-rendered, prevents flash)
+ *  in     400ms  — brightness builds over 1 600ms
+ *  out    2 100ms — overlay dissolves over 550ms
+ *  done   2 680ms — unmount + data-intro removed
  */
 
 import { useState, useEffect, useRef } from "react";
@@ -44,9 +44,9 @@ export default function CinematicIntro() {
     const ids = timers.current;
     const at  = (fn: () => void, ms: number) => { ids.push(setTimeout(fn, ms)); };
 
-    at(() => setPhase("in"),  300);
-    at(() => setPhase("out"), 1800);
-    at(() => { unlockPage(); setPhase("done"); }, 2350);
+    at(() => setPhase("in"),  400);   // 400ms black silence before anything
+    at(() => setPhase("out"), 2100);  // hold the logo fully lit
+    at(() => { unlockPage(); setPhase("done"); }, 2680);
 
     return () => ids.forEach(clearTimeout);
   }, []);
@@ -64,53 +64,60 @@ export default function CinematicIntro() {
         background: "#000000",
         display: "flex", alignItems: "center", justifyContent: "center",
         pointerEvents: "none",
-        // Dissolve the overlay — not the logo — at the end
         opacity:    out ? 0 : 1,
-        transition: out ? "opacity 500ms ease-in-out" : "none",
+        transition: out ? "opacity 550ms ease-in-out" : "none",
       }}
     >
+      {/* Atmospheric ambient — a barely-there glow in the background.
+          Builds very slowly (2s) so it never feels like a flash. */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: [
+          "radial-gradient(ellipse 55% 45% at 50% 50%,",
+          "  rgba(247,37,133,0.07) 0%,",
+          "  rgba(123,47,190,0.04) 45%,",
+          "  transparent 70%)",
+        ].join(""),
+        opacity:    lit ? 1 : 0,
+        transition: "opacity 2200ms ease-out",
+      }} />
+
+      {/* Logo — brightness-only reveal, no opacity animation.
+          The easing (0.04,0.62,0.23,0.98) keeps the logo nearly
+          invisible for the first ~600ms then lets brightness build,
+          mimicking a real light source warming up. */}
       <Image
         src="/logo.png"
         alt="ReadyMiix"
-        width={280}
-        height={280}
+        width={320}
+        height={320}
         priority
         style={{
-          width:   "clamp(200px, 52vw, 280px)",
-          height:  "auto",
-          display: "block",
-
-          // Shadow state: completely dark, slightly blurred, fractionally larger
-          // Lit state:    full colour, sharp, atmospheric glow settled around the mark
-          opacity:   lit ? 1 : 0,
-          transform: lit ? "scale(1)" : "scale(1.05)",
-
-          // Filter functions MUST match in count and order between states
-          // so the browser can interpolate each one smoothly.
+          width:    "clamp(220px, 55vw, 320px)",
+          height:   "auto",
+          display:  "block",
+          position: "relative",
+          transform: lit ? "scale(1)" : "scale(1.04)",
           filter: lit
             ? [
                 "brightness(1)",
-                "saturate(1.08)",
+                "saturate(1.10)",
                 "blur(0px)",
-                "drop-shadow(0 0 22px rgba(247,37,133,0.55))",
-                "drop-shadow(0 0 70px rgba(247,37,133,0.22))",
-                "drop-shadow(0 0 180px rgba(123,47,190,0.16))",
+                "drop-shadow(0 0 20px rgba(247,37,133,0.50))",
+                "drop-shadow(0 0 60px rgba(247,37,133,0.20))",
+                "drop-shadow(0 0 150px rgba(123,47,190,0.14))",
               ].join(" ")
             : [
                 "brightness(0)",
-                "saturate(0.4)",
-                "blur(10px)",
+                "saturate(0)",
+                "blur(6px)",
                 "drop-shadow(0 0 0px rgba(247,37,133,0))",
                 "drop-shadow(0 0 0px rgba(247,37,133,0))",
                 "drop-shadow(0 0 0px rgba(123,47,190,0))",
               ].join(" "),
-
-          // Slow ease — the slowness IS the premium
-          // filter runs 100ms longer than opacity/transform for the depth-of-field lag
           transition: [
-            "opacity    1200ms cubic-bezier(0.16, 1, 0.3, 1)",
-            "transform  1200ms cubic-bezier(0.16, 1, 0.3, 1)",
-            "filter     1300ms cubic-bezier(0.16, 1, 0.3, 1)",
+            "filter    1600ms cubic-bezier(0.04, 0.62, 0.23, 0.98)",
+            "transform 1400ms cubic-bezier(0.25, 1, 0.5, 1)",
           ].join(", "),
         }}
       />
