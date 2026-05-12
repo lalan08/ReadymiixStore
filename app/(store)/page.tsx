@@ -116,7 +116,7 @@ export default async function HomePage() {
             <div className="absolute inset-0 rounded-full bg-brand-purple/10 blur-[160px] scale-[3.6]" />
             <Image
               src="/logo.png" alt="ReadyMiix" width={400} height={400} priority
-              className="relative z-10 w-[160px] h-[160px] sm:w-[220px] sm:h-[220px] md:w-[300px] md:h-[300px] lg:w-[360px] lg:h-[360px] object-contain"
+              className="relative z-10 w-[220px] h-[220px] sm:w-[270px] sm:h-[270px] md:w-[320px] md:h-[320px] lg:w-[380px] lg:h-[380px] object-contain"
               style={{ filter: "drop-shadow(0 0 80px rgba(247,37,133,0.70)) drop-shadow(0 0 30px rgba(247,37,133,0.35))" }}
             />
           </div>
