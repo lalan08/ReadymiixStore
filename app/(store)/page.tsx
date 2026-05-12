@@ -111,11 +111,11 @@ export default async function HomePage() {
 
           {/* Logo */}
           <div className="relative animate-slide-in-up [animation-delay:0ms] mb-14 md:mb-20 lg:mb-24">
-            <div className="absolute inset-0 rounded-full bg-brand-gold/10 blur-[80px] scale-[2.2] animate-glow-breathe" />
+            <div className="absolute inset-0 rounded-full bg-brand-gold/14 blur-[90px] scale-[2.4] animate-glow-breathe" />
             <Image
-              src="/logo.png" alt="ReadyMiix" width={160} height={160} priority
-              className="relative z-10 w-[88px] h-[88px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] object-contain"
-              style={{ filter: "drop-shadow(0 0 40px rgba(247,37,133,0.55)) drop-shadow(0 0 14px rgba(247,37,133,0.25))" }}
+              src="/logo.png" alt="ReadyMiix" width={220} height={220} priority
+              className="relative z-10 w-[130px] h-[130px] sm:w-[155px] sm:h-[155px] md:w-[180px] md:h-[180px] lg:w-[210px] lg:h-[210px] object-contain"
+              style={{ filter: "drop-shadow(0 0 55px rgba(247,37,133,0.65)) drop-shadow(0 0 20px rgba(247,37,133,0.30))" }}
             />
           </div>
 
