@@ -5,7 +5,7 @@ import { Sparkles, Snowflake } from "lucide-react";
 
 export default function HeroCTAs() {
   return (
-    <div className="animate-slide-in-up [animation-delay:420ms] flex flex-col items-stretch gap-3.5 md:gap-4 w-full max-w-[380px]">
+    <div className="animate-slide-in-up [animation-delay:420ms] flex flex-col items-stretch gap-4 md:gap-5 w-full max-w-[380px]">
 
       {/* Primary CTA */}
       <Link

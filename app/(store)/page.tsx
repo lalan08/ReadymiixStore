@@ -67,7 +67,9 @@ export default async function HomePage() {
 
         {/* ── Cocktail poster ──
             mobile : fills the entire hero, object-position pushed left so
-                     the cocktail subject sits in the right 2/3 of viewport
+                     the cocktail subject sits in the right 2/3 of viewport.
+                     scale + origin-left enlarges it and lets the right edge
+                     bleed off-screen for a real campaign-poster feel.
             md+    : native portrait aspect, full hero height, anchored
                      to the right — cocktail subject reads at ~80% viewport */}
         <div className="absolute inset-0 md:left-auto md:right-0 md:aspect-[1023/1537] md:w-auto pointer-events-none">
@@ -75,30 +77,41 @@ export default async function HomePage() {
             src="/hero-cocktail.png"
             alt="ReadyMiix cocktail premium"
             fill priority
-            sizes="(max-width: 768px) 100vw, 67vh"
-            className="object-cover object-[0%_center] md:object-center"
+            sizes="(max-width: 768px) 122vw, 67vh"
+            className="object-cover object-[0%_center] md:object-center scale-[1.18] md:scale-100 origin-left"
             style={{ filter: "saturate(1.18) contrast(1.06)" }}
           />
         </div>
 
-        {/* ── Left-side dark mask — guarantees text legibility ── */}
+        {/* ── Left-side dark mask — softer, more diffuse so the photo bleeds
+              into the text area instead of being clipped by a hard line ── */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "linear-gradient(to right, #010108 0%, #010108 12%, rgba(1,1,8,0.92) 28%, rgba(1,1,8,0.55) 44%, transparent 62%)",
+            background: "linear-gradient(to right, #010108 0%, rgba(1,1,8,0.94) 16%, rgba(1,1,8,0.78) 32%, rgba(1,1,8,0.42) 50%, rgba(1,1,8,0.12) 70%, transparent 88%)",
           }}
         />
 
-        {/* ── Vignette — adds cinematic depth on the right too ── */}
+        {/* ── Pink/purple glow bleed — fuses the cocktail's neon halo
+              across the dark left side so the scene feels one composition ── */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse 90% 75% at 78% 55%, rgba(247,37,133,0.18) 0%, rgba(123,47,190,0.12) 28%, rgba(0,180,255,0.05) 52%, transparent 78%)",
+            mixBlendMode: "screen",
+          }}
+        />
+
+        {/* ── Vignette — softer than before, keeps the photo breathing ── */}
         <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse 95% 78% at 65% 50%, transparent 20%, rgba(1,1,8,0.50) 100%)",
+          background: "radial-gradient(ellipse 100% 80% at 62% 50%, transparent 28%, rgba(1,1,8,0.40) 100%)",
         }} />
 
         {/* ── Top fade ── */}
-        <div className="absolute inset-x-0 top-0 h-[160px] pointer-events-none bg-gradient-to-b from-[#010108]/75 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-[160px] pointer-events-none bg-gradient-to-b from-[#010108]/70 to-transparent" />
 
         {/* ── Bottom fade — hands off to next section ── */}
-        <div className="absolute inset-x-0 bottom-0 h-[260px] pointer-events-none bg-gradient-to-t from-[#010108] via-[#010108]/60 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-[280px] pointer-events-none bg-gradient-to-t from-[#010108] via-[#010108]/55 to-transparent" />
 
         {/* ── Atmospheric smoke — slow drifting coloured clouds ── */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ mixBlendMode: "screen" }}>
@@ -133,12 +146,12 @@ export default async function HomePage() {
         </div>
 
         {/* ══════════ CONTENT — left-aligned text column ══════════ */}
-        <div className="relative z-10 container-custom pt-28 pb-24 md:py-32 lg:py-40">
+        <div className="relative z-10 container-custom pt-32 pb-28 md:py-32 lg:py-40">
           <div className="w-full max-w-[78%] sm:max-w-[68%] md:max-w-[52%] lg:max-w-[46%]">
 
             {/* Eyebrow */}
             <p
-              className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-7 md:mb-9"
+              className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-12 md:mb-14"
               style={{ textShadow: "0 0 18px rgba(0,210,200,0.55), 0 2px 8px rgba(0,0,0,0.7)" }}
             >
               <Sparkles className="w-3.5 h-3.5 shrink-0" />
@@ -146,7 +159,7 @@ export default async function HomePage() {
             </p>
 
             {/* Slogan — dominant focal point */}
-            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.9] tracking-tight mb-7 md:mb-8">
+            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.9] tracking-tight mb-8 md:mb-9">
               <span
                 className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-white"
                 style={{ textShadow: "0 8px 40px rgba(0,0,0,0.85), 0 0 50px rgba(255,255,255,0.08)" }}
@@ -162,11 +175,11 @@ export default async function HomePage() {
             </h1>
 
             {/* Accent bar */}
-            <div className="animate-slide-in-up [animation-delay:260ms] w-14 md:w-16 h-[3px] bg-gradient-to-r from-brand-gold via-brand-gold/70 to-transparent rounded-full mb-6 md:mb-7" />
+            <div className="animate-slide-in-up [animation-delay:260ms] w-14 md:w-16 h-[3px] bg-gradient-to-r from-brand-gold via-brand-gold/70 to-transparent rounded-full mb-7 md:mb-8" />
 
             {/* Subtitle */}
             <p
-              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[420px] mb-9 md:mb-11"
+              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[420px] mb-12 md:mb-14"
               style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
             >
               Des cocktails premium prêts à boire, pensés pour vos{" "}
