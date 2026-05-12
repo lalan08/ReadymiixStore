@@ -146,25 +146,16 @@ export default async function HomePage() {
 
           {/* Main headline */}
           <div className="animate-slide-in-up [animation-delay:160ms]">
-            <h1 className="font-display uppercase leading-none tracking-tight">
+            <h1 className="font-display uppercase leading-[0.88] tracking-tight">
               <span
-                className="block text-[clamp(3.2rem,13.5vw,10rem)] text-white mb-1 md:mb-3"
-                style={{ letterSpacing: "-0.01em", textShadow: "0 0 140px rgba(255,255,255,0.06)" }}
+                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-white"
+                style={{ textShadow: "0 0 80px rgba(255,255,255,0.1)" }}
               >
                 BIEN FRAIS
               </span>
               <span
-                className="block text-[clamp(3.2rem,13.5vw,10rem)]"
-                style={{
-                  letterSpacing: "-0.01em",
-                  color: "#F72585",
-                  textShadow: [
-                    "0 0 20px rgba(247,37,133,1)",
-                    "0 0 55px rgba(247,37,133,0.65)",
-                    "0 0 110px rgba(247,37,133,0.3)",
-                    "0 0 200px rgba(247,37,133,0.12)",
-                  ].join(", "),
-                }}
+                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-gold-gradient"
+                style={{ filter: "drop-shadow(0 0 50px rgba(247,37,133,0.55))" }}
               >
                 TOUJOURS PRÊT
               </span>
