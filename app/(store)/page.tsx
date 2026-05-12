@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ShoppingBag, MapPin, Star, ChevronRight } from "lucide-react";
+import { ArrowRight, ShoppingBag, MapPin, Star, ChevronRight, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 import EventsSlider from "@/components/store/EventsSlider";
@@ -55,120 +55,82 @@ export default async function HomePage() {
     <div className="overflow-x-hidden">
 
       {/* ══════════════════════════════════════
-          HERO — Cinematic composition (3 zones)
+          HERO — Asymmetric composition (text left, product right)
       ══════════════════════════════════════ */}
-      <section className="relative h-[100svh] min-h-[680px] md:min-h-[780px] flex flex-col bg-[#010108] overflow-hidden">
+      <section className="relative min-h-[100svh] flex items-center bg-[#010108] overflow-hidden">
 
-        {/* ── Background photo ── */}
+        {/* ── Product photograph — fills the hero, framed to keep subject right of centre ── */}
         <Image
-          src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=1400&q=80&auto=format&fm=webp"
-          alt="" fill priority sizes="100vw"
-          className="object-cover object-center"
-          style={{ filter: "brightness(0.22) saturate(1.4) contrast(1.08)" }}
+          src="/hero-cocktail.jpg"
+          alt="ReadyMiix cocktail premium"
+          fill priority sizes="100vw"
+          className="object-cover object-[70%_center] md:object-[65%_center] lg:object-[62%_center]"
         />
 
-        {/* ── Sky-fade gradient — purple dusk over the top ── */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1A0042]/95 via-[#0A0024]/65 to-[#010108]" />
+        {/* ── Left fade — guarantees text legibility over the photo ── */}
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#010108] via-[#010108]/85 via-25% to-transparent md:via-30% md:to-50%" />
 
-        {/* ── Diagonal accent streak — soft pink crossing the frame ── */}
+        {/* ── Bottom fade — anchors content, hands off to next section ── */}
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-[#010108]" />
+
+        {/* ── Subtle vignette for cinematic depth ── */}
         <div className="absolute inset-0 pointer-events-none" style={{
-          background: "linear-gradient(135deg, transparent 35%, rgba(247,37,133,0.10) 50%, transparent 65%)",
+          background: "radial-gradient(ellipse 100% 80% at 60% 50%, transparent 35%, rgba(1,1,8,0.55) 100%)",
         }} />
 
-        {/* ── Vignette — deeper, pulls focus to centre ── */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse 78% 72% at 50% 52%, transparent 18%, rgba(1,1,8,0.85) 100%)",
-        }} />
-
-        {/* ── Top light beam — diffuse spotlight above the logo ── */}
-        <div className="absolute -top-[180px] left-1/2 -translate-x-1/2 w-[900px] h-[760px] pointer-events-none" style={{
-          background: "radial-gradient(ellipse at top, rgba(247,37,133,0.20) 0%, rgba(247,37,133,0.07) 30%, transparent 65%)",
-          filter: "blur(20px)",
-        }} />
-
-        {/* ── Ambient orbs — 4 layers for depth ── */}
+        {/* ── Ambient neon orbs — anchor the colour palette ── */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="hero-orb absolute -top-[280px] -left-[200px] w-[820px] h-[820px] rounded-full blur-[170px]"
-            style={{ background: "rgba(70,0,150,0.22)", "--dur": "42s" } as React.CSSProperties} />
-          <div className="hero-orb absolute -top-[140px] -right-[280px] w-[680px] h-[680px] rounded-full blur-[150px]"
-            style={{ background: "rgba(247,37,133,0.12)", "--dur": "32s", animationDelay: "-8s" } as React.CSSProperties} />
-          <div className="hero-orb absolute -bottom-[260px] left-1/2 -translate-x-1/2 w-[1200px] h-[700px] rounded-full blur-[200px]"
-            style={{ background: "rgba(0,180,255,0.08)", "--dur": "55s", animationDelay: "-15s" } as React.CSSProperties} />
-          <div className="hero-orb absolute bottom-[18%] -left-[120px] w-[420px] h-[420px] rounded-full blur-[140px]"
-            style={{ background: "rgba(0,210,200,0.05)", "--dur": "48s", animationDelay: "-22s" } as React.CSSProperties} />
-
-          {/* Grid texture — barely-there */}
-          <div className="absolute inset-0 bg-grid opacity-[0.035]" />
+          <div className="hero-orb absolute -top-[180px] -left-[120px] w-[620px] h-[620px] rounded-full blur-[160px]"
+            style={{ background: "rgba(247,37,133,0.10)", "--dur": "38s" } as React.CSSProperties} />
+          <div className="hero-orb absolute bottom-[-220px] -left-[160px] w-[680px] h-[480px] rounded-full blur-[170px]"
+            style={{ background: "rgba(70,0,150,0.18)", "--dur": "48s", animationDelay: "-12s" } as React.CSSProperties} />
+          <div className="hero-orb absolute top-[40%] -right-[200px] w-[520px] h-[520px] rounded-full blur-[150px]"
+            style={{ background: "rgba(0,210,200,0.06)", "--dur": "44s", animationDelay: "-20s" } as React.CSSProperties} />
 
           {/* Top accent line */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/70 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/60 to-transparent" />
         </div>
 
-        {/* ── Cold smoke at the bottom — slow drift ── */}
-        <div className="absolute bottom-0 left-0 right-0 h-[340px] pointer-events-none overflow-hidden">
-          <div className="absolute inset-0 blur-[60px]"
-            style={{ background: "rgba(0,180,255,0.09)", animation: "ciDrift1 30s ease-in-out infinite", opacity: 0.7 }} />
-          <div className="absolute inset-0 blur-[80px]"
-            style={{ background: "rgba(247,37,133,0.07)", animation: "ciDrift2 38s ease-in-out infinite", opacity: 0.6 }} />
-          <div className="absolute bottom-0 left-0 right-0 h-full bg-gradient-to-t from-[#010108] via-[#010108]/75 to-transparent" />
-        </div>
+        {/* ══════════ CONTENT — left-aligned text column ══════════ */}
+        <div className="relative z-10 container-custom pt-28 pb-20 md:py-32 lg:py-36">
+          <div className="w-full md:max-w-[58%] lg:max-w-[52%]">
 
-        {/* ── Horizontal light streak behind the slogan ── */}
-        <div className="absolute left-0 right-0 h-px pointer-events-none" style={{
-          top: "52%",
-          background: "linear-gradient(90deg, transparent 5%, rgba(247,37,133,0.45) 35%, rgba(0,180,255,0.30) 65%, transparent 95%)",
-          opacity: 0.28,
-        }} />
+            {/* Eyebrow */}
+            <p className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-6 md:mb-8">
+              <Sparkles className="w-3.5 h-3.5 shrink-0" />
+              Prêt à boire. Prêt à vivre.
+            </p>
 
-        {/* ══════════ CONTENT — 3 zones: top logo, centre slogan, bottom CTAs ══════════ */}
-        <div className="relative z-10 flex-1 flex flex-col items-center text-center px-6 md:px-12 pt-[7svh] md:pt-[8svh] pb-[5svh] md:pb-[6svh]">
-
-          {/* ─── TOP ZONE — Logo (atmospheric, smaller) + Eyebrow tagline ─── */}
-          <div className="flex flex-col items-center gap-5 md:gap-7">
-
-            {/* Logo */}
-            <div className="relative animate-slide-in-up [animation-delay:0ms]">
-              <div className="absolute inset-0 rounded-full bg-brand-gold/14 blur-[80px] scale-[2.4] animate-glow-breathe" />
-              <Image
-                src="/logo.png" alt="ReadyMiix" width={240} height={240} priority
-                className="relative z-10 w-[110px] h-[110px] sm:w-[130px] sm:h-[130px] md:w-[150px] md:h-[150px] lg:w-[170px] lg:h-[170px] object-contain"
-                style={{ filter: "drop-shadow(0 0 50px rgba(247,37,133,0.55)) drop-shadow(0 0 20px rgba(247,37,133,0.30))" }}
-              />
-            </div>
-
-            {/* Eyebrow tagline — frames the slogan, adds context */}
-            <div className="animate-slide-in-up [animation-delay:120ms] flex items-center gap-3 opacity-90">
-              <span className="h-px w-8 md:w-12 bg-gradient-to-r from-transparent to-brand-gold/60" />
-              <p className="text-[10px] md:text-[11px] font-black text-brand-gold uppercase tracking-[0.4em] whitespace-nowrap">
-                ReadyMiix · Guyane 973
-              </p>
-              <span className="h-px w-8 md:w-12 bg-gradient-to-l from-transparent to-brand-gold/60" />
-            </div>
-          </div>
-
-          {/* ─── MIDDLE ZONE — Slogan DOMINANT (auto-centered via flex-1) ─── */}
-          <div className="flex-1 flex items-center justify-center w-full">
-            <h1 className="animate-slide-in-up [animation-delay:260ms] font-display uppercase leading-[0.85] tracking-tight">
+            {/* Slogan — dominant focal point */}
+            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.9] tracking-tight mb-6 md:mb-7">
               <span
-                className="block text-[clamp(3.2rem,14vw,6.5rem)] md:text-[clamp(4.8rem,10vw,8.5rem)] lg:text-[clamp(6.5rem,11.5vw,12rem)] text-white mb-2 md:mb-4"
-                style={{ textShadow: "0 0 80px rgba(255,255,255,0.15), 0 0 25px rgba(255,255,255,0.08)" }}
+                className="block text-[clamp(2.8rem,12vw,5rem)] md:text-[clamp(3.8rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-white"
+                style={{ textShadow: "0 4px 30px rgba(0,0,0,0.65), 0 0 60px rgba(255,255,255,0.06)" }}
               >
                 BIEN FRAIS
               </span>
               <span
-                className="block text-[clamp(3.2rem,14vw,6.5rem)] md:text-[clamp(4.8rem,10vw,8.5rem)] lg:text-[clamp(6.5rem,11.5vw,12rem)] text-gold-gradient"
-                style={{ filter: "drop-shadow(0 0 60px rgba(247,37,133,0.65)) drop-shadow(0 0 20px rgba(247,37,133,0.35))" }}
+                className="block text-[clamp(2.8rem,12vw,5rem)] md:text-[clamp(3.8rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-gold-gradient mt-1 md:mt-2"
+                style={{ filter: "drop-shadow(0 4px 25px rgba(0,0,0,0.55)) drop-shadow(0 0 35px rgba(247,37,133,0.45))" }}
               >
                 TOUJOURS PRÊT
               </span>
             </h1>
-          </div>
 
-          {/* ─── BOTTOM ZONE — CTAs with breathing room ─── */}
-          <div className="w-full flex justify-center">
+            {/* Accent underline */}
+            <div className="animate-slide-in-up [animation-delay:260ms] w-14 md:w-16 h-[3px] bg-gradient-to-r from-brand-gold via-brand-gold/70 to-transparent rounded-full mb-5 md:mb-6" />
+
+            {/* Subtitle — clarifies the brand promise */}
+            <p className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/75 leading-relaxed max-w-[440px] mb-8 md:mb-10">
+              Des cocktails premium prêts à boire, pensés pour vos{" "}
+              <span className="text-brand-gold font-semibold">meilleurs</span>{" "}
+              moments.
+            </p>
+
+            {/* CTAs — left-aligned, full width on mobile, capped on desktop */}
             <HeroCTAs />
-          </div>
 
+          </div>
         </div>
 
         {/* Scroll indicator */}
