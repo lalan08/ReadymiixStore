@@ -61,7 +61,7 @@ export default async function HomePage() {
 
         {/* ── Product photograph — fills the hero, framed to keep subject right of centre ── */}
         <Image
-          src="/hero-cocktail.jpg"
+          src="/hero-cocktail.png"
           alt="ReadyMiix cocktail premium"
           fill priority sizes="100vw"
           className="object-cover object-[70%_center] md:object-[65%_center] lg:object-[62%_center]"
