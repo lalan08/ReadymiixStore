@@ -159,7 +159,7 @@ export default async function HomePage() {
         </div>
 
         {/* ── Hero content ── */}
-        <div className="relative z-10 flex flex-col items-center text-center px-5 md:px-8 lg:px-5 gap-4 md:gap-5 lg:gap-7">
+        <div className="relative z-10 flex flex-col items-center text-center px-5 md:px-8 lg:px-5 gap-5 md:gap-8 lg:gap-10">
 
           {/* Logo */}
           <div className="relative animate-slide-in-up [animation-delay:0ms]">
@@ -186,18 +186,32 @@ export default async function HomePage() {
 
           {/* Main headline */}
           <div className="animate-slide-in-up [animation-delay:160ms]">
-            <h1 className="font-display uppercase leading-[0.88] tracking-tight">
+            <h1 className="font-display uppercase leading-none tracking-tight">
+              {/* Line 1 — statement blanc pur */}
               <span
-                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-white"
-                style={{ textShadow: "0 0 80px rgba(255,255,255,0.1)" }}
+                className="block text-[clamp(3.2rem,13.5vw,10rem)] text-white mb-1 md:mb-3"
+                style={{
+                  letterSpacing: "-0.01em",
+                  textShadow: "0 0 140px rgba(255,255,255,0.06)",
+                }}
               >
-                BIEN FRAIS
+                TON COCKTAIL.
               </span>
+              {/* Line 2 — neon rose, lumière douce */}
               <span
-                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-gold-gradient"
-                style={{ filter: "drop-shadow(0 0 50px rgba(247,37,133,0.55))" }}
+                className="block text-[clamp(3.2rem,13.5vw,10rem)]"
+                style={{
+                  letterSpacing: "-0.01em",
+                  color: "#F72585",
+                  textShadow: [
+                    "0 0 20px rgba(247,37,133,1)",
+                    "0 0 55px rgba(247,37,133,0.65)",
+                    "0 0 110px rgba(247,37,133,0.3)",
+                    "0 0 200px rgba(247,37,133,0.12)",
+                  ].join(", "),
+                }}
               >
-                TOUJOURS PRÊT
+                TON STYLE.
               </span>
             </h1>
           </div>
