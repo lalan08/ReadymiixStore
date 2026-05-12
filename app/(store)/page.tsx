@@ -111,27 +111,27 @@ export default async function HomePage() {
         <div className="relative z-10 flex flex-col items-center text-center px-6 md:px-12">
 
           {/* Logo */}
-          <div className="relative animate-slide-in-up [animation-delay:0ms] mb-14 md:mb-20 lg:mb-24">
+          <div className="relative animate-slide-in-up [animation-delay:0ms] mb-8 md:mb-20 lg:mb-24">
             <div className="absolute inset-0 rounded-full bg-brand-gold/16 blur-[120px] scale-[3.0] animate-glow-breathe" />
             <div className="absolute inset-0 rounded-full bg-brand-purple/10 blur-[160px] scale-[3.6]" />
             <Image
               src="/logo.png" alt="ReadyMiix" width={400} height={400} priority
-              className="relative z-10 w-[220px] h-[220px] sm:w-[270px] sm:h-[270px] md:w-[320px] md:h-[320px] lg:w-[380px] lg:h-[380px] object-contain"
+              className="relative z-10 w-[160px] h-[160px] sm:w-[220px] sm:h-[220px] md:w-[300px] md:h-[300px] lg:w-[360px] lg:h-[360px] object-contain"
               style={{ filter: "drop-shadow(0 0 80px rgba(247,37,133,0.70)) drop-shadow(0 0 30px rgba(247,37,133,0.35))" }}
             />
           </div>
 
           {/* Main headline */}
-          <div className="animate-slide-in-up [animation-delay:120ms] mb-12 md:mb-16 lg:mb-20">
+          <div className="animate-slide-in-up [animation-delay:120ms] mb-7 md:mb-16 lg:mb-20">
             <h1 className="font-display uppercase leading-[0.9] tracking-tight">
               <span
-                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-white mb-2 md:mb-4"
+                className="block text-[clamp(2.6rem,11vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-white mb-1 md:mb-4"
                 style={{ textShadow: "0 0 80px rgba(255,255,255,0.1)" }}
               >
                 BIEN FRAIS
               </span>
               <span
-                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-gold-gradient"
+                className="block text-[clamp(2.6rem,11vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-gold-gradient"
                 style={{ filter: "drop-shadow(0 0 50px rgba(247,37,133,0.55))" }}
               >
                 TOUJOURS PRÊT

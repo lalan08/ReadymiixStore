@@ -10,7 +10,7 @@ export default function HeroCTAs() {
       {/* Primary CTA */}
       <Link
         href="/composer"
-        className="hero-cta-primary group relative w-full flex items-center justify-center gap-3 px-8 py-[18px] rounded-2xl font-bold text-[11px] md:text-[12px] uppercase tracking-[0.18em] overflow-hidden active:scale-[0.97]"
+        className="hero-cta-primary group relative w-full flex items-center justify-center gap-3 px-8 py-[14px] md:py-[18px] rounded-2xl font-bold text-[11px] md:text-[12px] uppercase tracking-[0.18em] overflow-hidden active:scale-[0.97]"
       >
         <Sparkles className="w-4 h-4 shrink-0 relative z-10" />
         <span className="relative z-10">Composer mon ReadyMiix</span>
@@ -20,7 +20,7 @@ export default function HeroCTAs() {
       {/* Secondary CTA */}
       <Link
         href="/shop?category=cocktails"
-        className="hero-cta-secondary group w-full flex items-center justify-center gap-2.5 px-8 py-[16px] rounded-2xl font-semibold text-[10px] md:text-[11px] uppercase tracking-[0.2em] active:scale-[0.97]"
+        className="hero-cta-secondary group w-full flex items-center justify-center gap-2.5 px-8 py-[12px] md:py-[16px] rounded-2xl font-semibold text-[10px] md:text-[11px] uppercase tracking-[0.2em] active:scale-[0.97]"
       >
         <Snowflake className="w-4 h-4 shrink-0" />
         <span>Découvrir les Frozen Caipi</span>
