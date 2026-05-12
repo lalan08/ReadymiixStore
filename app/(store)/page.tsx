@@ -56,11 +56,12 @@ export default async function HomePage() {
 
       {/* ══════════════════════════════════════
           HERO — Premium campaign poster
+          • Big neon logo at the top-left, in the content flow
           • Cocktail anchored right, fills full hero height at native aspect
           • Dark, atmospheric left side for text overlay
           • Layered smoke + neon haze for nightlife realism
       ══════════════════════════════════════ */}
-      <section className="relative min-h-[100svh] flex items-center bg-[#010108] overflow-hidden">
+      <section className="relative min-h-[100svh] flex items-start bg-[#010108] overflow-hidden">
 
         {/* ── Deep black base ── */}
         <div className="absolute inset-0 bg-[#020208]" />
@@ -145,9 +146,25 @@ export default async function HomePage() {
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent" />
         </div>
 
-        {/* ══════════ CONTENT — left-aligned text column ══════════ */}
-        <div className="relative z-10 container-custom pt-36 pb-28 md:pt-40 md:pb-32 lg:pt-48 lg:pb-40">
+        {/* ══════════ CONTENT — left-aligned column with logo on top ══════════ */}
+        <div className="relative z-10 container-custom pt-4 pb-28 md:pt-6 md:pb-32 lg:pt-8 lg:pb-40 w-full">
           <div className="w-full max-w-[78%] sm:max-w-[68%] md:max-w-[52%] lg:max-w-[46%]">
+
+            {/* Big neon logo — replaces the old navbar logo, dominant brand mark */}
+            <Link
+              href="/"
+              className="animate-slide-in-up [animation-delay:0ms] inline-block -ml-2 md:-ml-3 mb-6 md:mb-10 lg:mb-12"
+              aria-label="ReadyMiix Store — Accueil"
+            >
+              <Image
+                src="/logo.png"
+                alt="ReadyMiix Store"
+                width={320}
+                height={320}
+                priority
+                className="w-[170px] h-[170px] sm:w-[200px] sm:h-[200px] md:w-[240px] md:h-[240px] lg:w-[280px] lg:h-[280px] object-contain"
+              />
+            </Link>
 
             {/* Eyebrow */}
             <p
