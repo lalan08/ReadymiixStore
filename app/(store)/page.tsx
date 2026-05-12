@@ -151,7 +151,7 @@ export default async function HomePage() {
                 className="block text-[clamp(3.2rem,13.5vw,10rem)] text-white mb-1 md:mb-3"
                 style={{ letterSpacing: "-0.01em", textShadow: "0 0 140px rgba(255,255,255,0.06)" }}
               >
-                TON COCKTAIL.
+                BIEN FRAIS
               </span>
               <span
                 className="block text-[clamp(3.2rem,13.5vw,10rem)]"
@@ -166,7 +166,7 @@ export default async function HomePage() {
                   ].join(", "),
                 }}
               >
-                TON STYLE.
+                TOUJOURS PRÊT
               </span>
             </h1>
           </div>
