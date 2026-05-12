@@ -186,7 +186,7 @@ export default async function HomePage() {
 
             {/* Secondary — Frozen Caipi */}
             <Link
-              href="/shop?category=cocktails"
+              href="/shop"
               className="flex-1 flex items-center justify-center gap-2.5 px-5 py-4 rounded-2xl font-bold text-[11px] md:text-sm uppercase tracking-widest transition-all duration-300 active:scale-[0.97] hover:-translate-y-0.5"
               style={{
                 background: "rgba(0,180,255,0.07)",
@@ -197,7 +197,7 @@ export default async function HomePage() {
               }}
             >
               <ShoppingBag className="w-4 h-4 shrink-0" />
-              <span>Frozen Caipi</span>
+              <span>Boutique</span>
             </Link>
 
           </div>
