@@ -55,79 +55,126 @@ export default async function HomePage() {
     <div className="overflow-x-hidden">
 
       {/* ══════════════════════════════════════
-          HERO — Asymmetric composition (text left, product right)
+          HERO — Premium campaign poster
+          • Cocktail anchored right, fills full hero height at native aspect
+          • Dark, atmospheric left side for text overlay
+          • Layered smoke + neon haze for nightlife realism
       ══════════════════════════════════════ */}
       <section className="relative min-h-[100svh] flex items-center bg-[#010108] overflow-hidden">
 
-        {/* ── Product photograph — fills the hero, framed to keep subject right of centre ── */}
-        <Image
-          src="/hero-cocktail.png"
-          alt="ReadyMiix cocktail premium"
-          fill priority sizes="100vw"
-          className="object-cover object-[70%_center] md:object-[65%_center] lg:object-[62%_center]"
+        {/* ── Deep black base ── */}
+        <div className="absolute inset-0 bg-[#020208]" />
+
+        {/* ── Cocktail poster ──
+            mobile : fills the entire hero, object-position pushed left so
+                     the cocktail subject sits in the right 2/3 of viewport
+            md+    : native portrait aspect, full hero height, anchored
+                     to the right — cocktail subject reads at ~80% viewport */}
+        <div className="absolute inset-0 md:left-auto md:right-0 md:aspect-[1023/1537] md:w-auto pointer-events-none">
+          <Image
+            src="/hero-cocktail.png"
+            alt="ReadyMiix cocktail premium"
+            fill priority
+            sizes="(max-width: 768px) 100vw, 67vh"
+            className="object-cover object-[0%_center] md:object-center"
+            style={{ filter: "saturate(1.18) contrast(1.06)" }}
+          />
+        </div>
+
+        {/* ── Left-side dark mask — guarantees text legibility ── */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(to right, #010108 0%, #010108 12%, rgba(1,1,8,0.92) 28%, rgba(1,1,8,0.55) 44%, transparent 62%)",
+          }}
         />
 
-        {/* ── Left fade — guarantees text legibility over the photo ── */}
-        <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#010108] via-[#010108]/85 via-25% to-transparent md:via-30% md:to-50%" />
-
-        {/* ── Bottom fade — anchors content, hands off to next section ── */}
-        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-[#010108]" />
-
-        {/* ── Subtle vignette for cinematic depth ── */}
+        {/* ── Vignette — adds cinematic depth on the right too ── */}
         <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse 100% 80% at 60% 50%, transparent 35%, rgba(1,1,8,0.55) 100%)",
+          background: "radial-gradient(ellipse 95% 78% at 65% 50%, transparent 20%, rgba(1,1,8,0.50) 100%)",
         }} />
 
-        {/* ── Ambient neon orbs — anchor the colour palette ── */}
+        {/* ── Top fade ── */}
+        <div className="absolute inset-x-0 top-0 h-[160px] pointer-events-none bg-gradient-to-b from-[#010108]/75 to-transparent" />
+
+        {/* ── Bottom fade — hands off to next section ── */}
+        <div className="absolute inset-x-0 bottom-0 h-[260px] pointer-events-none bg-gradient-to-t from-[#010108] via-[#010108]/60 to-transparent" />
+
+        {/* ── Atmospheric smoke — slow drifting coloured clouds ── */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ mixBlendMode: "screen" }}>
+          <div className="absolute -inset-[15%] blur-[110px] opacity-55"
+            style={{
+              background: "radial-gradient(ellipse 50% 35% at 28% 65%, rgba(123,47,190,0.45) 0%, transparent 60%)",
+              animation: "ciDrift1 36s ease-in-out infinite",
+            }} />
+          <div className="absolute -inset-[15%] blur-[120px] opacity-50"
+            style={{
+              background: "radial-gradient(ellipse 55% 40% at 55% 38%, rgba(247,37,133,0.40) 0%, transparent 60%)",
+              animation: "ciDrift2 42s ease-in-out infinite",
+            }} />
+          <div className="absolute -inset-[15%] blur-[130px] opacity-40"
+            style={{
+              background: "radial-gradient(ellipse 45% 35% at 22% 80%, rgba(0,180,255,0.40) 0%, transparent 60%)",
+              animation: "ciDrift3 38s ease-in-out infinite",
+            }} />
+        </div>
+
+        {/* ── Neon orbs — anchor the palette on the dark left side ── */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="hero-orb absolute -top-[180px] -left-[120px] w-[620px] h-[620px] rounded-full blur-[160px]"
-            style={{ background: "rgba(247,37,133,0.10)", "--dur": "38s" } as React.CSSProperties} />
-          <div className="hero-orb absolute bottom-[-220px] -left-[160px] w-[680px] h-[480px] rounded-full blur-[170px]"
-            style={{ background: "rgba(70,0,150,0.18)", "--dur": "48s", animationDelay: "-12s" } as React.CSSProperties} />
-          <div className="hero-orb absolute top-[40%] -right-[200px] w-[520px] h-[520px] rounded-full blur-[150px]"
-            style={{ background: "rgba(0,210,200,0.06)", "--dur": "44s", animationDelay: "-20s" } as React.CSSProperties} />
+          <div className="hero-orb absolute -bottom-[180px] -left-[140px] w-[640px] h-[500px] rounded-full blur-[180px]"
+            style={{ background: "rgba(70,0,150,0.24)", "--dur": "48s" } as React.CSSProperties} />
+          <div className="hero-orb absolute top-[10%] -left-[120px] w-[440px] h-[440px] rounded-full blur-[160px]"
+            style={{ background: "rgba(247,37,133,0.10)", "--dur": "42s", animationDelay: "-14s" } as React.CSSProperties} />
+          <div className="hero-orb absolute bottom-[10%] left-[35%] w-[380px] h-[380px] rounded-full blur-[150px]"
+            style={{ background: "rgba(0,210,200,0.07)", "--dur": "50s", animationDelay: "-22s" } as React.CSSProperties} />
 
           {/* Top accent line */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/60 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent" />
         </div>
 
         {/* ══════════ CONTENT — left-aligned text column ══════════ */}
-        <div className="relative z-10 container-custom pt-28 pb-20 md:py-32 lg:py-36">
-          <div className="w-full md:max-w-[58%] lg:max-w-[52%]">
+        <div className="relative z-10 container-custom pt-28 pb-24 md:py-32 lg:py-40">
+          <div className="w-full max-w-[78%] sm:max-w-[68%] md:max-w-[52%] lg:max-w-[46%]">
 
             {/* Eyebrow */}
-            <p className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-6 md:mb-8">
+            <p
+              className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-7 md:mb-9"
+              style={{ textShadow: "0 0 18px rgba(0,210,200,0.55), 0 2px 8px rgba(0,0,0,0.7)" }}
+            >
               <Sparkles className="w-3.5 h-3.5 shrink-0" />
               Prêt à boire. Prêt à vivre.
             </p>
 
             {/* Slogan — dominant focal point */}
-            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.9] tracking-tight mb-6 md:mb-7">
+            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.9] tracking-tight mb-7 md:mb-8">
               <span
-                className="block text-[clamp(2.8rem,12vw,5rem)] md:text-[clamp(3.8rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-white"
-                style={{ textShadow: "0 4px 30px rgba(0,0,0,0.65), 0 0 60px rgba(255,255,255,0.06)" }}
+                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-white"
+                style={{ textShadow: "0 8px 40px rgba(0,0,0,0.85), 0 0 50px rgba(255,255,255,0.08)" }}
               >
                 BIEN FRAIS
               </span>
               <span
-                className="block text-[clamp(2.8rem,12vw,5rem)] md:text-[clamp(3.8rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-gold-gradient mt-1 md:mt-2"
-                style={{ filter: "drop-shadow(0 4px 25px rgba(0,0,0,0.55)) drop-shadow(0 0 35px rgba(247,37,133,0.45))" }}
+                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-gold-gradient mt-1 md:mt-2"
+                style={{ filter: "drop-shadow(0 8px 30px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(247,37,133,0.50))" }}
               >
                 TOUJOURS PRÊT
               </span>
             </h1>
 
-            {/* Accent underline */}
-            <div className="animate-slide-in-up [animation-delay:260ms] w-14 md:w-16 h-[3px] bg-gradient-to-r from-brand-gold via-brand-gold/70 to-transparent rounded-full mb-5 md:mb-6" />
+            {/* Accent bar */}
+            <div className="animate-slide-in-up [animation-delay:260ms] w-14 md:w-16 h-[3px] bg-gradient-to-r from-brand-gold via-brand-gold/70 to-transparent rounded-full mb-6 md:mb-7" />
 
-            {/* Subtitle — clarifies the brand promise */}
-            <p className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/75 leading-relaxed max-w-[440px] mb-8 md:mb-10">
+            {/* Subtitle */}
+            <p
+              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[420px] mb-9 md:mb-11"
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+            >
               Des cocktails premium prêts à boire, pensés pour vos{" "}
               <span className="text-brand-gold font-semibold">meilleurs</span>{" "}
               moments.
             </p>
 
-            {/* CTAs — left-aligned, full width on mobile, capped on desktop */}
+            {/* CTAs */}
             <HeroCTAs />
 
           </div>
