@@ -75,11 +75,11 @@ export default async function HomePage() {
         {/* ── Slow ambient orbs — plus grands, plus lents ── */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="hero-orb absolute -top-[320px] -left-[220px] w-[900px] h-[900px] rounded-full blur-[170px]"
-            style={{ background: "rgba(70,0,150,0.22)", "--dur": "26s" } as React.CSSProperties} />
+            style={{ background: "rgba(70,0,150,0.18)", "--dur": "42s" } as React.CSSProperties} />
           <div className="hero-orb absolute -top-[120px] -right-[320px] w-[750px] h-[750px] rounded-full blur-[150px]"
-            style={{ background: "rgba(247,37,133,0.13)", "--dur": "20s", animationDelay: "-8s" } as React.CSSProperties} />
+            style={{ background: "rgba(247,37,133,0.10)", "--dur": "32s", animationDelay: "-8s" } as React.CSSProperties} />
           <div className="hero-orb absolute -bottom-[240px] left-1/2 -translate-x-1/2 w-[1100px] h-[650px] rounded-full blur-[200px]"
-            style={{ background: "rgba(0,180,255,0.07)", "--dur": "32s", animationDelay: "-15s" } as React.CSSProperties} />
+            style={{ background: "rgba(0,180,255,0.06)", "--dur": "55s", animationDelay: "-15s" } as React.CSSProperties} />
           {/* Centre depth */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full blur-[110px]"
             style={{ background: "rgba(18,0,55,0.55)" }} />
@@ -105,50 +105,25 @@ export default async function HomePage() {
           opacity: 0.25,
         }} />
 
-        {/* ── Bokeh ambiance — points lumineux doux ── */}
-        <div className="absolute top-[19%] left-[8%] w-3 h-3 rounded-full pointer-events-none animate-float [animation-delay:0s]"
-          style={{ background: "rgba(247,37,133,0.9)", boxShadow: "0 0 22px 10px rgba(247,37,133,0.22)", filter: "blur(1.5px)" }} />
-        <div className="absolute top-[31%] right-[9%] w-2.5 h-2.5 rounded-full pointer-events-none animate-float [animation-delay:-5s] [animation-duration:11s]"
-          style={{ background: "rgba(123,47,190,0.9)", boxShadow: "0 0 18px 8px rgba(123,47,190,0.22)", filter: "blur(1px)" }} />
-        <div className="absolute bottom-[36%] left-[13%] w-2 h-2 rounded-full pointer-events-none animate-float [animation-delay:-9s] [animation-duration:14s]"
-          style={{ background: "rgba(0,200,255,0.9)", boxShadow: "0 0 14px 6px rgba(0,200,255,0.18)", filter: "blur(1px)" }} />
-        <div className="absolute bottom-[45%] right-[15%] w-1.5 h-1.5 rounded-full pointer-events-none animate-float [animation-delay:-3s] [animation-duration:9s]"
-          style={{ background: "rgba(247,37,133,0.7)", boxShadow: "0 0 10px 5px rgba(247,37,133,0.15)", filter: "blur(1px)" }} />
 
         {/* ── Hero content ── */}
-        <div className="relative z-10 flex flex-col items-center text-center px-5 md:px-8 gap-6 md:gap-9 lg:gap-11">
+        <div className="relative z-10 flex flex-col items-center text-center px-6 md:px-12">
 
           {/* Logo */}
-          <div className="relative animate-slide-in-up [animation-delay:0ms]">
-            <div className="absolute inset-0 rounded-full bg-brand-gold/12 blur-[70px] scale-[2.0] animate-glow-breathe" />
+          <div className="relative animate-slide-in-up [animation-delay:0ms] mb-14 md:mb-20 lg:mb-24">
+            <div className="absolute inset-0 rounded-full bg-brand-gold/10 blur-[80px] scale-[2.2] animate-glow-breathe" />
             <Image
-              src="/logo.png" alt="ReadyMiix" width={180} height={180} priority
-              className="relative z-10 w-[96px] h-[96px] sm:w-[110px] sm:h-[110px] md:w-[130px] md:h-[130px] object-contain"
-              style={{ filter: "drop-shadow(0 0 55px rgba(247,37,133,0.75)) drop-shadow(0 0 18px rgba(247,37,133,0.35))" }}
+              src="/logo.png" alt="ReadyMiix" width={160} height={160} priority
+              className="relative z-10 w-[88px] h-[88px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] object-contain"
+              style={{ filter: "drop-shadow(0 0 40px rgba(247,37,133,0.55)) drop-shadow(0 0 14px rgba(247,37,133,0.25))" }}
             />
           </div>
 
-          {/* Badge */}
-          <div className="animate-slide-in-up [animation-delay:80ms]">
-            <span
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.25em]"
-              style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.07)",
-                backdropFilter: "blur(10px)",
-                color: "rgba(255,255,255,0.45)",
-              }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-teal animate-pulse shrink-0" />
-              Guyane 973 · Cocktails Premium
-            </span>
-          </div>
-
           {/* Main headline */}
-          <div className="animate-slide-in-up [animation-delay:160ms]">
-            <h1 className="font-display uppercase leading-[0.88] tracking-tight">
+          <div className="animate-slide-in-up [animation-delay:120ms] mb-12 md:mb-16 lg:mb-20">
+            <h1 className="font-display uppercase leading-[0.9] tracking-tight">
               <span
-                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-white"
+                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-white mb-2 md:mb-4"
                 style={{ textShadow: "0 0 80px rgba(255,255,255,0.1)" }}
               >
                 BIEN FRAIS
@@ -163,17 +138,16 @@ export default async function HomePage() {
           </div>
 
           {/* CTAs */}
-          <div className="animate-slide-in-up [animation-delay:260ms] flex flex-col sm:flex-row gap-3 w-full max-w-[380px] md:max-w-[460px]">
+          <div className="animate-slide-in-up [animation-delay:240ms] flex flex-col sm:flex-row gap-4 w-full max-w-[340px] sm:max-w-[480px]">
 
-            {/* Primary — Composer */}
             <Link
               href="/composer"
-              className="group relative flex-1 flex items-center justify-center gap-2.5 px-5 py-4 rounded-2xl font-bold text-[11px] md:text-sm uppercase tracking-widest overflow-hidden transition-all duration-300 active:scale-[0.97] hover:-translate-y-0.5"
+              className="group relative flex-1 flex items-center justify-center gap-2.5 px-6 py-5 rounded-2xl font-bold text-[11px] md:text-sm uppercase tracking-widest overflow-hidden transition-all duration-400 active:scale-[0.97] hover:-translate-y-1"
               style={{
-                background: "linear-gradient(135deg, rgba(197,0,106,0.92) 0%, rgba(247,37,133,0.88) 100%)",
-                backdropFilter: "blur(12px)",
-                border: "1px solid rgba(247,37,133,0.3)",
-                boxShadow: "0 0 40px rgba(247,37,133,0.32), 0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12)",
+                background: "linear-gradient(135deg, rgba(197,0,106,0.90) 0%, rgba(247,37,133,0.86) 100%)",
+                backdropFilter: "blur(16px)",
+                border: "1px solid rgba(247,37,133,0.25)",
+                boxShadow: "0 0 36px rgba(247,37,133,0.28), 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.10)",
                 color: "#fff",
               }}
             >
@@ -181,19 +155,18 @@ export default async function HomePage() {
                 <Sparkles className="w-4 h-4 shrink-0" />
                 <span>Composer mon ReadyMiix</span>
               </span>
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-800 pointer-events-none" />
             </Link>
 
-            {/* Secondary — Frozen Caipi */}
             <Link
               href="/shop"
-              className="flex-1 flex items-center justify-center gap-2.5 px-5 py-4 rounded-2xl font-bold text-[11px] md:text-sm uppercase tracking-widest transition-all duration-300 active:scale-[0.97] hover:-translate-y-0.5"
+              className="flex-1 flex items-center justify-center gap-2.5 px-6 py-5 rounded-2xl font-bold text-[11px] md:text-sm uppercase tracking-widest transition-all duration-400 active:scale-[0.97] hover:-translate-y-1"
               style={{
-                background: "rgba(0,180,255,0.07)",
-                backdropFilter: "blur(12px)",
-                border: "1px solid rgba(0,180,255,0.18)",
-                boxShadow: "0 0 22px rgba(0,180,255,0.1), 0 4px 20px rgba(0,0,0,0.4)",
-                color: "rgba(255,255,255,0.85)",
+                background: "rgba(255,255,255,0.04)",
+                backdropFilter: "blur(16px)",
+                border: "1px solid rgba(255,255,255,0.10)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
+                color: "rgba(255,255,255,0.75)",
               }}
             >
               <ShoppingBag className="w-4 h-4 shrink-0" />
