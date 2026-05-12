@@ -46,17 +46,17 @@ export default function Navbar() {
         )}
       >
         <div className="container-custom">
-          {/* mobile: h-[72px] | tablet: h-[78px] | desktop: h-24 */}
-          <nav className="flex items-center justify-between h-[72px] md:h-[78px] lg:h-24">
+          {/* Tall navbar to accommodate the big neon logo from the mockup */}
+          <nav className="flex items-center justify-between h-[104px] md:h-[120px] lg:h-[136px]">
 
-            {/* Logo */}
+            {/* Logo — sized to match the reference visual (≈25% of viewport width on mobile) */}
             <Link href="/" className="flex items-center group" aria-label="ReadyMiix Store — Accueil">
               <Image
                 src="/logo.png"
                 alt="ReadyMiix Store"
-                width={88}
-                height={88}
-                className="w-[56px] h-[56px] md:w-[64px] md:h-[64px] lg:w-[80px] lg:h-[80px] object-contain"
+                width={160}
+                height={160}
+                className="w-[88px] h-[88px] md:w-[104px] md:h-[104px] lg:w-[120px] lg:h-[120px] object-contain"
                 priority
               />
             </Link>

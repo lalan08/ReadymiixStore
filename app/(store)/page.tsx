@@ -146,7 +146,7 @@ export default async function HomePage() {
         </div>
 
         {/* ══════════ CONTENT — left-aligned text column ══════════ */}
-        <div className="relative z-10 container-custom pt-32 pb-28 md:py-32 lg:py-40">
+        <div className="relative z-10 container-custom pt-36 pb-28 md:pt-40 md:pb-32 lg:pt-48 lg:pb-40">
           <div className="w-full max-w-[78%] sm:max-w-[68%] md:max-w-[52%] lg:max-w-[46%]">
 
             {/* Eyebrow */}
