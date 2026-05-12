@@ -1,9 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ShoppingBag, MapPin, Star, ChevronRight, Sparkles } from "lucide-react";
+import { ArrowRight, ShoppingBag, MapPin, Star, ChevronRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 import EventsSlider from "@/components/store/EventsSlider";
+import HeroCTAs from "@/components/store/HeroCTAs";
 
 export const revalidate = 300; // 5 minutes
 
@@ -139,42 +140,7 @@ export default async function HomePage() {
           </div>
 
           {/* CTAs */}
-          <div className="animate-slide-in-up [animation-delay:240ms] flex flex-col sm:flex-row gap-4 w-full max-w-[340px] sm:max-w-[480px]">
-
-            <Link
-              href="/composer"
-              className="group relative flex-1 flex items-center justify-center gap-2.5 px-6 py-5 rounded-2xl font-bold text-[11px] md:text-sm uppercase tracking-widest overflow-hidden transition-all duration-400 active:scale-[0.97] hover:-translate-y-1"
-              style={{
-                background: "linear-gradient(135deg, rgba(197,0,106,0.90) 0%, rgba(247,37,133,0.86) 100%)",
-                backdropFilter: "blur(16px)",
-                border: "1px solid rgba(247,37,133,0.25)",
-                boxShadow: "0 0 36px rgba(247,37,133,0.28), 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.10)",
-                color: "#fff",
-              }}
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 shrink-0" />
-                <span>Composer mon ReadyMiix</span>
-              </span>
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-800 pointer-events-none" />
-            </Link>
-
-            <Link
-              href="/shop"
-              className="flex-1 flex items-center justify-center gap-2.5 px-6 py-5 rounded-2xl font-bold text-[11px] md:text-sm uppercase tracking-widest transition-all duration-400 active:scale-[0.97] hover:-translate-y-1"
-              style={{
-                background: "rgba(255,255,255,0.04)",
-                backdropFilter: "blur(16px)",
-                border: "1px solid rgba(255,255,255,0.10)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
-                color: "rgba(255,255,255,0.75)",
-              }}
-            >
-              <ShoppingBag className="w-4 h-4 shrink-0" />
-              <span>Boutique</span>
-            </Link>
-
-          </div>
+          <HeroCTAs />
 
         </div>
 
