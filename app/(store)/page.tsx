@@ -78,55 +78,50 @@ export default async function HomePage() {
             src="/hero-cocktail.png"
             alt="ReadyMiix cocktail premium"
             fill priority
+            quality={95}
             sizes="(max-width: 768px) 122vw, 67vh"
             className="object-cover object-[0%_center] md:object-center scale-[1.18] md:scale-100 origin-left"
-            style={{ filter: "saturate(1.18) contrast(1.06)" }}
+            style={{ filter: "saturate(1.32) contrast(1.12) brightness(1.04)" }}
           />
         </div>
 
-        {/* ── Left-side dark mask — softer, more diffuse so the photo bleeds
-              into the text area instead of being clipped by a hard line ── */}
+        {/* ── Left-side dark mask — pulled back to 58% so the cocktail
+              area (right half) is completely free of overlay ── */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "linear-gradient(to right, #010108 0%, rgba(1,1,8,0.94) 16%, rgba(1,1,8,0.78) 32%, rgba(1,1,8,0.42) 50%, rgba(1,1,8,0.12) 70%, transparent 88%)",
+            background: "linear-gradient(to right, #010108 0%, rgba(1,1,8,0.92) 15%, rgba(1,1,8,0.70) 30%, rgba(1,1,8,0.28) 45%, transparent 58%)",
           }}
         />
 
-        {/* ── Pink glow bleed — fuses the cocktail's neon halo
-              across the dark left side so the scene feels one composition ── */}
+        {/* ── Pink glow bleed — discreet halo, no longer veils the photo ── */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse 90% 75% at 78% 55%, rgba(247,37,133,0.16) 0%, rgba(247,37,133,0.06) 30%, rgba(0,180,255,0.04) 55%, transparent 78%)",
+            background: "radial-gradient(ellipse 90% 75% at 78% 55%, rgba(247,37,133,0.10) 0%, rgba(247,37,133,0.04) 30%, rgba(0,180,255,0.03) 55%, transparent 78%)",
             mixBlendMode: "screen",
           }}
         />
 
-        {/* ── Vignette — softer than before, keeps the photo breathing ── */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse 100% 80% at 62% 50%, transparent 28%, rgba(1,1,8,0.40) 100%)",
-        }} />
+        {/* ── Top fade — lighter so neon palms keep popping ── */}
+        <div className="absolute inset-x-0 top-0 h-[160px] pointer-events-none bg-gradient-to-b from-[#010108]/35 to-transparent" />
 
-        {/* ── Top fade ── */}
-        <div className="absolute inset-x-0 top-0 h-[160px] pointer-events-none bg-gradient-to-b from-[#010108]/70 to-transparent" />
-
-        {/* ── Bottom fade — hands off to next section ── */}
-        <div className="absolute inset-x-0 bottom-0 h-[280px] pointer-events-none bg-gradient-to-t from-[#010108] via-[#010108]/55 to-transparent" />
+        {/* ── Bottom fade — shorter and lighter so the wet floor stays visible ── */}
+        <div className="absolute inset-x-0 bottom-0 h-[180px] pointer-events-none bg-gradient-to-t from-[#010108] via-[#010108]/30 to-transparent" />
 
         {/* ── Atmospheric smoke — slow drifting coloured clouds ── */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ mixBlendMode: "screen" }}>
-          <div className="absolute -inset-[15%] blur-[110px] opacity-35"
+          <div className="absolute -inset-[15%] blur-[110px] opacity-25"
             style={{
               background: "radial-gradient(ellipse 50% 35% at 28% 65%, rgba(247,37,133,0.22) 0%, transparent 60%)",
               animation: "ciDrift1 36s ease-in-out infinite",
             }} />
-          <div className="absolute -inset-[15%] blur-[120px] opacity-50"
+          <div className="absolute -inset-[15%] blur-[120px] opacity-30"
             style={{
               background: "radial-gradient(ellipse 55% 40% at 55% 38%, rgba(247,37,133,0.40) 0%, transparent 60%)",
               animation: "ciDrift2 42s ease-in-out infinite",
             }} />
-          <div className="absolute -inset-[15%] blur-[130px] opacity-40"
+          <div className="absolute -inset-[15%] blur-[130px] opacity-25"
             style={{
               background: "radial-gradient(ellipse 45% 35% at 22% 80%, rgba(0,180,255,0.40) 0%, transparent 60%)",
               animation: "ciDrift3 38s ease-in-out infinite",
