@@ -93,12 +93,12 @@ export default async function HomePage() {
           }}
         />
 
-        {/* ── Pink/purple glow bleed — fuses the cocktail's neon halo
+        {/* ── Pink glow bleed — fuses the cocktail's neon halo
               across the dark left side so the scene feels one composition ── */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse 90% 75% at 78% 55%, rgba(247,37,133,0.18) 0%, rgba(123,47,190,0.12) 28%, rgba(0,180,255,0.05) 52%, transparent 78%)",
+            background: "radial-gradient(ellipse 90% 75% at 78% 55%, rgba(247,37,133,0.16) 0%, rgba(247,37,133,0.06) 30%, rgba(0,180,255,0.04) 55%, transparent 78%)",
             mixBlendMode: "screen",
           }}
         />
@@ -116,9 +116,9 @@ export default async function HomePage() {
 
         {/* ── Atmospheric smoke — slow drifting coloured clouds ── */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ mixBlendMode: "screen" }}>
-          <div className="absolute -inset-[15%] blur-[110px] opacity-55"
+          <div className="absolute -inset-[15%] blur-[110px] opacity-35"
             style={{
-              background: "radial-gradient(ellipse 50% 35% at 28% 65%, rgba(123,47,190,0.45) 0%, transparent 60%)",
+              background: "radial-gradient(ellipse 50% 35% at 28% 65%, rgba(247,37,133,0.22) 0%, transparent 60%)",
               animation: "ciDrift1 36s ease-in-out infinite",
             }} />
           <div className="absolute -inset-[15%] blur-[120px] opacity-50"
@@ -136,7 +136,7 @@ export default async function HomePage() {
         {/* ── Neon orbs — anchor the palette on the dark left side ── */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="hero-orb absolute -bottom-[180px] -left-[140px] w-[640px] h-[500px] rounded-full blur-[180px]"
-            style={{ background: "rgba(70,0,150,0.24)", "--dur": "48s" } as React.CSSProperties} />
+            style={{ background: "rgba(180,30,90,0.10)", "--dur": "48s" } as React.CSSProperties} />
           <div className="hero-orb absolute top-[10%] -left-[120px] w-[440px] h-[440px] rounded-full blur-[160px]"
             style={{ background: "rgba(247,37,133,0.10)", "--dur": "42s", animationDelay: "-14s" } as React.CSSProperties} />
           <div className="hero-orb absolute bottom-[10%] left-[35%] w-[380px] h-[380px] rounded-full blur-[150px]"
