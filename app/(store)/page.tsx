@@ -73,7 +73,7 @@ export default async function HomePage() {
                      bleed off-screen for a real campaign-poster feel.
             md+    : native portrait aspect, full hero height, anchored
                      to the right — cocktail subject reads at ~80% viewport */}
-        <div className="absolute inset-0 md:left-auto md:right-0 md:aspect-[1023/1537] md:w-auto pointer-events-none">
+        <div className="absolute inset-x-0 top-0 bottom-[80px] md:bottom-0 md:left-auto md:right-0 md:aspect-[1023/1537] md:w-auto pointer-events-none">
           <Image
             src="/hero-cocktail.png"
             alt="ReadyMiix cocktail premium"
