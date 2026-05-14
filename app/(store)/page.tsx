@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ShoppingBag, MapPin, Star, ChevronRight, Sparkles, Leaf, Snowflake, Martini } from "lucide-react";
+import { ArrowRight, ShoppingBag, MapPin, Star, ChevronRight, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 import EventsSlider from "@/components/store/EventsSlider";
@@ -56,11 +56,12 @@ export default async function HomePage() {
 
       {/* ══════════════════════════════════════
           HERO — Premium campaign poster
+          • Big neon logo at the top-left, in the content flow
           • Cocktail anchored right, fills full hero height at native aspect
           • Dark, atmospheric left side for text overlay
           • Layered smoke + neon haze for nightlife realism
       ══════════════════════════════════════ */}
-      <section className="relative min-h-[100svh] flex items-center bg-[#010108] overflow-hidden">
+      <section className="relative min-h-[100svh] flex items-start bg-[#010108] overflow-hidden">
 
         {/* ── Deep black base ── */}
         <div className="absolute inset-0 bg-[#020208]" />
@@ -140,9 +141,25 @@ export default async function HomePage() {
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent" />
         </div>
 
-        {/* ══════════ CONTENT — left-aligned column ══════════ */}
-        <div className="relative z-10 container-custom pt-32 pb-28 md:pt-36 md:pb-32 lg:pt-44 lg:pb-40 w-full">
+        {/* ══════════ CONTENT — left-aligned column with logo on top ══════════ */}
+        <div className="relative z-10 container-custom pt-4 pb-28 md:pt-6 md:pb-32 lg:pt-8 lg:pb-40 w-full">
           <div className="w-full max-w-[78%] sm:max-w-[68%] md:max-w-[52%] lg:max-w-[46%]">
+
+            {/* Big neon logo — replaces the old navbar logo, dominant brand mark */}
+            <Link
+              href="/"
+              className="animate-slide-in-up [animation-delay:0ms] inline-block -ml-2 md:-ml-3 mb-6 md:mb-10 lg:mb-12"
+              aria-label="ReadyMiix Store — Accueil"
+            >
+              <Image
+                src="/logo.png"
+                alt="ReadyMiix Store"
+                width={320}
+                height={320}
+                priority
+                className="w-[170px] h-[170px] sm:w-[200px] sm:h-[200px] md:w-[240px] md:h-[240px] lg:w-[280px] lg:h-[280px] object-contain"
+              />
+            </Link>
 
             {/* Eyebrow */}
             <p
@@ -193,36 +210,6 @@ export default async function HomePage() {
           <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.3em]">Scroll</span>
           <div className="w-px h-8 bg-gradient-to-b from-transparent to-brand-gold" />
           <div className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-bounce" />
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════
-          TRUST STRIP — 3 promises sous le hero
-      ══════════════════════════════════════ */}
-      <section className="relative -mt-6 md:-mt-8 z-20 px-4 md:px-6 pb-2">
-        <div className="container-custom">
-          <div
-            className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 px-3 py-4 md:py-5 rounded-2xl md:rounded-3xl border border-white/[0.08]"
-            style={{
-              background: "rgba(8,6,14,0.78)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-            }}
-          >
-            {[
-              { Icon: Leaf,      title: "Saveurs",       sub: "Exotiques" },
-              { Icon: Snowflake, title: "Bien Frais",    sub: "Toujours"  },
-              { Icon: Martini,   title: "Prêt à Boire",  sub: "Partout"   },
-            ].map(({ Icon, title, sub }) => (
-              <div key={title} className="flex items-center gap-2 sm:gap-3 min-w-0">
-                <Icon className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 text-brand-teal" strokeWidth={1.8} />
-                <div className="flex flex-col leading-tight min-w-0">
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-white/85 truncate">{title}</span>
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-white/85 truncate">{sub}</span>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 

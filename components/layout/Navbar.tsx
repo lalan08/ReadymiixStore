@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import { useCartStore } from "@/lib/store";
@@ -16,9 +15,6 @@ const navLinks = [
   { href: "/about",     label: "Notre histoire" },
   { href: "/contact",   label: "Contact" },
 ];
-
-// Inline links shown on every viewport — the 3 main pages
-const primaryLinks = navLinks.slice(0, 3);
 
 export default function Navbar() {
   const [scrolled, setScrolled]   = useState(false);
@@ -49,34 +45,19 @@ export default function Navbar() {
         )}
       >
         <div className="container-custom">
-          {/* 3-zone layout matching the reference mockup: logo left, primary
-              links middle, actions right. Tall enough to fit the big neon mark. */}
-          <nav className="flex items-center justify-between gap-3 h-[96px] md:h-[112px] lg:h-[128px]">
+          {/* Compact navbar — logo lives in the hero, not here. Items are
+              clustered to the right so they sit visually opposite the big
+              neon mark in the hero. */}
+          <nav className="flex items-center justify-end gap-3 md:gap-6 lg:gap-9 h-[72px] md:h-[80px] lg:h-[88px]">
 
-            {/* Logo (left) */}
-            <Link
-              href="/"
-              className="flex items-center shrink-0 group"
-              aria-label="ReadyMiix Store — Accueil"
-            >
-              <Image
-                src="/logo.png"
-                alt="ReadyMiix Store"
-                width={160}
-                height={160}
-                priority
-                className="w-[76px] h-[76px] md:w-[92px] md:h-[92px] lg:w-[108px] lg:h-[108px] object-contain"
-              />
-            </Link>
-
-            {/* Primary links — visible on every viewport */}
-            <ul className="flex items-center gap-3 sm:gap-4 md:gap-5 lg:gap-7">
-              {primaryLinks.map((link) => (
+            {/* Tablet + desktop links — gap tighter on tablet */}
+            <ul className="hidden md:flex items-center md:gap-5 lg:gap-7">
+              {navLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
                     className={cn(
-                      "text-[10px] sm:text-[11px] md:text-xs lg:text-sm font-bold uppercase tracking-wider transition-colors relative group whitespace-nowrap",
+                      "md:text-xs lg:text-sm font-medium transition-colors relative group",
                       pathname === link.href
                         ? "text-brand-gold"
                         : "text-brand-muted hover:text-brand-text"
