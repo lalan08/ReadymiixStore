@@ -80,7 +80,7 @@ export default async function HomePage() {
             fill priority
             quality={95}
             sizes="(max-width: 768px) 100vw, 67vh"
-            className="object-cover object-[18%_center] md:object-center"
+            className="object-cover object-[7%_center] md:object-center"
             style={{ filter: "saturate(1.32) contrast(1.12) brightness(1.04)" }}
           />
         </div>
