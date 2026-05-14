@@ -79,8 +79,8 @@ export default async function HomePage() {
             alt="ReadyMiix cocktail premium"
             fill priority
             quality={95}
-            sizes="(max-width: 768px) 122vw, 67vh"
-            className="object-cover object-[0%_center] md:object-center scale-[1.18] md:scale-100 origin-left"
+            sizes="(max-width: 768px) 110vw, 67vh"
+            className="object-cover object-[18%_center] md:object-center scale-[1.08] md:scale-100 origin-center"
             style={{ filter: "saturate(1.32) contrast(1.12) brightness(1.04)" }}
           />
         </div>
