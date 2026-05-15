@@ -4,9 +4,6 @@ import { useState, useEffect } from "react";
 import { ChevronRight, ChevronDown, Truck, Snowflake, Wine, Lock, Sparkles } from "lucide-react";
 import CocktailConfigurator from "@/components/store/CocktailConfigurator";
 
-const DEFAULT_LIGHT_IMG = "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80";
-const DEFAULT_HARD_IMG  = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=600&q=80";
-
 /* ─── Data ─────────────────────────────────────────────────── */
 
 const CARD_DEFAULTS = {
@@ -80,23 +77,25 @@ function ProductCard({
         </span>
       </div>
 
-      {/* Hero image */}
-      <div
-        className="relative mx-2 md:mx-4 overflow-hidden"
-        style={{ aspectRatio: "4/3", borderRadius: 16, background: "#050510" }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={heroImg}
-          alt={`Cocktail ${title}`}
-          className="absolute inset-0 w-full h-full"
-          style={{ objectFit: "cover", objectPosition: "center", transform: "scale(0.92)" }}
-        />
+      {/* Hero image — only renders when a custom visual is configured in admin */}
+      {heroImg && (
         <div
-          className="absolute inset-0"
-          style={{ background: `linear-gradient(to top, ${accent}30 0%, transparent 60%)` }}
-        />
-      </div>
+          className="relative mx-2 md:mx-4 overflow-hidden"
+          style={{ aspectRatio: "4/3", borderRadius: 16, background: "#050510" }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={heroImg}
+            alt={`Cocktail ${title}`}
+            className="absolute inset-0 w-full h-full"
+            style={{ objectFit: "cover", objectPosition: "center", transform: "scale(0.92)" }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{ background: `linear-gradient(to top, ${accent}30 0%, transparent 60%)` }}
+          />
+        </div>
+      )}
 
       {/* 3 highlights */}
       <div className="px-3 md:px-5 pt-3 pb-2 flex flex-col gap-1.5 md:gap-2">
@@ -182,7 +181,7 @@ export default function ComposerPage() {
       title:      siteCfg.light_title     || CARD_DEFAULTS.light.title,
       highlights: parseList(siteCfg.light_highlights, CARD_DEFAULTS.light.highlights),
       detail:     parseList(siteCfg.light_detail,     CARD_DEFAULTS.light.detail),
-      heroImg:    siteCfg.light_card_image || DEFAULT_LIGHT_IMG,
+      heroImg:    siteCfg.light_card_image || "",
     },
     {
       type: "hard" as const,
@@ -190,7 +189,7 @@ export default function ComposerPage() {
       title:      siteCfg.hard_title     || CARD_DEFAULTS.hard.title,
       highlights: parseList(siteCfg.hard_highlights, CARD_DEFAULTS.hard.highlights),
       detail:     parseList(siteCfg.hard_detail,     CARD_DEFAULTS.hard.detail),
-      heroImg:    siteCfg.hard_card_image || DEFAULT_HARD_IMG,
+      heroImg:    siteCfg.hard_card_image || "",
     },
   ];
 
