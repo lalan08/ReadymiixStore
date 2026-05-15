@@ -143,12 +143,12 @@ export default async function HomePage() {
 
         {/* ══════════ CONTENT — left-aligned column with logo on top ══════════ */}
         <div className="relative z-10 container-custom pt-4 pb-28 md:pt-6 md:pb-32 lg:pt-8 lg:pb-40 w-full">
-          <div className="w-full max-w-[78%] sm:max-w-[68%] md:max-w-[52%] lg:max-w-[46%]">
+          <div className="w-full max-w-[70%] sm:max-w-[60%] md:max-w-[48%] lg:max-w-[42%]">
 
             {/* Big neon logo — replaces the old navbar logo, dominant brand mark */}
             <Link
               href="/"
-              className="animate-slide-in-up [animation-delay:0ms] inline-block -ml-2 md:-ml-3 mb-6 md:mb-10 lg:mb-12"
+              className="animate-slide-in-up [animation-delay:0ms] inline-block -ml-2 md:-ml-3 mb-4 md:mb-7 lg:mb-8"
               aria-label="ReadyMiix Store — Accueil"
             >
               <Image
@@ -163,7 +163,7 @@ export default async function HomePage() {
 
             {/* Eyebrow */}
             <p
-              className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-12 md:mb-14"
+              className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-7 md:mb-9"
               style={{ textShadow: "0 0 18px rgba(0,210,200,0.55), 0 2px 8px rgba(0,0,0,0.7)" }}
             >
               <Sparkles className="w-3.5 h-3.5 shrink-0" />
@@ -191,7 +191,7 @@ export default async function HomePage() {
 
             {/* Subtitle */}
             <p
-              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[420px] mb-12 md:mb-14"
+              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[340px] md:max-w-[360px] mb-10 md:mb-12"
               style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
             >
               Des cocktails premium prêts à boire, pensés pour vos{" "}
