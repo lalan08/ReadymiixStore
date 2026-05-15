@@ -38,6 +38,7 @@ model Product {
   tags          String      @default("[]")
   productType   String      @default("simple")
   hasSoftChoice Boolean     @default(false)
+  softQty       Int         @default(1)
   orderItems    OrderItem[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt

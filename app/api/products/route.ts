@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     const {
       name, slug, description, price, comparePrice,
       images, categoryId, stock, featured, active,
-      volume, alcohol, tags, productType, hasSoftChoice,
+      volume, alcohol, tags, productType, hasSoftChoice, softQty,
     } = body;
 
     if (!name || !price || !categoryId) {
@@ -51,6 +51,7 @@ export async function POST(req: Request) {
         alcohol: alcohol || null, tags: tags ?? "[]",
         productType: productType ?? "simple",
         hasSoftChoice: hasSoftChoice ?? false,
+        softQty: softQty ? Math.max(1, Math.min(6, parseInt(softQty) || 1)) : 1,
         slug: finalSlug,
       },
       include: { category: true },

@@ -14,6 +14,7 @@ export interface CartItem {
   options?: {
     sirop?: string;
     soft?: string;
+    softs?: string[];
   };
 }
 

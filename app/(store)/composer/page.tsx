@@ -40,15 +40,15 @@ const FEATURES = [
 ];
 
 const INSPIRATIONS = [
-  { name: "HENNY PASSION", emoji: "🍊🥃", desc: "Hennessy + sirop Passion + Freez rouge",    type: "hard"  as const },
-  { name: "HENNY GRENADE", emoji: "🌹🥃", desc: "Hennessy + sirop Grenadine + Sprite",       type: "hard"  as const },
-  { name: "LIGHT CURAÇAO", emoji: "🌊🍬", desc: "Light + sirop Curaçao + bonbons surprises", type: "light" as const },
-  { name: "FRAISE MENTHE", emoji: "🍓🌿", desc: "Light + sirop Fraise + menthe fraîche",     type: "light" as const },
+  { name: "HENNY PASSION", emoji: "🍊🥃", desc: "Hard · parfum Passion + Freez rouge",    type: "hard"  as const },
+  { name: "HENNY GRENADE", emoji: "🌹🥃", desc: "Hard · parfum Grenadine + Sprite",       type: "hard"  as const },
+  { name: "LIGHT CURAÇAO", emoji: "🌊🍬", desc: "Light · parfum Curaçao + bonbons surprises", type: "light" as const },
+  { name: "FRAISE MENTHE", emoji: "🍓🌿", desc: "Light · parfum Fraise + menthe fraîche",     type: "light" as const },
 ];
 
 /* ─── Product card ──────────────────────────────────────────── */
 function ProductCard({
-  type, accent, title, highlights, detail, heroImg, objectFit = "cover", onCompose,
+  type, accent, title, highlights, detail, heroImg, onCompose,
 }: {
   type: "light" | "hard";
   accent: string;
@@ -56,7 +56,6 @@ function ProductCard({
   highlights: readonly string[];
   detail: readonly string[];
   heroImg: string;
-  objectFit?: "cover" | "contain";
   onCompose: () => void;
 }) {
   const [showDetail, setShowDetail] = useState(false);
@@ -91,7 +90,7 @@ function ProductCard({
           src={heroImg}
           alt={`Cocktail ${title}`}
           className="absolute inset-0 w-full h-full"
-          style={{ objectFit, objectPosition: "center" }}
+          style={{ objectFit: "cover", objectPosition: "center", transform: "scale(0.92)" }}
         />
         <div
           className="absolute inset-0"
@@ -161,6 +160,15 @@ export default function ComposerPage() {
   const [siteCfg, setSiteCfg] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    // Auto-open configurator when ?type=hard or ?type=light is in the URL
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get("type");
+    if (t === "hard" || t === "light") {
+      setCfg({ open: true, type: t });
+    }
+  }, []);
+
+  useEffect(() => {
     fetch("/api/config")
       .then((r) => r.ok ? r.json() : {})
       .then((data: Record<string, string>) => setSiteCfg(data))
@@ -175,7 +183,6 @@ export default function ComposerPage() {
       highlights: parseList(siteCfg.light_highlights, CARD_DEFAULTS.light.highlights),
       detail:     parseList(siteCfg.light_detail,     CARD_DEFAULTS.light.detail),
       heroImg:    siteCfg.light_card_image || DEFAULT_LIGHT_IMG,
-      objectFit:  (siteCfg.light_card_fit || "cover") as "cover" | "contain",
     },
     {
       type: "hard" as const,
@@ -184,7 +191,6 @@ export default function ComposerPage() {
       highlights: parseList(siteCfg.hard_highlights, CARD_DEFAULTS.hard.highlights),
       detail:     parseList(siteCfg.hard_detail,     CARD_DEFAULTS.hard.detail),
       heroImg:    siteCfg.hard_card_image || DEFAULT_HARD_IMG,
-      objectFit:  (siteCfg.hard_card_fit || "cover") as "cover" | "contain",
     },
   ];
 
@@ -197,10 +203,11 @@ export default function ComposerPage() {
 
         {/* ── Hero heading ── */}
         <div className="text-center mb-8">
-          <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.25em] mb-2">— Compose ton cocktail</p>
-          <h1 className="font-display text-3xl md:text-5xl text-white uppercase tracking-wide">
-            Choisis ton style
+          <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.25em] mb-2">— ReadyMiix Cocktails</p>
+          <h1 className="font-display text-3xl md:text-5xl text-white uppercase tracking-wide mb-2">
+            Compose ton ReadyMiix 🍹
           </h1>
+          <p className="text-sm text-white/50">Choisis ton style et ton parfum.</p>
         </div>
 
         {/* ── Split product section ── */}

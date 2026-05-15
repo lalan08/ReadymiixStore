@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import { useCartStore } from "@/lib/store";
@@ -46,20 +45,10 @@ export default function Navbar() {
         )}
       >
         <div className="container-custom">
-          {/* mobile: h-16 | tablet: h-[66px] | desktop: h-20 */}
-          <nav className="flex items-center justify-between h-16 md:h-[66px] lg:h-20">
-
-            {/* Logo */}
-            <Link href="/" className="flex items-center group" aria-label="ReadyMiix Store — Accueil">
-              <Image
-                src="/logo.png"
-                alt="ReadyMiix Store"
-                width={56}
-                height={56}
-                className="w-10 h-10 md:w-11 md:h-11 lg:w-14 lg:h-14 object-contain"
-                priority
-              />
-            </Link>
+          {/* Compact navbar — logo lives in the hero, not here. Items are
+              clustered to the right so they sit visually opposite the big
+              neon mark in the hero. */}
+          <nav className="flex items-center justify-end gap-3 md:gap-6 lg:gap-9 h-[72px] md:h-[80px] lg:h-[88px]">
 
             {/* Tablet + desktop links — gap tighter on tablet */}
             <ul className="hidden md:flex items-center md:gap-5 lg:gap-7">

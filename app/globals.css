@@ -170,6 +170,32 @@
     animation: orbDrift var(--dur, 14s) ease-in-out infinite;
     will-change: transform;
   }
+
+  /* Hero CTAs */
+  .hero-cta-primary {
+    background: linear-gradient(135deg, #C5006A 0%, #F72585 55%, #FF5BA3 100%);
+    /* Soft pink halo replaces the hard black drop so the button floats
+       in the neon ambiance instead of sitting on top of it */
+    box-shadow: 0 0 55px rgba(247,37,133,0.45), 0 8px 28px rgba(247,37,133,0.22), inset 0 1px 0 rgba(255,255,255,0.18);
+    color: #fff;
+    transition: box-shadow 0.35s cubic-bezier(0.22,1,0.36,1), transform 0.35s cubic-bezier(0.22,1,0.36,1);
+  }
+  .hero-cta-primary:hover {
+    box-shadow: 0 0 75px rgba(247,37,133,0.60), 0 12px 36px rgba(247,37,133,0.30), inset 0 1px 0 rgba(255,255,255,0.22);
+    transform: translateY(-2px);
+  }
+  /* Secondary — discrete ghost button, sits inside the scene */
+  .hero-cta-secondary {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.09);
+    color: rgba(255,255,255,0.50);
+    transition: border-color 0.4s ease, color 0.4s ease, background 0.4s ease;
+  }
+  .hero-cta-secondary:hover {
+    background: rgba(255,255,255,0.025);
+    border-color: rgba(0,210,200,0.28);
+    color: rgba(255,255,255,0.88);
+  }
 }
 
 /* ── Respect user motion preferences ── */

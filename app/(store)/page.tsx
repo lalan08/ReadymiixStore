@@ -1,9 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ShoppingBag, MapPin, Flame, Candy, Package, Star, ChevronRight, Sparkles } from "lucide-react";
+import { ArrowRight, ShoppingBag, MapPin, Star, ChevronRight, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 import EventsSlider from "@/components/store/EventsSlider";
+import HeroCTAs from "@/components/store/HeroCTAs";
 
 export const revalidate = 300; // 5 minutes
 
@@ -54,183 +55,159 @@ export default async function HomePage() {
     <div className="overflow-x-hidden">
 
       {/* ══════════════════════════════════════
-          HERO — Immersive aurora full-screen
+          HERO — Premium campaign poster
+          • Big neon logo at the top-left, in the content flow
+          • Cocktail anchored right, fills full hero height at native aspect
+          • Dark, atmospheric left side for text overlay
+          • Layered smoke + neon haze for nightlife realism
       ══════════════════════════════════════ */}
-      <section className="relative h-[100svh] min-h-[600px] md:min-h-[680px] lg:min-h-[750px] flex flex-col items-center justify-center bg-[#020208] overflow-hidden">
+      <section className="relative min-h-[100svh] flex items-start bg-[#010108] overflow-hidden">
 
-        {/* ── Cocktail background — cinematic mood ── */}
-        <Image
-          src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=1200&q=75&auto=format&fm=webp"
-          alt=""
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
-          className="object-cover object-center"
-          style={{ filter: "brightness(0.32) saturate(1.25)" }}
-        />
+        {/* ── Deep black base ── */}
+        <div className="absolute inset-0 bg-[#020208]" />
 
-        {/* ── Cinematic overlay stack ── */}
-        {/* 1. Brand gradient — purple top, dark bottom */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0D003A]/65 via-transparent to-brand-darker/95" />
-        {/* 2. Edge vignette — focuses on centre */}
+        {/* ── Cocktail poster ──
+            mobile : fills the entire hero, object-position pushed left so
+                     the cocktail subject sits in the right 2/3 of viewport.
+                     scale + origin-left enlarges it and lets the right edge
+                     bleed off-screen for a real campaign-poster feel.
+            md+    : native portrait aspect, full hero height, anchored
+                     to the right — cocktail subject reads at ~80% viewport */}
+        <div className="absolute inset-x-0 top-0 bottom-[80px] md:bottom-0 md:left-auto md:right-0 md:aspect-[1023/1537] md:w-auto pointer-events-none">
+          <Image
+            src="/hero-cocktail.png"
+            alt="ReadyMiix cocktail premium"
+            fill priority
+            quality={95}
+            sizes="(max-width: 768px) 100vw, 67vh"
+            className="object-cover object-[7%_center] md:object-center"
+            style={{ filter: "saturate(1.32) contrast(1.12) brightness(1.04)" }}
+          />
+        </div>
+
+        {/* ── Left-side dark mask — pulled back to 58% so the cocktail
+              area (right half) is completely free of overlay ── */}
         <div
-          className="absolute inset-0"
-          style={{ background: "radial-gradient(ellipse 75% 90% at 50% 50%, transparent 25%, rgba(5,2,15,0.52) 100%)" }}
-        />
-        {/* 3. Smoke mist at base */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-52 pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse 110% 100% at 50% 100%, rgba(247,37,133,0.055) 0%, rgba(123,47,190,0.03) 45%, transparent 70%)",
-            filter: "blur(22px)",
+            background: "linear-gradient(to right, #010108 0%, rgba(1,1,8,0.92) 15%, rgba(1,1,8,0.70) 30%, rgba(1,1,8,0.28) 45%, transparent 58%)",
           }}
         />
 
-        {/* ── Aurora orbs — on top of photo, neon atmosphere ── */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {/* Orb 1 — purple, top-left */}
-          <div
-            className="hero-orb absolute -top-[280px] -left-[200px] w-[750px] h-[750px] rounded-full bg-brand-purple/28 blur-[120px]"
-            style={{ "--dur": "15s" } as React.CSSProperties}
-          />
-          {/* Orb 2 — pink, top-right */}
-          <div
-            className="hero-orb absolute -top-[150px] -right-[260px] w-[700px] h-[700px] rounded-full bg-brand-gold/22 blur-[110px]"
-            style={{ "--dur": "11s", animationDelay: "-5s" } as React.CSSProperties}
-          />
-          {/* Orb 3 — teal, bottom-centre */}
-          <div
-            className="hero-orb absolute -bottom-[260px] left-1/2 -translate-x-1/2 w-[900px] h-[650px] rounded-full bg-brand-teal/12 blur-[140px]"
-            style={{ "--dur": "19s", animationDelay: "-9s" } as React.CSSProperties}
-          />
-          {/* Deep purple depth — centre */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full bg-[#1A004A]/50 blur-[90px]" />
-          {/* Grid texture */}
-          <div className="absolute inset-0 bg-grid opacity-[0.05]" />
+        {/* ── Pink glow bleed — discreet halo, no longer veils the photo ── */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse 90% 75% at 78% 55%, rgba(247,37,133,0.10) 0%, rgba(247,37,133,0.04) 30%, rgba(0,180,255,0.03) 55%, transparent 78%)",
+            mixBlendMode: "screen",
+          }}
+        />
+
+        {/* ── Top fade — lighter so neon palms keep popping ── */}
+        <div className="absolute inset-x-0 top-0 h-[160px] pointer-events-none bg-gradient-to-b from-[#010108]/35 to-transparent" />
+
+        {/* ── Bottom fade — shorter and lighter so the wet floor stays visible ── */}
+        <div className="absolute inset-x-0 bottom-0 h-[180px] pointer-events-none bg-gradient-to-t from-[#010108] via-[#010108]/30 to-transparent" />
+
+        {/* ── Atmospheric smoke — slow drifting coloured clouds ── */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ mixBlendMode: "screen" }}>
+          <div className="absolute -inset-[15%] blur-[110px] opacity-25"
+            style={{
+              background: "radial-gradient(ellipse 50% 35% at 28% 65%, rgba(247,37,133,0.22) 0%, transparent 60%)",
+              animation: "ciDrift1 36s ease-in-out infinite",
+            }} />
+          <div className="absolute -inset-[15%] blur-[120px] opacity-30"
+            style={{
+              background: "radial-gradient(ellipse 55% 40% at 55% 38%, rgba(247,37,133,0.40) 0%, transparent 60%)",
+              animation: "ciDrift2 42s ease-in-out infinite",
+            }} />
+          <div className="absolute -inset-[15%] blur-[130px] opacity-25"
+            style={{
+              background: "radial-gradient(ellipse 45% 35% at 22% 80%, rgba(0,180,255,0.40) 0%, transparent 60%)",
+              animation: "ciDrift3 38s ease-in-out infinite",
+            }} />
+        </div>
+
+        {/* ── Neon orbs — anchor the palette on the dark left side ── */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="hero-orb absolute -bottom-[180px] -left-[140px] w-[640px] h-[500px] rounded-full blur-[180px]"
+            style={{ background: "rgba(180,30,90,0.10)", "--dur": "48s" } as React.CSSProperties} />
+          <div className="hero-orb absolute top-[10%] -left-[120px] w-[440px] h-[440px] rounded-full blur-[160px]"
+            style={{ background: "rgba(247,37,133,0.10)", "--dur": "42s", animationDelay: "-14s" } as React.CSSProperties} />
+          <div className="hero-orb absolute bottom-[10%] left-[35%] w-[380px] h-[380px] rounded-full blur-[150px]"
+            style={{ background: "rgba(0,210,200,0.07)", "--dur": "50s", animationDelay: "-22s" } as React.CSSProperties} />
+
           {/* Top accent line */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/70 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent" />
         </div>
 
-        {/* ── Ambient light particles — premium nightlife ── */}
+        {/* ══════════ CONTENT — left-aligned column with logo on top ══════════ */}
+        <div className="relative z-10 container-custom pt-4 pb-28 md:pt-6 md:pb-32 lg:pt-8 lg:pb-40 w-full">
+          <div className="w-full max-w-[78%] sm:max-w-[68%] md:max-w-[52%] lg:max-w-[46%]">
 
-        {/* Cross flare — top left — neon pink */}
-        <div className="pointer-events-none select-none absolute left-[5%] top-[20%] opacity-30 animate-float [animation-delay:0s]">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <line x1="14" y1="2" x2="14" y2="26" stroke="#F72585" strokeWidth="1.4" strokeLinecap="round"/>
-            <line x1="2" y1="14" x2="26" y2="14" stroke="#F72585" strokeWidth="1.4" strokeLinecap="round"/>
-            <circle cx="14" cy="14" r="2.5" fill="#F72585"/>
-          </svg>
-          <div className="absolute inset-[-4px] blur-[8px] bg-[#F72585]/25 rounded-full" />
-        </div>
+            {/* Big neon logo — replaces the old navbar logo, dominant brand mark */}
+            <Link
+              href="/"
+              className="animate-slide-in-up [animation-delay:0ms] inline-block -ml-2 md:-ml-3 mb-6 md:mb-10 lg:mb-12"
+              aria-label="ReadyMiix Store — Accueil"
+            >
+              <Image
+                src="/logo.png"
+                alt="ReadyMiix Store"
+                width={320}
+                height={320}
+                priority
+                className="w-[170px] h-[170px] sm:w-[200px] sm:h-[200px] md:w-[240px] md:h-[240px] lg:w-[280px] lg:h-[280px] object-contain"
+              />
+            </Link>
 
-        {/* Glowing ring — top right — violet */}
-        <div className="pointer-events-none select-none absolute right-[7%] top-[26%] animate-float [animation-delay:-3s] [animation-duration:9s]">
-          <div
-            className="w-11 h-11 rounded-full border border-[#7B2FBE]/55"
-            style={{ boxShadow: "0 0 16px rgba(123,47,190,0.45), inset 0 0 10px rgba(123,47,190,0.18)" }}
-          />
-        </div>
+            {/* Eyebrow */}
+            <p
+              className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-12 md:mb-14"
+              style={{ textShadow: "0 0 18px rgba(0,210,200,0.55), 0 2px 8px rgba(0,0,0,0.7)" }}
+            >
+              <Sparkles className="w-3.5 h-3.5 shrink-0" />
+              Prêt à boire. Prêt à vivre.
+            </p>
 
-        {/* Ice diamond — bottom left — teal */}
-        <div className="pointer-events-none select-none absolute left-[11%] bottom-[18%] opacity-30 animate-float [animation-delay:-5s] [animation-duration:8s]">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <path d="M11 1L21 11L11 21L1 11Z" stroke="#00D2C8" strokeWidth="1.2" strokeLinejoin="round"/>
-            <circle cx="11" cy="11" r="2" fill="#00D2C8" opacity="0.7"/>
-          </svg>
-          <div className="absolute inset-[-6px] blur-[8px] bg-[#00D2C8]/20 rounded-full" />
-        </div>
-
-        {/* 4-point star flare — bottom right — pink */}
-        <div className="pointer-events-none select-none absolute right-[5%] bottom-[30%] opacity-20 animate-float [animation-delay:-1.5s] [animation-duration:12s]">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M10 0L12 8L20 10L12 12L10 20L8 12L0 10L8 8Z" fill="#F72585"/>
-          </svg>
-          <div className="absolute inset-[-4px] blur-[7px] bg-[#F72585]/20 rounded-full" />
-        </div>
-
-        {/* Extra: small violet dot cluster — mid right */}
-        <div className="pointer-events-none select-none absolute right-[12%] top-[55%] opacity-20 animate-float [animation-delay:-7s] [animation-duration:14s]">
-          <div className="w-2 h-2 rounded-full bg-[#7B2FBE]" style={{ boxShadow: "0 0 10px 3px rgba(123,47,190,0.6)" }} />
-        </div>
-
-        {/* Extra: pink micro-dot — left center */}
-        <div className="pointer-events-none select-none absolute left-[8%] top-[52%] opacity-20 animate-float [animation-delay:-10s] [animation-duration:16s]">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#F72585]" style={{ boxShadow: "0 0 8px 3px rgba(247,37,133,0.55)" }} />
-        </div>
-
-        {/* ── Hero content ── */}
-        <div className="relative z-10 flex flex-col items-center text-center px-5 md:px-8 lg:px-5 gap-4 md:gap-5 lg:gap-7">
-
-          {/* Logo */}
-          <div className="relative animate-slide-in-up [animation-delay:0ms]">
-            <div className="absolute inset-0 rounded-full bg-brand-gold/15 blur-[80px] scale-[2.2] animate-glow-breathe" />
-            <div className="absolute inset-0 rounded-full bg-brand-purple/10 blur-[110px] scale-[2.8]" />
-            <Image
-              src="/logo.png"
-              alt="ReadyMiix"
-              width={200}
-              height={200}
-              className="relative z-10 w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] md:w-[148px] md:h-[148px] lg:w-[190px] lg:h-[190px] object-contain"
-              style={{ filter: "drop-shadow(0 0 70px rgba(247,37,133,0.85)) drop-shadow(0 0 25px rgba(247,37,133,0.45))" }}
-              priority
-            />
-          </div>
-
-          {/* Live badge */}
-          <div className="animate-slide-in-up [animation-delay:80ms]">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-sm text-[11px] font-bold text-brand-teal uppercase tracking-[0.2em]">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-teal animate-pulse shrink-0" />
-              Guyane 973 · Cocktails premium
-            </span>
-          </div>
-
-          {/* Main headline */}
-          <div className="animate-slide-in-up [animation-delay:160ms]">
-            <h1 className="font-display uppercase leading-[0.88] tracking-tight">
+            {/* Slogan — dominant focal point */}
+            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.9] tracking-tight mb-8 md:mb-9">
               <span
-                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-white"
-                style={{ textShadow: "0 0 80px rgba(255,255,255,0.1)" }}
+                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-white"
+                style={{ textShadow: "0 8px 40px rgba(0,0,0,0.85), 0 0 50px rgba(255,255,255,0.08)" }}
               >
                 BIEN FRAIS
               </span>
               <span
-                className="block text-[clamp(3.2rem,13vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-gold-gradient"
-                style={{ filter: "drop-shadow(0 0 50px rgba(247,37,133,0.55))" }}
+                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-gold-gradient mt-1 md:mt-2"
+                style={{ filter: "drop-shadow(0 8px 30px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(247,37,133,0.50))" }}
               >
                 TOUJOURS PRÊT
               </span>
             </h1>
-          </div>
 
-          {/* CTAs */}
-          <div className="animate-slide-in-up [animation-delay:260ms] flex flex-col sm:flex-row gap-3 w-full max-w-[380px] md:max-w-[440px] lg:max-w-[480px]">
-            {/* Primary — Composer */}
-            <Link
-              href="/composer"
-              className="group relative flex-1 flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#C5006A] to-[#F72585] text-white font-bold px-5 py-3.5 md:py-3 lg:py-4 rounded-2xl text-xs md:text-[11px] lg:text-sm uppercase tracking-widest shadow-[0_0_40px_rgba(247,37,133,0.45)] hover:shadow-[0_0_65px_rgba(247,37,133,0.7)] hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.97] overflow-hidden"
+            {/* Accent bar */}
+            <div className="animate-slide-in-up [animation-delay:260ms] w-14 md:w-16 h-[3px] bg-gradient-to-r from-brand-gold via-brand-gold/70 to-transparent rounded-full mb-7 md:mb-8" />
+
+            {/* Subtitle */}
+            <p
+              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[420px] mb-12 md:mb-14"
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
             >
-              <span className="relative z-10 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 shrink-0" />
-                <span>Composer mon cocktail</span>
-              </span>
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
-            </Link>
+              Des cocktails premium prêts à boire, pensés pour vos{" "}
+              <span className="text-brand-gold font-semibold">meilleurs</span>{" "}
+              moments.
+            </p>
 
-            {/* Secondary — Boutique */}
-            <Link
-              href="/shop"
-              className="flex-1 flex items-center justify-center gap-2.5 border border-white/15 bg-white/[0.05] backdrop-blur-sm text-white font-bold px-5 py-3.5 md:py-3 lg:py-4 rounded-2xl text-xs md:text-[11px] lg:text-sm uppercase tracking-widest hover:border-brand-teal/60 hover:bg-white/[0.09] hover:shadow-[0_0_28px_rgba(0,210,200,0.22)] hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.97]"
-            >
-              <ShoppingBag className="w-4 h-4 shrink-0" />
-              <span>Voir la boutique</span>
-            </Link>
+            {/* CTAs */}
+            <HeroCTAs />
+
           </div>
-
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
-          <span className="text-[9px] font-bold text-white/50 uppercase tracking-[0.3em]">Scroll</span>
+        <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30 z-10">
+          <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.3em]">Scroll</span>
           <div className="w-px h-8 bg-gradient-to-b from-transparent to-brand-gold" />
           <div className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-bounce" />
         </div>
@@ -259,67 +236,135 @@ export default async function HomePage() {
       </div>
 
       {/* ══════════════════════════════════════
-          GAMMES BAND
+          3 UNIVERSE PORTALS
       ══════════════════════════════════════ */}
-      <section className="py-10 md:py-11 lg:py-14 bg-brand-card/50 border-b border-brand-border">
+      <section className="py-5 md:py-6" style={{ background: "#020208" }}>
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-3 md:gap-4 lg:gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
 
-            {/* Hard */}
+            {/* ── HARD portal ── */}
             <Link
-              href="/shop?category=hard"
-              className="group relative flex items-center gap-5 p-5 rounded-2xl border border-brand-gold/20 bg-gradient-to-br from-brand-gold/6 to-brand-darker hover:border-brand-gold/50 hover:shadow-[0_0_40px_rgba(247,37,133,0.15)] transition-all duration-400 overflow-hidden"
+              href="/composer?type=hard"
+              className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
+              style={{ background: "linear-gradient(145deg, #1A000D 0%, #0A0007 100%)", minHeight: 148 }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative w-14 h-14 rounded-2xl bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-brand-gold/20 group-hover:border-brand-gold/40 transition-all duration-300">
-                <Flame className="w-7 h-7 text-brand-gold" />
-              </div>
-              <div className="relative flex flex-col gap-0.5">
-                <h3 className="font-display text-xl text-brand-text uppercase tracking-wide group-hover:text-brand-gold transition-colors duration-200">Hard</h3>
-                <p className="text-sm text-brand-muted leading-snug">Hennessy + alcools forts, pour les amateurs</p>
-                <span className="mt-1.5 text-xs text-brand-gold font-bold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
-                  Voir les cups <ChevronRight className="w-3.5 h-3.5" />
+              {/* Glow orb */}
+              <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-20 group-hover:opacity-35 transition-opacity duration-500"
+                style={{ background: "#F72585" }} />
+              {/* Border default */}
+              <div className="absolute inset-0 rounded-3xl border transition-all duration-300"
+                style={{ borderColor: "rgba(247,37,133,0.15)" }} />
+              {/* Border hover */}
+              <div className="absolute inset-0 rounded-3xl border opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ borderColor: "rgba(247,37,133,0.5)", boxShadow: "inset 0 0 30px rgba(247,37,133,0.05)" }} />
+              {/* Bottom glow line */}
+              <div className="absolute bottom-0 left-6 right-6 h-px opacity-40 group-hover:opacity-90 transition-opacity"
+                style={{ background: "linear-gradient(90deg, transparent, #F72585, transparent)" }} />
+
+              {/* Tag */}
+              <p className="relative text-[9px] font-black uppercase tracking-[0.35em]"
+                style={{ color: "rgba(247,37,133,0.55)" }}>
+                Nightlife · Intense
+              </p>
+
+              {/* Bottom row */}
+              <div className="relative flex items-end justify-between">
+                <h3 className="font-display text-[64px] md:text-[72px] text-white uppercase leading-none tracking-tight"
+                  style={{ textShadow: "0 0 40px rgba(247,37,133,0.25)" }}>
+                  HARD
+                </h3>
+                <span className="flex items-center gap-1 text-[11px] font-bold mb-1.5 group-hover:gap-2 transition-all"
+                  style={{ color: "#F72585" }}>
+                  Composer <ChevronRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <Flame className="absolute right-4 top-4 w-5 h-5 text-brand-gold/15 group-hover:text-brand-gold/30 transition-colors" />
             </Link>
 
-            {/* Light */}
+            {/* ── LIGHT portal ── */}
             <Link
-              href="/shop?category=light"
-              className="group relative flex items-center gap-5 p-5 rounded-2xl border border-brand-teal/20 bg-gradient-to-br from-brand-teal/6 to-brand-darker hover:border-brand-teal/50 hover:shadow-[0_0_40px_rgba(0,210,200,0.12)] transition-all duration-400 overflow-hidden"
+              href="/composer?type=light"
+              className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
+              style={{ background: "linear-gradient(145deg, #001814 0%, #000A0A 100%)", minHeight: 148 }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-teal/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative w-14 h-14 rounded-2xl bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-brand-teal/20 group-hover:border-brand-teal/40 transition-all duration-300">
-                <Candy className="w-7 h-7 text-brand-teal" />
-              </div>
-              <div className="relative flex flex-col gap-0.5">
-                <h3 className="font-display text-xl text-brand-text uppercase tracking-wide group-hover:text-brand-teal transition-colors duration-200">Light</h3>
-                <p className="text-sm text-brand-muted leading-snug">Haribo, Jitty Shocks, popping candy & plus</p>
-                <span className="mt-1.5 text-xs text-brand-teal font-bold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
-                  Voir les cups <ChevronRight className="w-3.5 h-3.5" />
+              {/* Glow orb */}
+              <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-15 group-hover:opacity-30 transition-opacity duration-500"
+                style={{ background: "#00D2C8" }} />
+              {/* Border default */}
+              <div className="absolute inset-0 rounded-3xl border transition-all duration-300"
+                style={{ borderColor: "rgba(0,210,200,0.15)" }} />
+              {/* Border hover */}
+              <div className="absolute inset-0 rounded-3xl border opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ borderColor: "rgba(0,210,200,0.5)", boxShadow: "inset 0 0 30px rgba(0,210,200,0.05)" }} />
+              {/* Bottom glow line */}
+              <div className="absolute bottom-0 left-6 right-6 h-px opacity-40 group-hover:opacity-90 transition-opacity"
+                style={{ background: "linear-gradient(90deg, transparent, #00D2C8, transparent)" }} />
+
+              {/* Tag */}
+              <p className="relative text-[9px] font-black uppercase tracking-[0.35em]"
+                style={{ color: "rgba(0,210,200,0.55)" }}>
+                Fun · Candy · Colorful
+              </p>
+
+              {/* Bottom row */}
+              <div className="relative flex items-end justify-between">
+                <h3 className="font-display text-[64px] md:text-[72px] text-white uppercase leading-none tracking-tight"
+                  style={{ textShadow: "0 0 40px rgba(0,210,200,0.2)" }}>
+                  LIGHT
+                </h3>
+                <span className="flex items-center gap-1 text-[11px] font-bold mb-1.5 group-hover:gap-2 transition-all"
+                  style={{ color: "#00D2C8" }}>
+                  Composer <ChevronRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <Candy className="absolute right-4 top-4 w-5 h-5 text-brand-teal/15 group-hover:text-brand-teal/30 transition-colors" />
             </Link>
 
-            {/* Packs */}
+            {/* ── FROZEN CAIPI portal ── */}
             <Link
-              href="/shop?category=packs"
-              className="group relative flex items-center gap-5 p-5 rounded-2xl border border-brand-purple/20 bg-gradient-to-br from-brand-purple/6 to-brand-darker hover:border-brand-purple/50 hover:shadow-[0_0_40px_rgba(123,47,190,0.15)] transition-all duration-400 overflow-hidden"
+              href="/shop?category=cocktails"
+              className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
+              style={{ background: "linear-gradient(145deg, #001320 0%, #000A12 100%)", minHeight: 148 }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative w-14 h-14 rounded-2xl bg-brand-purple/10 border border-brand-purple/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-brand-purple/20 group-hover:border-brand-purple/40 transition-all duration-300">
-                <Package className="w-7 h-7 text-brand-purple-light" />
-              </div>
-              <div className="relative flex flex-col gap-0.5">
-                <h3 className="font-display text-xl text-brand-text uppercase tracking-wide group-hover:text-brand-purple-light transition-colors duration-200">Packs</h3>
-                <p className="text-sm text-brand-muted leading-snug">Pack Duo, x4 ou x10 — idéal pour soirées</p>
-                <span className="mt-1.5 text-xs text-brand-purple-light font-bold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
-                  Voir les packs <ChevronRight className="w-3.5 h-3.5" />
+              {/* Glow orb */}
+              <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-15 group-hover:opacity-30 transition-opacity duration-500"
+                style={{ background: "#00C8FF" }} />
+              {/* Second orb — tropical mint */}
+              <div className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity duration-500"
+                style={{ background: "#00F0DC" }} />
+              {/* Border default */}
+              <div className="absolute inset-0 rounded-3xl border transition-all duration-300"
+                style={{ borderColor: "rgba(0,200,255,0.12)" }} />
+              {/* Border hover */}
+              <div className="absolute inset-0 rounded-3xl border opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ borderColor: "rgba(0,200,255,0.45)", boxShadow: "inset 0 0 30px rgba(0,200,255,0.04)" }} />
+              {/* Bottom glow line */}
+              <div className="absolute bottom-0 left-6 right-6 h-px opacity-40 group-hover:opacity-90 transition-opacity"
+                style={{ background: "linear-gradient(90deg, transparent, #00C8FF, transparent)" }} />
+              {/* Ice crystal accent */}
+              <span className="absolute top-4 right-5 text-xl opacity-20 group-hover:opacity-40 transition-opacity">❄</span>
+
+              {/* Tag */}
+              <p className="relative text-[9px] font-black uppercase tracking-[0.35em]"
+                style={{ color: "rgba(0,200,255,0.55)" }}>
+                Frozen · Tropical · Premium
+              </p>
+
+              {/* Bottom row */}
+              <div className="relative flex items-end justify-between">
+                <div className="leading-none">
+                  <h3 className="font-display text-[46px] md:text-[52px] text-white uppercase leading-none tracking-tight"
+                    style={{ textShadow: "0 0 40px rgba(0,200,255,0.25)" }}>
+                    FROZEN
+                  </h3>
+                  <h3 className="font-display text-[46px] md:text-[52px] uppercase leading-none tracking-widest"
+                    style={{ color: "#00C8FF", textShadow: "0 0 30px rgba(0,200,255,0.5)" }}>
+                    CAIPI
+                  </h3>
+                </div>
+                <span className="flex items-center gap-1 text-[11px] font-bold mb-1.5 group-hover:gap-2 transition-all"
+                  style={{ color: "#00C8FF" }}>
+                  Découvrir <ChevronRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <Package className="absolute right-4 top-4 w-5 h-5 text-brand-purple/15 group-hover:text-brand-purple/30 transition-colors" />
             </Link>
 
           </div>

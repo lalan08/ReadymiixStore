@@ -17,7 +17,7 @@ interface Product {
   categoryId: string; category: Category;
   stock: number; featured: boolean; active: boolean;
   volume: string | null; alcohol: string | null; tags: string;
-  productType: string; hasSoftChoice: boolean;
+  productType: string; hasSoftChoice: boolean; softQty: number;
 }
 
 const TABS = [
@@ -77,6 +77,7 @@ export default function ArticleEditForm({
   const [featured,     setFeatured]     = useState(product.featured);
   const [productType,  setProductType]  = useState(product.productType ?? "simple");
   const [hasSoftChoice, setHasSoftChoice] = useState(product.hasSoftChoice ?? false);
+  const [softQty,       setSoftQty]       = useState(product.softQty ?? 1);
 
   /* ---------- image ---------- */
   const existingImages = parseJsonField<string[]>(product.images, []);
@@ -134,6 +135,7 @@ export default function ArticleEditForm({
         tags:    product.tags,
         productType,
         hasSoftChoice,
+        softQty: hasSoftChoice ? softQty : 1,
       }),
     });
     if (res.ok) {
@@ -534,6 +536,33 @@ export default function ArticleEditForm({
                 }`} />
               </button>
             </div>
+
+            {/* Nombre de softs (visible seulement si hasSoftChoice) */}
+            {hasSoftChoice && (
+              <div className="flex items-center justify-between py-2 pl-3 border-l-2 border-brand-teal/40 ml-1">
+                <div>
+                  <p className="font-semibold text-brand-text text-sm">Nombre de softs</p>
+                  <p className="text-xs text-brand-muted mt-0.5">
+                    Ex: 2 pour un pack duo
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSoftQty((v) => Math.max(1, v - 1))}
+                    className="w-8 h-8 rounded-xl bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text hover:border-brand-gold/40 flex items-center justify-center text-lg font-bold transition-colors"
+                  >
+                    −
+                  </button>
+                  <span className="w-6 text-center font-bold text-brand-text">{softQty}</span>
+                  <button
+                    onClick={() => setSoftQty((v) => Math.min(6, v + 1))}
+                    className="w-8 h-8 rounded-xl bg-brand-card border border-brand-border text-brand-muted hover:text-brand-text hover:border-brand-gold/40 flex items-center justify-center text-lg font-bold transition-colors"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         </div>
       )}
