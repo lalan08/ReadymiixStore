@@ -338,6 +338,9 @@ export async function GET() {
     await prisma.$executeRawUnsafe(`
       CREATE UNIQUE INDEX IF NOT EXISTS "Soft_slug_key" ON "Soft"("slug");
     `);
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "Soft" ADD COLUMN IF NOT EXISTS "image" TEXT;
+    `);
 
     // ── SiteConfig table ─────────────────────────────────────
     await prisma.$executeRawUnsafe(`
