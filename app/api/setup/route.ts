@@ -148,47 +148,51 @@ export async function GET() {
       CREATE UNIQUE INDEX IF NOT EXISTS "Newsletter_email_key" ON "Newsletter"("email");
     `);
 
-    // Seed categories
-    await prisma.category.upsert({
-      where: { slug: "hard" },
-      update: {},
-      create: {
-        id: "cat_hard_001",
-        name: "Hard 🔥",
-        slug: "hard",
-        description: "Cocktails avec alcool fort — Hennessy & spirits. Pour les amateurs qui veulent du caractère.",
-        image: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80",
-        sortOrder: 1,
-      },
-    });
+    // Seed categories (only on empty database — preserves user deletions)
+    const categoryCount = await prisma.category.count();
+    if (categoryCount === 0) {
+      await prisma.category.upsert({
+        where: { slug: "hard" },
+        update: {},
+        create: {
+          id: "cat_hard_001",
+          name: "Hard 🔥",
+          slug: "hard",
+          description: "Cocktails avec alcool fort — Hennessy & spirits. Pour les amateurs qui veulent du caractère.",
+          image: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80",
+          sortOrder: 1,
+        },
+      });
 
-    await prisma.category.upsert({
-      where: { slug: "light" },
-      update: {},
-      create: {
-        id: "cat_light_001",
-        name: "Light 🍬",
-        slug: "light",
-        description: "Cocktails légers avec bonbons & saveurs fruitées. Pour tous les goûts.",
-        image: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=600&q=80",
-        sortOrder: 2,
-      },
-    });
+      await prisma.category.upsert({
+        where: { slug: "light" },
+        update: {},
+        create: {
+          id: "cat_light_001",
+          name: "Light 🍬",
+          slug: "light",
+          description: "Cocktails légers avec bonbons & saveurs fruitées. Pour tous les goûts.",
+          image: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=600&q=80",
+          sortOrder: 2,
+        },
+      });
 
-    await prisma.category.upsert({
-      where: { slug: "packs" },
-      update: {},
-      create: {
-        id: "cat_packs_001",
-        name: "Packs & Offres 🎁",
-        slug: "packs",
-        description: "Packs de plusieurs cups — idéal pour soirées, cadeaux et événements.",
-        image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80",
-        sortOrder: 3,
-      },
-    });
+      await prisma.category.upsert({
+        where: { slug: "packs" },
+        update: {},
+        create: {
+          id: "cat_packs_001",
+          name: "Packs & Offres 🎁",
+          slug: "packs",
+          description: "Packs de plusieurs cups — idéal pour soirées, cadeaux et événements.",
+          image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80",
+          sortOrder: 3,
+        },
+      });
+    }
 
-    // Seed products
+    // Seed products (only on empty database — preserves user deletions)
+    const productCount = await prisma.product.count();
     const hardCat  = await prisma.category.findUnique({ where: { slug: "hard" } });
     const lightCat = await prisma.category.findUnique({ where: { slug: "light" } });
     const packsCat = await prisma.category.findUnique({ where: { slug: "packs" } });
@@ -293,12 +297,14 @@ export async function GET() {
       },
     ];
 
-    for (const product of products) {
-      await prisma.product.upsert({
-        where: { slug: product.slug },
-        update: {},
-        create: product,
-      });
+    if (productCount === 0 && hardCat && lightCat && packsCat) {
+      for (const product of products) {
+        await prisma.product.upsert({
+          where: { slug: product.slug },
+          update: {},
+          create: product,
+        });
+      }
     }
 
     // ── Sirop table ──────────────────────────────────────────
@@ -352,7 +358,7 @@ export async function GET() {
       );
     `);
 
-    // ── Seed sirops ──────────────────────────────────────────
+    // ── Seed sirops (only on empty database — preserves user deletions) ──
     const sirops = [
       { id: "sir_passion",   name: "Passion",   slug: "passion",   emoji: "🍊", color: "#F97316", sortOrder: 1 },
       { id: "sir_grenadine", name: "Grenadine", slug: "grenadine", emoji: "🌹", color: "#E11D48", sortOrder: 2 },
@@ -363,27 +369,31 @@ export async function GET() {
       { id: "sir_citron",    name: "Citron",    slug: "citron",    emoji: "🍋", color: "#EAB308", sortOrder: 7 },
       { id: "sir_coco",      name: "Coco",      slug: "coco",      emoji: "🥥", color: "#A3A3A3", sortOrder: 8 },
     ];
-    for (const s of sirops) {
-      await prisma.sirop.upsert({
-        where: { slug: s.slug },
-        update: {},
-        create: s,
-      });
+    if ((await prisma.sirop.count()) === 0) {
+      for (const s of sirops) {
+        await prisma.sirop.upsert({
+          where: { slug: s.slug },
+          update: {},
+          create: s,
+        });
+      }
     }
 
-    // ── Seed softs ───────────────────────────────────────────
+    // ── Seed softs (only on empty database — preserves user deletions) ──
     const softs = [
       { id: "soft_freez",     name: "Freez Rouge",       slug: "freez-rouge", emoji: "🔴", surcharge: 1.5, sortOrder: 1 },
       { id: "soft_sprite",    name: "Sprite",            slug: "sprite",      emoji: "🍋", surcharge: 1.5, sortOrder: 2 },
       { id: "soft_cola",      name: "Cola",              slug: "cola",        emoji: "🥤", surcharge: 1.5, sortOrder: 3 },
       { id: "soft_schweppes", name: "Schweppes Agrumes", slug: "schweppes",   emoji: "🍊", surcharge: 1.5, sortOrder: 4 },
     ];
-    for (const s of softs) {
-      await prisma.soft.upsert({
-        where: { slug: s.slug },
-        update: {},
-        create: s,
-      });
+    if ((await prisma.soft.count()) === 0) {
+      for (const s of softs) {
+        await prisma.soft.upsert({
+          where: { slug: s.slug },
+          update: {},
+          create: s,
+        });
+      }
     }
 
     // ── Media table ──────────────────────────────────────────
