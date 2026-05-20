@@ -184,17 +184,19 @@
     box-shadow: 0 0 75px rgba(247,37,133,0.60), 0 12px 36px rgba(247,37,133,0.30), inset 0 1px 0 rgba(255,255,255,0.22);
     transform: translateY(-2px);
   }
-  /* Secondary — discrete ghost button, sits inside the scene */
+  /* Secondary — outline button, sits clearly above the dark mask zone */
   .hero-cta-secondary {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.09);
-    color: rgba(255,255,255,0.50);
+    background: rgba(1,1,8,0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(0,210,200,0.40);
+    color: rgba(255,255,255,0.88);
     transition: border-color 0.4s ease, color 0.4s ease, background 0.4s ease;
   }
   .hero-cta-secondary:hover {
-    background: rgba(255,255,255,0.025);
-    border-color: rgba(0,210,200,0.28);
-    color: rgba(255,255,255,0.88);
+    background: rgba(0,210,200,0.10);
+    border-color: rgba(0,210,200,0.65);
+    color: #fff;
   }
 }
 

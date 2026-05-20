@@ -67,30 +67,28 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-[#020208]" />
 
         {/* ── Cocktail poster ──
-            mobile : fills the entire hero, object-position pushed left so
-                     the cocktail subject sits in the right 2/3 of viewport.
-                     scale + origin-left enlarges it and lets the right edge
-                     bleed off-screen for a real campaign-poster feel.
+            mobile : occupies the right ~55% of the viewport so the glass
+                     gets a dedicated zone and stays clean (no text overlap)
             md+    : native portrait aspect, full hero height, anchored
                      to the right — cocktail subject reads at ~80% viewport */}
-        <div className="absolute inset-x-0 top-0 bottom-[80px] md:bottom-0 md:left-auto md:right-0 md:aspect-[1023/1537] md:w-auto pointer-events-none">
+        <div className="absolute top-0 bottom-[80px] right-0 w-[58%] md:bottom-0 md:left-auto md:w-auto md:aspect-[1023/1537] pointer-events-none">
           <Image
             src="/hero-cocktail.png"
             alt="ReadyMiix cocktail premium"
             fill priority
             quality={95}
-            sizes="(max-width: 768px) 100vw, 67vh"
-            className="object-cover object-[7%_center] md:object-center"
+            sizes="(max-width: 768px) 60vw, 67vh"
+            className="object-cover object-center"
             style={{ filter: "saturate(1.32) contrast(1.12) brightness(1.04)" }}
           />
         </div>
 
-        {/* ── Left-side dark mask — pulled back to 58% so the cocktail
-              area (right half) is completely free of overlay ── */}
+        {/* ── Left-side dark mask — fades out where the cocktail starts so
+              the glass area stays luminous and the text side stays solid ── */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "linear-gradient(to right, #010108 0%, rgba(1,1,8,0.92) 15%, rgba(1,1,8,0.70) 30%, rgba(1,1,8,0.28) 45%, transparent 58%)",
+            background: "linear-gradient(to right, #010108 0%, rgba(1,1,8,0.96) 18%, rgba(1,1,8,0.78) 32%, rgba(1,1,8,0.32) 42%, transparent 50%)",
           }}
         />
 
@@ -141,14 +139,14 @@ export default async function HomePage() {
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent" />
         </div>
 
-        {/* ══════════ CONTENT — left-aligned column with logo on top ══════════ */}
+        {/* ══════════ CONTENT — left zone, paired with the cocktail on the right ══════════ */}
         <div className="relative z-10 container-custom pt-4 pb-28 md:pt-6 md:pb-32 lg:pt-8 lg:pb-40 w-full">
-          <div className="w-full max-w-[70%] sm:max-w-[60%] md:max-w-[48%] lg:max-w-[42%]">
+          <div className="w-full max-w-[48%] sm:max-w-[50%] md:max-w-[50%] lg:max-w-[46%]">
 
-            {/* Big neon logo — replaces the old navbar logo, dominant brand mark */}
+            {/* Big neon logo — dominant brand mark anchoring the top */}
             <Link
               href="/"
-              className="animate-slide-in-up [animation-delay:0ms] inline-block -ml-2 md:-ml-3 mb-4 md:mb-7 lg:mb-8"
+              className="animate-slide-in-up [animation-delay:0ms] inline-block -ml-2 md:-ml-3 mb-5 md:mb-8 lg:mb-10"
               aria-label="ReadyMiix Store — Accueil"
             >
               <Image
@@ -157,13 +155,13 @@ export default async function HomePage() {
                 width={320}
                 height={320}
                 priority
-                className="w-[170px] h-[170px] sm:w-[200px] sm:h-[200px] md:w-[240px] md:h-[240px] lg:w-[280px] lg:h-[280px] object-contain"
+                className="w-[150px] h-[150px] sm:w-[180px] sm:h-[180px] md:w-[220px] md:h-[220px] lg:w-[260px] lg:h-[260px] object-contain"
               />
             </Link>
 
             {/* Eyebrow */}
             <p
-              className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-7 md:mb-9"
+              className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[10px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-5 md:mb-7"
               style={{ textShadow: "0 0 18px rgba(0,210,200,0.55), 0 2px 8px rgba(0,0,0,0.7)" }}
             >
               <Sparkles className="w-3.5 h-3.5 shrink-0" />
@@ -171,15 +169,15 @@ export default async function HomePage() {
             </p>
 
             {/* Slogan — dominant focal point */}
-            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.9] tracking-tight mb-8 md:mb-9">
+            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.88] tracking-tight mb-7 md:mb-8">
               <span
-                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-white"
+                className="block text-[clamp(2rem,9.5vw,4.4rem)] md:text-[clamp(3.6rem,7.5vw,6.6rem)] lg:text-[clamp(4.6rem,7vw,8.4rem)] text-white"
                 style={{ textShadow: "0 8px 40px rgba(0,0,0,0.85), 0 0 50px rgba(255,255,255,0.08)" }}
               >
                 BIEN FRAIS
               </span>
               <span
-                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-gold-gradient mt-1 md:mt-2"
+                className="block text-[clamp(2rem,9.5vw,4.4rem)] md:text-[clamp(3.6rem,7.5vw,6.6rem)] lg:text-[clamp(4.6rem,7vw,8.4rem)] text-gold-gradient mt-1 md:mt-2"
                 style={{ filter: "drop-shadow(0 8px 30px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(247,37,133,0.50))" }}
               >
                 TOUJOURS PRÊT
@@ -187,11 +185,11 @@ export default async function HomePage() {
             </h1>
 
             {/* Accent bar */}
-            <div className="animate-slide-in-up [animation-delay:260ms] w-14 md:w-16 h-[3px] bg-gradient-to-r from-brand-gold via-brand-gold/70 to-transparent rounded-full mb-7 md:mb-8" />
+            <div className="animate-slide-in-up [animation-delay:260ms] w-12 md:w-16 h-[3px] bg-gradient-to-r from-brand-gold via-brand-gold/70 to-transparent rounded-full mb-6 md:mb-7" />
 
             {/* Subtitle */}
             <p
-              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[340px] md:max-w-[360px] mb-10 md:mb-12"
+              className="animate-slide-in-up [animation-delay:320ms] text-[13px] md:text-base lg:text-[17px] text-white/80 leading-relaxed mb-8 md:mb-10"
               style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
             >
               Des cocktails premium prêts à boire, pensés pour vos{" "}
