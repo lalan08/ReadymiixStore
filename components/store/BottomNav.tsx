@@ -11,7 +11,7 @@ const ALL_TABS = [
   { href: "/shop",     Icon: ShoppingBag,  label: "Boutique" },
   { href: "/composer", Icon: Sparkles,     label: "Mixer",   highlight: true, composerOnly: true },
   { href: "/cart",     Icon: ShoppingCart, label: "Panier"   },
-  { href: "/about",    Icon: User,         label: "Profil"   },
+  { href: "/profil",   Icon: User,         label: "Profil"   },
 ];
 
 export default function BottomNav({ composerEnabled = true }: { composerEnabled?: boolean }) {

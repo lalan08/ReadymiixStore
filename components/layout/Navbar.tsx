@@ -12,7 +12,6 @@ const allNavLinks = [
   { href: "/",          label: "Accueil" },
   { href: "/composer",  label: "Composer 🎯", composerOnly: true },
   { href: "/shop",      label: "Boutique" },
-  { href: "/about",     label: "Notre histoire" },
   { href: "/contact",   label: "Contact" },
 ];
 
