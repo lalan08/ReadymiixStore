@@ -101,7 +101,22 @@ export default function AdminCategoriesPage() {
 
   async function remove(c: Category) {
     if (!confirm(`Supprimer la catégorie "${c.name}" ?`)) return;
-    const r = await fetch(`/api/admin/categories/${c.id}`, { method: "DELETE" });
+    let r = await fetch(`/api/admin/categories/${c.id}`, { method: "DELETE" });
+
+    if (r.status === 400) {
+      const data = await r.json().catch(() => ({}));
+      const n = data.productCount ?? c._count?.products ?? 0;
+      if (n > 0) {
+        if (
+          !confirm(
+            `⚠️ "${c.name}" contient ${n} produit(s).\n\nSupprimer DÉFINITIVEMENT la catégorie ET ses ${n} produit(s) ? Cette action est irréversible.`,
+          )
+        )
+          return;
+        r = await fetch(`/api/admin/categories/${c.id}?withProducts=true`, { method: "DELETE" });
+      }
+    }
+
     if (r.ok) {
       toast.success("Catégorie supprimée");
       await load();
