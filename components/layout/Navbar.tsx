@@ -8,15 +8,17 @@ import { useCartStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import CartDrawer from "@/components/store/CartDrawer";
 
-const navLinks = [
+const allNavLinks = [
   { href: "/",          label: "Accueil" },
-  { href: "/composer",  label: "Composer 🎯" },
+  { href: "/composer",  label: "Composer 🎯", composerOnly: true },
   { href: "/shop",      label: "Boutique" },
   { href: "/about",     label: "Notre histoire" },
   { href: "/contact",   label: "Contact" },
 ];
 
-export default function Navbar() {
+export default function Navbar({ composerEnabled = true }: { composerEnabled?: boolean }) {
+  const navLinks = allNavLinks.filter((l) => composerEnabled || !l.composerOnly);
+
   const [scrolled, setScrolled]   = useState(false);
   const [menuOpen, setMenuOpen]   = useState(false);
   const [mounted, setMounted]     = useState(false);

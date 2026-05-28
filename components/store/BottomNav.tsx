@@ -6,15 +6,15 @@ import { usePathname } from "next/navigation";
 import { Home, ShoppingBag, Sparkles, ShoppingCart, User } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 
-const TABS = [
+const ALL_TABS = [
   { href: "/",         Icon: Home,         label: "Accueil"  },
   { href: "/shop",     Icon: ShoppingBag,  label: "Boutique" },
-  { href: "/composer", Icon: Sparkles,     label: "Mixer",   highlight: true },
+  { href: "/composer", Icon: Sparkles,     label: "Mixer",   highlight: true, composerOnly: true },
   { href: "/cart",     Icon: ShoppingCart, label: "Panier"   },
   { href: "/about",    Icon: User,         label: "Profil"   },
 ];
 
-export default function BottomNav() {
+export default function BottomNav({ composerEnabled = true }: { composerEnabled?: boolean }) {
   const pathname  = usePathname();
   const itemCount = useCartStore((s) => s.itemCount());
   const [mounted, setMounted] = useState(false);
@@ -22,6 +22,8 @@ export default function BottomNav() {
   useEffect(() => { setMounted(true); }, []);
 
   if (pathname.startsWith("/admin")) return null;
+
+  const TABS = ALL_TABS.filter((t) => composerEnabled || !t.composerOnly);
 
   return (
     <nav

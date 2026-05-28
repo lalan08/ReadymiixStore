@@ -5,8 +5,9 @@ import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 import EventsSlider from "@/components/store/EventsSlider";
 import HeroCTAs from "@/components/store/HeroCTAs";
+import { isComposerEnabled } from "@/lib/siteConfig";
 
-export const revalidate = 300; // 5 minutes
+export const revalidate = 60;
 
 async function getFeaturedProducts() {
   try {
@@ -45,10 +46,11 @@ const TICKER_ITEMS = [
 ];
 
 export default async function HomePage() {
-  const [featuredProducts, categories, events] = await Promise.all([
+  const [featuredProducts, categories, events, composerEnabled] = await Promise.all([
     getFeaturedProducts(),
     getCategories(),
     getEvents(),
+    isComposerEnabled(),
   ]);
 
   return (
@@ -240,9 +242,10 @@ export default async function HomePage() {
       ══════════════════════════════════════ */}
       <section className="py-5 md:py-6" style={{ background: "#020208" }}>
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+          <div className={`grid grid-cols-1 gap-3 md:gap-4 ${composerEnabled ? "md:grid-cols-3" : "md:grid-cols-1 max-w-xl mx-auto"}`}>
 
-            {/* ── HARD portal ── */}
+            {/* ── HARD portal — composer only ── */}
+            {composerEnabled && (
             <Link
               href="/composer?type=hard"
               className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
@@ -279,8 +282,10 @@ export default async function HomePage() {
                 </span>
               </div>
             </Link>
+            )}
 
-            {/* ── LIGHT portal ── */}
+            {/* ── LIGHT portal — composer only ── */}
+            {composerEnabled && (
             <Link
               href="/composer?type=light"
               className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
@@ -317,8 +322,9 @@ export default async function HomePage() {
                 </span>
               </div>
             </Link>
+            )}
 
-            {/* ── FROZEN CAIPI portal ── */}
+            {/* ── FROZEN CAIPI portal — always shown (boutique) ── */}
             <Link
               href="/shop?category=cocktails"
               className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
