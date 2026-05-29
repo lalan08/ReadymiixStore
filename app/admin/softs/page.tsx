@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Plus, Pencil, Trash2, Check, X } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Plus, Pencil, Trash2, Check, X, Upload } from "lucide-react";
 import { slugify } from "@/lib/utils";
 
 interface Soft {
@@ -9,14 +9,49 @@ interface Soft {
   name: string;
   slug: string;
   emoji: string;
+  image: string | null;
   surcharge: number;
   active: boolean;
   sortOrder: number;
 }
 
 const EMPTY: Omit<Soft, "id"> = {
-  name: "", slug: "", emoji: "🥤", surcharge: 1.5, active: true, sortOrder: 0,
+  name: "", slug: "", emoji: "🥤", image: null, surcharge: 1.5, active: true, sortOrder: 0,
 };
+
+const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
+const MAX_SIZE_BYTES = 3 * 1024 * 1024;
+
+async function optimizeBadge(file: File): Promise<string> {
+  if (file.type === "image/svg+xml") {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target!.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const max = 240;
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext("2d")!;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/webp", 0.88));
+      };
+      img.src = ev.target!.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 export default function AdminSoftsPage() {
   const [softs, setSofts]     = useState<Soft[]>([]);
@@ -25,6 +60,8 @@ export default function AdminSoftsPage() {
   const [editId, setEditId]   = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving]   = useState(false);
+  const [imgError, setImgError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -38,16 +75,52 @@ export default function AdminSoftsPage() {
   function openAdd() {
     setEditId(null);
     setForm({ ...EMPTY, sortOrder: softs.length + 1 });
+    setImgError(null);
     setShowForm(true);
   }
 
   function openEdit(s: Soft) {
     setEditId(s.id);
-    setForm({ name: s.name, slug: s.slug, emoji: s.emoji, surcharge: s.surcharge, active: s.active, sortOrder: s.sortOrder });
+    setForm({
+      name: s.name,
+      slug: s.slug,
+      emoji: s.emoji,
+      image: s.image ?? null,
+      surcharge: s.surcharge,
+      active: s.active,
+      sortOrder: s.sortOrder,
+    });
+    setImgError(null);
     setShowForm(true);
   }
 
-  function cancelForm() { setShowForm(false); setEditId(null); }
+  function cancelForm() { setShowForm(false); setEditId(null); setImgError(null); }
+
+  async function onImagePick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImgError(null);
+    if (!ACCEPTED_TYPES.includes(file.type)) {
+      setImgError("Format non supporté (PNG, JPG, WebP, SVG)");
+      return;
+    }
+    if (file.size > MAX_SIZE_BYTES) {
+      setImgError("Fichier trop lourd (max 3 Mo)");
+      return;
+    }
+    try {
+      const dataUrl = await optimizeBadge(file);
+      setForm((f) => ({ ...f, image: dataUrl }));
+    } catch {
+      setImgError("Impossible de lire l'image");
+    } finally {
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
+  function clearImage() {
+    setForm((f) => ({ ...f, image: null }));
+  }
 
   async function save() {
     if (!form.name.trim()) return;
@@ -97,6 +170,59 @@ export default function AdminSoftsPage() {
           <h2 className="font-display text-lg text-brand-text mb-4">
             {editId ? "Modifier le soft" : "Nouveau soft"}
           </h2>
+
+          {/* Image / Emoji picker */}
+          <div className="mb-5">
+            <label className="text-xs text-brand-muted uppercase tracking-wide block mb-2">
+              Visuel (image ou emoji)
+            </label>
+            <div className="flex items-center gap-4">
+              <div
+                className="w-20 h-20 rounded-2xl border border-brand-border bg-brand-darker flex items-center justify-center overflow-hidden shrink-0"
+              >
+                {form.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={form.image} alt="Soft" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-4xl">{form.emoji || "🥤"}</span>
+                )}
+              </div>
+              <div className="flex-1 flex flex-col gap-2">
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept={ACCEPTED_TYPES.join(",")}
+                  onChange={onImagePick}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="flex items-center justify-center gap-2 text-sm font-semibold text-brand-text bg-white/5 hover:bg-white/10 border border-brand-border px-4 py-2 rounded-xl transition-colors"
+                >
+                  <Upload className="w-4 h-4" />
+                  {form.image ? "Changer l'image" : "Uploader une image"}
+                </button>
+                {form.image && (
+                  <button
+                    type="button"
+                    onClick={clearImage}
+                    className="flex items-center justify-center gap-2 text-xs text-brand-muted hover:text-brand-error transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                    Retirer l&apos;image
+                  </button>
+                )}
+                {!form.image && (
+                  <p className="text-[11px] text-brand-muted">
+                    PNG, JPG, WebP ou SVG · max 3 Mo. Sans image, l&apos;emoji s&apos;affichera.
+                  </p>
+                )}
+                {imgError && <p className="text-xs text-brand-error">{imgError}</p>}
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="text-xs text-brand-muted uppercase tracking-wide block mb-1">Nom *</label>
@@ -108,7 +234,7 @@ export default function AdminSoftsPage() {
               />
             </div>
             <div>
-              <label className="text-xs text-brand-muted uppercase tracking-wide block mb-1">Emoji</label>
+              <label className="text-xs text-brand-muted uppercase tracking-wide block mb-1">Emoji (fallback)</label>
               <input
                 className="input-base text-2xl"
                 value={form.emoji}
@@ -200,8 +326,17 @@ export default function AdminSoftsPage() {
               {softs.map((s) => (
                 <tr key={s.id} className="border-b border-brand-border/50 hover:bg-white/2 transition-colors">
                   <td className="px-5 py-3">
-                    <span className="text-xl mr-2">{s.emoji}</span>
-                    <span className="font-medium text-brand-text">{s.name}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-brand-darker border border-brand-border flex items-center justify-center overflow-hidden shrink-0">
+                        {s.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={s.image} alt={s.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-lg">{s.emoji}</span>
+                        )}
+                      </div>
+                      <span className="font-medium text-brand-text">{s.name}</span>
+                    </div>
                   </td>
                   <td className="px-5 py-3">
                     <span className="text-brand-gold font-semibold">

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ShoppingBag, MapPin, Star, ChevronRight } from "lucide-react";
+import { ArrowRight, ShoppingBag, MapPin, Star, ChevronRight, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 import EventsSlider from "@/components/store/EventsSlider";
 import HeroCTAs from "@/components/store/HeroCTAs";
+import { isComposerEnabled } from "@/lib/siteConfig";
 
-export const revalidate = 300; // 5 minutes
+export const revalidate = 60;
 
 async function getFeaturedProducts() {
   try {
@@ -45,107 +46,169 @@ const TICKER_ITEMS = [
 ];
 
 export default async function HomePage() {
-  const [featuredProducts, categories, events] = await Promise.all([
+  const [featuredProducts, categories, events, composerEnabled] = await Promise.all([
     getFeaturedProducts(),
     getCategories(),
     getEvents(),
+    isComposerEnabled(),
   ]);
 
   return (
     <div className="overflow-x-hidden">
 
       {/* ══════════════════════════════════════
-          HERO — Cinematic immersive
+          HERO — Premium campaign poster
+          • Big neon logo at the top-left, in the content flow
+          • Cocktail anchored right, fills full hero height at native aspect
+          • Dark, atmospheric left side for text overlay
+          • Layered smoke + neon haze for nightlife realism
       ══════════════════════════════════════ */}
-      <section className="relative h-[100svh] min-h-[620px] md:min-h-[720px] flex flex-col items-center justify-center bg-[#010108] overflow-hidden">
+      <section className="relative min-h-[100svh] flex items-start bg-[#010108] overflow-hidden">
 
-        {/* ── Background photo — très sombre, saturé ── */}
-        <Image
-          src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=1400&q=80&auto=format&fm=webp"
-          alt="" fill priority sizes="100vw"
-          className="object-cover object-center"
-          style={{ filter: "brightness(0.26) saturate(1.35)" }}
+        {/* ── Deep black base ── */}
+        <div className="absolute inset-0 bg-[#020208]" />
+
+        {/* ── Cocktail poster ──
+            mobile : fills the entire hero, object-position pushed left so
+                     the cocktail subject sits in the right 2/3 of viewport.
+                     scale + origin-left enlarges it and lets the right edge
+                     bleed off-screen for a real campaign-poster feel.
+            md+    : native portrait aspect, full hero height, anchored
+                     to the right — cocktail subject reads at ~80% viewport */}
+        <div className="absolute inset-x-0 top-0 bottom-[80px] md:bottom-0 md:left-auto md:right-0 md:aspect-[1023/1537] md:w-auto pointer-events-none">
+          <Image
+            src="/hero-cocktail.png"
+            alt="ReadyMiix cocktail premium"
+            fill priority
+            quality={95}
+            sizes="(max-width: 768px) 100vw, 67vh"
+            className="object-cover object-[7%_center] md:object-center"
+            style={{ filter: "saturate(1.32) contrast(1.12) brightness(1.04)" }}
+          />
+        </div>
+
+        {/* ── Left-side dark mask — pulled back to 58% so the cocktail
+              area (right half) is completely free of overlay ── */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(to right, #010108 0%, rgba(1,1,8,0.92) 15%, rgba(1,1,8,0.70) 30%, rgba(1,1,8,0.28) 45%, transparent 58%)",
+          }}
         />
 
-        {/* ── Gradient stack ── */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0C0030]/85 via-[#010108]/55 to-[#010108]" />
-        <div className="absolute inset-0" style={{
-          background: "radial-gradient(ellipse 85% 80% at 50% 45%, transparent 25%, rgba(1,1,8,0.65) 100%)",
-        }} />
+        {/* ── Pink glow bleed — discreet halo, no longer veils the photo ── */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse 90% 75% at 78% 55%, rgba(247,37,133,0.10) 0%, rgba(247,37,133,0.04) 30%, rgba(0,180,255,0.03) 55%, transparent 78%)",
+            mixBlendMode: "screen",
+          }}
+        />
 
-        {/* ── Slow ambient orbs — plus grands, plus lents ── */}
+        {/* ── Top fade — lighter so neon palms keep popping ── */}
+        <div className="absolute inset-x-0 top-0 h-[160px] pointer-events-none bg-gradient-to-b from-[#010108]/35 to-transparent" />
+
+        {/* ── Bottom fade — shorter and lighter so the wet floor stays visible ── */}
+        <div className="absolute inset-x-0 bottom-0 h-[180px] pointer-events-none bg-gradient-to-t from-[#010108] via-[#010108]/30 to-transparent" />
+
+        {/* ── Atmospheric smoke — slow drifting coloured clouds ── */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ mixBlendMode: "screen" }}>
+          <div className="absolute -inset-[15%] blur-[110px] opacity-25"
+            style={{
+              background: "radial-gradient(ellipse 50% 35% at 28% 65%, rgba(247,37,133,0.22) 0%, transparent 60%)",
+              animation: "ciDrift1 36s ease-in-out infinite",
+            }} />
+          <div className="absolute -inset-[15%] blur-[120px] opacity-30"
+            style={{
+              background: "radial-gradient(ellipse 55% 40% at 55% 38%, rgba(247,37,133,0.40) 0%, transparent 60%)",
+              animation: "ciDrift2 42s ease-in-out infinite",
+            }} />
+          <div className="absolute -inset-[15%] blur-[130px] opacity-25"
+            style={{
+              background: "radial-gradient(ellipse 45% 35% at 22% 80%, rgba(0,180,255,0.40) 0%, transparent 60%)",
+              animation: "ciDrift3 38s ease-in-out infinite",
+            }} />
+        </div>
+
+        {/* ── Neon orbs — anchor the palette on the dark left side ── */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="hero-orb absolute -top-[320px] -left-[220px] w-[900px] h-[900px] rounded-full blur-[170px]"
-            style={{ background: "rgba(70,0,150,0.18)", "--dur": "42s" } as React.CSSProperties} />
-          <div className="hero-orb absolute -top-[120px] -right-[320px] w-[750px] h-[750px] rounded-full blur-[150px]"
-            style={{ background: "rgba(247,37,133,0.10)", "--dur": "32s", animationDelay: "-8s" } as React.CSSProperties} />
-          <div className="hero-orb absolute -bottom-[240px] left-1/2 -translate-x-1/2 w-[1100px] h-[650px] rounded-full blur-[200px]"
-            style={{ background: "rgba(0,180,255,0.06)", "--dur": "55s", animationDelay: "-15s" } as React.CSSProperties} />
-          {/* Centre depth */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full blur-[110px]"
-            style={{ background: "rgba(18,0,55,0.55)" }} />
-          {/* Grid subtil */}
-          <div className="absolute inset-0 bg-grid opacity-[0.04]" />
+          <div className="hero-orb absolute -bottom-[180px] -left-[140px] w-[640px] h-[500px] rounded-full blur-[180px]"
+            style={{ background: "rgba(180,30,90,0.10)", "--dur": "48s" } as React.CSSProperties} />
+          <div className="hero-orb absolute top-[10%] -left-[120px] w-[440px] h-[440px] rounded-full blur-[160px]"
+            style={{ background: "rgba(247,37,133,0.10)", "--dur": "42s", animationDelay: "-14s" } as React.CSSProperties} />
+          <div className="hero-orb absolute bottom-[10%] left-[35%] w-[380px] h-[380px] rounded-full blur-[150px]"
+            style={{ background: "rgba(0,210,200,0.07)", "--dur": "50s", animationDelay: "-22s" } as React.CSSProperties} />
+
           {/* Top accent line */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/60 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent" />
         </div>
 
-        {/* ── Fumée froide en bas — derive lente ── */}
-        <div className="absolute bottom-0 left-0 right-0 h-[280px] pointer-events-none overflow-hidden">
-          <div className="absolute inset-0 blur-[55px]"
-            style={{ background: "rgba(0,180,255,0.09)", animation: "ciDrift1 30s ease-in-out infinite", opacity: 0.7 }} />
-          <div className="absolute inset-0 blur-[80px]"
-            style={{ background: "rgba(247,37,133,0.07)", animation: "ciDrift2 38s ease-in-out infinite", opacity: 0.6 }} />
-          <div className="absolute bottom-0 left-0 right-0 h-full bg-gradient-to-t from-[#010108] via-[#010108]/70 to-transparent" />
-        </div>
+        {/* ══════════ CONTENT — left-aligned column with logo on top ══════════ */}
+        <div className="relative z-10 container-custom pt-4 pb-28 md:pt-6 md:pb-32 lg:pt-8 lg:pb-40 w-full">
+          <div className="w-full max-w-[70%] sm:max-w-[60%] md:max-w-[48%] lg:max-w-[42%]">
 
-        {/* ── Raie lumineuse horizontale ── */}
-        <div className="absolute left-0 right-0 h-px pointer-events-none" style={{
-          top: "46%",
-          background: "linear-gradient(90deg, transparent 5%, rgba(247,37,133,0.4) 35%, rgba(0,180,255,0.35) 65%, transparent 95%)",
-          opacity: 0.25,
-        }} />
+            {/* Big neon logo — replaces the old navbar logo, dominant brand mark */}
+            <Link
+              href="/"
+              className="animate-slide-in-up [animation-delay:0ms] inline-block -ml-2 md:-ml-3 mb-4 md:mb-7 lg:mb-8"
+              aria-label="ReadyMiix Store — Accueil"
+            >
+              <Image
+                src="/logo.png"
+                alt="ReadyMiix Store"
+                width={320}
+                height={320}
+                priority
+                className="w-[170px] h-[170px] sm:w-[200px] sm:h-[200px] md:w-[240px] md:h-[240px] lg:w-[280px] lg:h-[280px] object-contain"
+              />
+            </Link>
 
+            {/* Eyebrow */}
+            <p
+              className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-7 md:mb-9"
+              style={{ textShadow: "0 0 18px rgba(0,210,200,0.55), 0 2px 8px rgba(0,0,0,0.7)" }}
+            >
+              <Sparkles className="w-3.5 h-3.5 shrink-0" />
+              Prêt à boire. Prêt à vivre.
+            </p>
 
-        {/* ── Hero content ── */}
-        <div className="relative z-10 flex flex-col items-center text-center px-6 md:px-12">
-
-          {/* Logo */}
-          <div className="relative animate-slide-in-up [animation-delay:0ms] mb-8 md:mb-20 lg:mb-24">
-            <div className="absolute inset-0 rounded-full bg-brand-gold/16 blur-[120px] scale-[3.0] animate-glow-breathe" />
-            <div className="absolute inset-0 rounded-full bg-brand-purple/10 blur-[160px] scale-[3.6]" />
-            <Image
-              src="/logo.png" alt="ReadyMiix" width={400} height={400} priority
-              className="relative z-10 w-[220px] h-[220px] sm:w-[270px] sm:h-[270px] md:w-[320px] md:h-[320px] lg:w-[380px] lg:h-[380px] object-contain"
-              style={{ filter: "drop-shadow(0 0 80px rgba(247,37,133,0.70)) drop-shadow(0 0 30px rgba(247,37,133,0.35))" }}
-            />
-          </div>
-
-          {/* Main headline */}
-          <div className="animate-slide-in-up [animation-delay:120ms] mb-7 md:mb-16 lg:mb-20">
-            <h1 className="font-display uppercase leading-[0.9] tracking-tight">
+            {/* Slogan — dominant focal point */}
+            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.9] tracking-tight mb-8 md:mb-9">
               <span
-                className="block text-[clamp(2.6rem,11vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-white mb-1 md:mb-4"
-                style={{ textShadow: "0 0 80px rgba(255,255,255,0.1)" }}
+                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-white"
+                style={{ textShadow: "0 8px 40px rgba(0,0,0,0.85), 0 0 50px rgba(255,255,255,0.08)" }}
               >
                 BIEN FRAIS
               </span>
               <span
-                className="block text-[clamp(2.6rem,11vw,5rem)] md:text-[clamp(3.5rem,8.5vw,6rem)] lg:text-[clamp(4.5rem,9vw,10rem)] text-gold-gradient"
-                style={{ filter: "drop-shadow(0 0 50px rgba(247,37,133,0.55))" }}
+                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-gold-gradient mt-1 md:mt-2"
+                style={{ filter: "drop-shadow(0 8px 30px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(247,37,133,0.50))" }}
               >
                 TOUJOURS PRÊT
               </span>
             </h1>
+
+            {/* Accent bar */}
+            <div className="animate-slide-in-up [animation-delay:260ms] w-14 md:w-16 h-[3px] bg-gradient-to-r from-brand-gold via-brand-gold/70 to-transparent rounded-full mb-7 md:mb-8" />
+
+            {/* Subtitle */}
+            <p
+              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[340px] md:max-w-[360px] mb-10 md:mb-12"
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+            >
+              Des cocktails premium prêts à boire, pensés pour vos{" "}
+              <span className="text-brand-gold font-semibold">meilleurs</span>{" "}
+              moments.
+            </p>
+
+            {/* CTAs */}
+            <HeroCTAs />
+
           </div>
-
-          {/* CTAs */}
-          <HeroCTAs />
-
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30">
+        <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30 z-10">
           <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.3em]">Scroll</span>
           <div className="w-px h-8 bg-gradient-to-b from-transparent to-brand-gold" />
           <div className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-bounce" />
@@ -179,9 +242,10 @@ export default async function HomePage() {
       ══════════════════════════════════════ */}
       <section className="py-5 md:py-6" style={{ background: "#020208" }}>
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+          <div className={`grid grid-cols-1 gap-3 md:gap-4 ${composerEnabled ? "md:grid-cols-3" : "md:grid-cols-1 max-w-xl mx-auto"}`}>
 
-            {/* ── HARD portal ── */}
+            {/* ── HARD portal — composer only ── */}
+            {composerEnabled && (
             <Link
               href="/composer?type=hard"
               className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
@@ -218,8 +282,10 @@ export default async function HomePage() {
                 </span>
               </div>
             </Link>
+            )}
 
-            {/* ── LIGHT portal ── */}
+            {/* ── LIGHT portal — composer only ── */}
+            {composerEnabled && (
             <Link
               href="/composer?type=light"
               className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
@@ -256,8 +322,9 @@ export default async function HomePage() {
                 </span>
               </div>
             </Link>
+            )}
 
-            {/* ── FROZEN CAIPI portal ── */}
+            {/* ── FROZEN CAIPI portal — always shown (boutique) ── */}
             <Link
               href="/shop?category=cocktails"
               className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
@@ -440,71 +507,6 @@ export default async function HomePage() {
           </div>
         </section>
       )}
-
-      {/* ══════════════════════════════════════
-          BRAND STORY
-      ══════════════════════════════════════ */}
-      <section className="py-12 md:py-14 lg:py-20">
-        <div className="container-custom">
-          <div className="grid lg:grid-cols-2 gap-8 md:gap-10 lg:gap-12 items-center">
-            <div className="relative">
-              <div className="aspect-[4/3] rounded-3xl overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&q=70&auto=format&fm=webp"
-                  alt="ReadyMiix – Notre histoire"
-                  fill
-                  loading="lazy"
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-darker/70 to-transparent" />
-              </div>
-              <div className="absolute -bottom-5 -right-5 glass border border-brand-gold/30 rounded-2xl p-5 hidden md:block shadow-gold-sm">
-                <p className="font-display text-4xl font-bold text-brand-gold uppercase">100%</p>
-                <p className="text-xs text-brand-muted mt-1">Fait en Guyane</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-6">
-              <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.2em]">— Notre histoire</p>
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-white uppercase leading-tight">
-                Nés en Guyane,{" "}
-                <span className="text-gold-gradient">pour la Guyane</span>
-              </h2>
-              <p className="text-brand-muted leading-relaxed">
-                ReadyMiix est né d&apos;une passion pour les saveurs tropicales authentiques
-                de la Guyane française. Chaque cup est préparé avec soin — Hard avec
-                Hennessy pour les amateurs, Light avec bonbons et surprises fruitées pour tous.
-              </p>
-              <p className="text-brand-muted leading-relaxed">
-                Le concept est simple :{" "}
-                <strong className="text-brand-text">tu commandes, tu récupères, tu savoures.</strong>{" "}
-                Bien frais, toujours prêt.
-              </p>
-
-              <div className="grid grid-cols-3 gap-4 pt-2">
-                {[
-                  { value: "7+",   label: "Produits" },
-                  { value: "200+", label: "Clients" },
-                  { value: "5",    label: "Points vente" },
-                ].map((stat) => (
-                  <div key={stat.label} className="text-center p-4 rounded-xl bg-brand-card border border-brand-border">
-                    <p className="font-display text-3xl font-bold text-brand-gold uppercase">{stat.value}</p>
-                    <p className="text-xs text-brand-muted mt-1">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-
-              <Link
-                href="/about"
-                className="inline-flex items-center gap-2 text-brand-gold hover:text-brand-gold-light font-semibold transition-colors group self-start"
-              >
-                Découvrir notre histoire
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ══════════════════════════════════════
           POINTS DE VENTE BAND
