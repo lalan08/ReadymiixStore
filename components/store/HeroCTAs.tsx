@@ -5,7 +5,7 @@ import { ShoppingBag } from "lucide-react";
 
 export default function HeroCTAs() {
   return (
-    <div className="animate-slide-in-up [animation-delay:420ms] flex flex-col items-stretch gap-4 w-full max-w-[340px] md:max-w-[360px]">
+    <div className="animate-slide-in-up [animation-delay:420ms] flex flex-col items-stretch gap-4 w-full max-w-[280px] md:max-w-[300px]">
 
       {/* Single primary CTA — Boutique First */}
       <Link

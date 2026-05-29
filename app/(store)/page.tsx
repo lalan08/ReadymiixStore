@@ -145,7 +145,9 @@ export default async function HomePage() {
 
         {/* ══════════ CONTENT — left-aligned column with logo on top ══════════ */}
         <div className="relative z-10 container-custom pt-4 pb-28 md:pt-6 md:pb-32 lg:pt-8 lg:pb-40 w-full">
-          <div className="w-full max-w-[70%] sm:max-w-[60%] md:max-w-[48%] lg:max-w-[42%]">
+          {/* Invisible composition zone — bounded left of the glass so text
+              and CTA keep their presence without ever reaching the cocktail */}
+          <div className="w-full max-w-[64%] sm:max-w-[54%] md:max-w-[45%] lg:max-w-[40%] xl:max-w-[37%]">
 
             {/* Big neon logo — replaces the old navbar logo, dominant brand mark */}
             <Link
@@ -175,13 +177,13 @@ export default async function HomePage() {
             {/* Slogan — dominant focal point */}
             <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.9] tracking-tight mb-8 md:mb-9">
               <span
-                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-white"
+                className="block text-[clamp(2.9rem,12vw,4.6rem)] md:text-[clamp(3.9rem,7vw,5.8rem)] lg:text-[clamp(4.8rem,6.2vw,7rem)] text-white"
                 style={{ textShadow: "0 8px 40px rgba(0,0,0,0.85), 0 0 50px rgba(255,255,255,0.08)" }}
               >
                 BIEN FRAIS
               </span>
               <span
-                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-gold-gradient mt-1 md:mt-2"
+                className="block text-[clamp(2.9rem,12vw,4.6rem)] md:text-[clamp(3.9rem,7vw,5.8rem)] lg:text-[clamp(4.8rem,6.2vw,7rem)] text-gold-gradient mt-1 md:mt-2"
                 style={{ filter: "drop-shadow(0 8px 30px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(247,37,133,0.50))" }}
               >
                 TOUJOURS PRÊT
@@ -193,7 +195,7 @@ export default async function HomePage() {
 
             {/* Subtitle */}
             <p
-              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[340px] md:max-w-[360px] mb-10 md:mb-12"
+              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[290px] md:max-w-[320px] mb-10 md:mb-12"
               style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
             >
               Des cocktails premium prêts à boire, pensés pour vos{" "}
