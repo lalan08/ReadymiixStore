@@ -174,19 +174,26 @@ export default async function HomePage() {
               Prêt à boire. Prêt à vivre.
             </p>
 
-            {/* Slogan — dominant focal point */}
-            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.9] tracking-tight mb-8 md:mb-9">
+            {/* Slogan — dominant focal point, 3-line composition to stay
+                clearly left of the glass while keeping a strong, premium scale */}
+            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.92] tracking-tight mb-8 md:mb-9">
               <span
-                className="block text-[clamp(2.9rem,12vw,4.6rem)] md:text-[clamp(3.9rem,7vw,5.8rem)] lg:text-[clamp(4.8rem,6.2vw,7rem)] text-white"
+                className="block text-[clamp(2rem,10vw,3.6rem)] md:text-[clamp(3.6rem,6.5vw,5.4rem)] lg:text-[clamp(4.2rem,5.8vw,6.8rem)] text-white"
                 style={{ textShadow: "0 8px 40px rgba(0,0,0,0.85), 0 0 50px rgba(255,255,255,0.08)" }}
               >
                 BIEN FRAIS
               </span>
               <span
-                className="block text-[clamp(2.9rem,12vw,4.6rem)] md:text-[clamp(3.9rem,7vw,5.8rem)] lg:text-[clamp(4.8rem,6.2vw,7rem)] text-gold-gradient mt-1 md:mt-2"
+                className="block text-[clamp(2rem,10vw,3.6rem)] md:text-[clamp(3.6rem,6.5vw,5.4rem)] lg:text-[clamp(4.2rem,5.8vw,6.8rem)] text-gold-gradient mt-1 md:mt-2"
                 style={{ filter: "drop-shadow(0 8px 30px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(247,37,133,0.50))" }}
               >
-                TOUJOURS PRÊT
+                TOUJOURS
+              </span>
+              <span
+                className="block text-[clamp(2rem,10vw,3.6rem)] md:text-[clamp(3.6rem,6.5vw,5.4rem)] lg:text-[clamp(4.2rem,5.8vw,6.8rem)] text-gold-gradient mt-1 md:mt-2"
+                style={{ filter: "drop-shadow(0 8px 30px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(247,37,133,0.50))" }}
+              >
+                PRÊT
               </span>
             </h1>
 
