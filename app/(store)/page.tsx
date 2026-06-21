@@ -5,8 +5,9 @@ import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/store/ProductCard";
 import EventsSlider from "@/components/store/EventsSlider";
 import HeroCTAs from "@/components/store/HeroCTAs";
+import { isComposerEnabled } from "@/lib/siteConfig";
 
-export const revalidate = 300; // 5 minutes
+export const revalidate = 60;
 
 async function getFeaturedProducts() {
   try {
@@ -45,10 +46,11 @@ const TICKER_ITEMS = [
 ];
 
 export default async function HomePage() {
-  const [featuredProducts, categories, events] = await Promise.all([
+  const [featuredProducts, categories, events, composerEnabled] = await Promise.all([
     getFeaturedProducts(),
     getCategories(),
     getEvents(),
+    isComposerEnabled(),
   ]);
 
   return (
@@ -143,12 +145,14 @@ export default async function HomePage() {
 
         {/* ══════════ CONTENT — left-aligned column with logo on top ══════════ */}
         <div className="relative z-10 container-custom pt-4 pb-28 md:pt-6 md:pb-32 lg:pt-8 lg:pb-40 w-full">
-          <div className="w-full max-w-[78%] sm:max-w-[68%] md:max-w-[52%] lg:max-w-[46%]">
+          {/* Invisible composition zone — bounded left of the glass so text
+              and CTA keep their presence without ever reaching the cocktail */}
+          <div className="w-full max-w-[64%] sm:max-w-[54%] md:max-w-[45%] lg:max-w-[40%] xl:max-w-[37%]">
 
             {/* Big neon logo — replaces the old navbar logo, dominant brand mark */}
             <Link
               href="/"
-              className="animate-slide-in-up [animation-delay:0ms] inline-block -ml-2 md:-ml-3 mb-6 md:mb-10 lg:mb-12"
+              className="animate-slide-in-up [animation-delay:0ms] inline-block -ml-2 md:-ml-3 mb-4 md:mb-7 lg:mb-8"
               aria-label="ReadyMiix Store — Accueil"
             >
               <Image
@@ -163,26 +167,33 @@ export default async function HomePage() {
 
             {/* Eyebrow */}
             <p
-              className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-12 md:mb-14"
+              className="animate-slide-in-up [animation-delay:80ms] flex items-center gap-2 text-[11px] md:text-xs font-black text-brand-teal uppercase tracking-[0.28em] mb-7 md:mb-9"
               style={{ textShadow: "0 0 18px rgba(0,210,200,0.55), 0 2px 8px rgba(0,0,0,0.7)" }}
             >
               <Sparkles className="w-3.5 h-3.5 shrink-0" />
               Prêt à boire. Prêt à vivre.
             </p>
 
-            {/* Slogan — dominant focal point */}
-            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.9] tracking-tight mb-8 md:mb-9">
+            {/* Slogan — dominant focal point, 3-line composition to stay
+                clearly left of the glass while keeping a strong, premium scale */}
+            <h1 className="animate-slide-in-up [animation-delay:180ms] font-display uppercase leading-[0.92] tracking-tight mb-8 md:mb-9">
               <span
-                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-white"
+                className="block text-[clamp(2rem,10vw,3.6rem)] md:text-[clamp(3.6rem,6.5vw,5.4rem)] lg:text-[clamp(4.2rem,5.8vw,6.8rem)] text-white"
                 style={{ textShadow: "0 8px 40px rgba(0,0,0,0.85), 0 0 50px rgba(255,255,255,0.08)" }}
               >
                 BIEN FRAIS
               </span>
               <span
-                className="block text-[clamp(2.6rem,11vw,4.6rem)] md:text-[clamp(4rem,8vw,7rem)] lg:text-[clamp(5rem,7.5vw,9rem)] text-gold-gradient mt-1 md:mt-2"
+                className="block text-[clamp(2rem,10vw,3.6rem)] md:text-[clamp(3.6rem,6.5vw,5.4rem)] lg:text-[clamp(4.2rem,5.8vw,6.8rem)] text-gold-gradient mt-1 md:mt-2"
                 style={{ filter: "drop-shadow(0 8px 30px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(247,37,133,0.50))" }}
               >
-                TOUJOURS PRÊT
+                TOUJOURS
+              </span>
+              <span
+                className="block text-[clamp(2rem,10vw,3.6rem)] md:text-[clamp(3.6rem,6.5vw,5.4rem)] lg:text-[clamp(4.2rem,5.8vw,6.8rem)] text-gold-gradient mt-1 md:mt-2"
+                style={{ filter: "drop-shadow(0 8px 30px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(247,37,133,0.50))" }}
+              >
+                PRÊT
               </span>
             </h1>
 
@@ -191,7 +202,7 @@ export default async function HomePage() {
 
             {/* Subtitle */}
             <p
-              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[420px] mb-12 md:mb-14"
+              className="animate-slide-in-up [animation-delay:320ms] text-sm md:text-base lg:text-[17px] text-white/80 leading-relaxed max-w-[290px] md:max-w-[320px] mb-10 md:mb-12"
               style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
             >
               Des cocktails premium prêts à boire, pensés pour vos{" "}
@@ -240,9 +251,10 @@ export default async function HomePage() {
       ══════════════════════════════════════ */}
       <section className="py-5 md:py-6" style={{ background: "#020208" }}>
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+          <div className={`grid grid-cols-1 gap-3 md:gap-4 ${composerEnabled ? "md:grid-cols-3" : "md:grid-cols-1 max-w-xl mx-auto"}`}>
 
-            {/* ── HARD portal ── */}
+            {/* ── HARD portal — composer only ── */}
+            {composerEnabled && (
             <Link
               href="/composer?type=hard"
               className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
@@ -279,8 +291,10 @@ export default async function HomePage() {
                 </span>
               </div>
             </Link>
+            )}
 
-            {/* ── LIGHT portal ── */}
+            {/* ── LIGHT portal — composer only ── */}
+            {composerEnabled && (
             <Link
               href="/composer?type=light"
               className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
@@ -317,8 +331,9 @@ export default async function HomePage() {
                 </span>
               </div>
             </Link>
+            )}
 
-            {/* ── FROZEN CAIPI portal ── */}
+            {/* ── FROZEN CAIPI portal — always shown (boutique) ── */}
             <Link
               href="/shop?category=cocktails"
               className="group relative overflow-hidden rounded-3xl flex flex-col justify-between p-5 md:p-7 cursor-pointer active:scale-[0.98] transition-transform duration-150"
@@ -501,71 +516,6 @@ export default async function HomePage() {
           </div>
         </section>
       )}
-
-      {/* ══════════════════════════════════════
-          BRAND STORY
-      ══════════════════════════════════════ */}
-      <section className="py-12 md:py-14 lg:py-20">
-        <div className="container-custom">
-          <div className="grid lg:grid-cols-2 gap-8 md:gap-10 lg:gap-12 items-center">
-            <div className="relative">
-              <div className="aspect-[4/3] rounded-3xl overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&q=70&auto=format&fm=webp"
-                  alt="ReadyMiix – Notre histoire"
-                  fill
-                  loading="lazy"
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-darker/70 to-transparent" />
-              </div>
-              <div className="absolute -bottom-5 -right-5 glass border border-brand-gold/30 rounded-2xl p-5 hidden md:block shadow-gold-sm">
-                <p className="font-display text-4xl font-bold text-brand-gold uppercase">100%</p>
-                <p className="text-xs text-brand-muted mt-1">Fait en Guyane</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-6">
-              <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.2em]">— Notre histoire</p>
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-white uppercase leading-tight">
-                Nés en Guyane,{" "}
-                <span className="text-gold-gradient">pour la Guyane</span>
-              </h2>
-              <p className="text-brand-muted leading-relaxed">
-                ReadyMiix est né d&apos;une passion pour les saveurs tropicales authentiques
-                de la Guyane française. Chaque cup est préparé avec soin — Hard avec
-                Hennessy pour les amateurs, Light avec bonbons et surprises fruitées pour tous.
-              </p>
-              <p className="text-brand-muted leading-relaxed">
-                Le concept est simple :{" "}
-                <strong className="text-brand-text">tu commandes, tu récupères, tu savoures.</strong>{" "}
-                Bien frais, toujours prêt.
-              </p>
-
-              <div className="grid grid-cols-3 gap-4 pt-2">
-                {[
-                  { value: "7+",   label: "Produits" },
-                  { value: "200+", label: "Clients" },
-                  { value: "5",    label: "Points vente" },
-                ].map((stat) => (
-                  <div key={stat.label} className="text-center p-4 rounded-xl bg-brand-card border border-brand-border">
-                    <p className="font-display text-3xl font-bold text-brand-gold uppercase">{stat.value}</p>
-                    <p className="text-xs text-brand-muted mt-1">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-
-              <Link
-                href="/about"
-                className="inline-flex items-center gap-2 text-brand-gold hover:text-brand-gold-light font-semibold transition-colors group self-start"
-              >
-                Découvrir notre histoire
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ══════════════════════════════════════
           POINTS DE VENTE BAND
