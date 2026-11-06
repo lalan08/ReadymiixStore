@@ -55,7 +55,14 @@ export default function ProductDetail({ product, softs, related }: Props) {
 
   const tags = parseJsonField<string[]>(product.tags, []);
   const isComposer = COMPOSER_SLUGS.includes(product.category.slug);
-  const isCaipi    = product.productType === "caipi" || tags.includes("caipi");
+  function norm(s: string) {
+    return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  }
+  const isCaipi =
+    product.productType === "caipi" ||
+    tags.includes("caipi") ||
+    norm(product.slug).includes("caipi") ||
+    norm(product.name).includes("caipi");
   const showSofts  = softs.length > 0 && product.hasSoftChoice;
 
   const discount = product.comparePrice
