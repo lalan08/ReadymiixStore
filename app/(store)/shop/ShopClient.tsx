@@ -50,15 +50,20 @@ export default function ShopClient({ allProducts, categories }: Props) {
   const activeCat = searchParams.get("cat") ?? undefined;
   const view = searchParams.get("view") ?? undefined;
 
+  const nonFrozen = useMemo(
+    () => allProducts.filter((p) => !p.category.name.toLowerCase().includes("frozen")),
+    [allProducts]
+  );
+
   const products = useMemo(() => {
     if (activeCat) return allProducts.filter((p) => p.category.slug === activeCat);
-    if (view === "populaires") return allProducts.filter((p) => p.featured);
+    if (view === "populaires") return nonFrozen.filter((p) => p.featured);
     if (view === "nouveautes")
-      return [...allProducts]
+      return [...nonFrozen]
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 12);
-    return allProducts;
-  }, [allProducts, activeCat, view]);
+    return nonFrozen;
+  }, [allProducts, nonFrozen, activeCat, view]);
 
   const activeCatObj = categories.find((c) => c.slug === activeCat);
   const isFrozen = !!activeCat && !!activeCatObj?.name.toLowerCase().includes("frozen");
@@ -108,7 +113,7 @@ export default function ShopClient({ allProducts, categories }: Props) {
               Tout
             </Link>
 
-            {categories.filter((c) => c._count.products > 0).map((cat) => (
+            {categories.filter((c) => c._count.products > 0 || c.name.toLowerCase().includes("frozen")).map((cat) => (
               <Link
                 key={cat.id}
                 href={`/shop?cat=${cat.slug}`}
