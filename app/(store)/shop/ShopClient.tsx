@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, ShoppingBag } from "lucide-react";
 import ShopCard from "@/components/store/ShopCard";
+import FrozenCaipiShop from "@/components/store/FrozenCaipiShop";
 
 interface TabCategory {
   id: string;
@@ -59,9 +60,12 @@ export default function ShopClient({ allProducts, categories }: Props) {
     return allProducts;
   }, [allProducts, activeCat, view]);
 
+  const activeCatObj = categories.find((c) => c.slug === activeCat);
+  const isFrozen = !!activeCat && !!activeCatObj?.name.toLowerCase().includes("frozen");
+
   const activeLabel =
     activeCat
-      ? (categories.find((c) => c.slug === activeCat)?.name ?? activeCat)
+      ? (activeCatObj?.name ?? activeCat)
       : view === "populaires" ? "Populaires"
       : view === "nouveautes" ? "Nouveautés"
       : "Tout";
@@ -130,7 +134,7 @@ export default function ShopClient({ allProducts, categories }: Props) {
               {activeCat || view ? activeLabel : "Nos articles"}
             </h2>
             <p className="text-xs text-brand-muted/70 mt-0.5">
-              {products.length} article{products.length !== 1 ? "s" : ""}
+              {isFrozen ? "16 parfums" : `${products.length} article${products.length !== 1 ? "s" : ""}`}
             </p>
           </div>
           {(activeCat || view) && (
@@ -143,7 +147,9 @@ export default function ShopClient({ allProducts, categories }: Props) {
           )}
         </div>
 
-        {products.length === 0 ? (
+        {isFrozen ? (
+          <FrozenCaipiShop />
+        ) : products.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-5 text-center">
             <div className="w-20 h-20 rounded-full bg-brand-card border border-brand-border flex items-center justify-center">
               <ShoppingBag className="w-8 h-8 text-brand-muted/40" />
