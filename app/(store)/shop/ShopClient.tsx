@@ -39,11 +39,6 @@ interface Props {
   categories: TabCategory[];
 }
 
-const SPECIAL_TABS = [
-  { key: "populaires", label: "Populaires", href: "/shop?view=populaires" },
-  { key: "nouveautes", label: "Nouveautés", href: "/shop?view=nouveautes" },
-];
-
 const ACTIVE_STYLE = {
   background: "linear-gradient(135deg, #C5006A, #F72585)",
   boxShadow: "0 0 16px rgba(247,37,133,0.45)",
@@ -121,21 +116,6 @@ export default function ShopClient({ allProducts, categories }: Props) {
                 style={activeCat === cat.slug ? ACTIVE_STYLE : {}}
               >
                 {cat.name}
-              </Link>
-            ))}
-
-            {SPECIAL_TABS.map((t) => (
-              <Link
-                key={t.key}
-                href={t.href}
-                className={`shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-bold transition-all duration-200 whitespace-nowrap cursor-pointer ${
-                  view === t.key
-                    ? "text-white"
-                    : "bg-white/[0.05] border border-white/[0.08] text-brand-muted hover:text-brand-text hover:border-brand-gold/30"
-                }`}
-                style={view === t.key ? ACTIVE_STYLE : {}}
-              >
-                {t.label}
               </Link>
             ))}
           </div>
