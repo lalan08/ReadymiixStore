@@ -15,6 +15,12 @@ export interface CartItem {
     sirop?: string;
     soft?: string;
     softs?: string[];
+    caipi?: {
+      parfum: string;
+      taille: string;
+      preparation: string;
+      supplements: string[];
+    };
   };
 }
 

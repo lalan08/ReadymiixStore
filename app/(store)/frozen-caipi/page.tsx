@@ -1,231 +1,586 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ShoppingCart, Check, Minus, Plus } from "lucide-react";
+import { ChevronLeft, Check, MessageCircle, Clock, MapPin, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useCartStore } from "@/lib/store";
+import { getCaipiPrice, CAIPI_SIZES, CAIPI_PREPARATIONS, CAIPI_SUPPLEMENTS } from "@/lib/caipiPricing";
+import { formatPrice } from "@/lib/utils";
 import toast from "react-hot-toast";
 
-const ACCENT  = "#00C8FF";
-const ACCENT2 = "#00F0DC";
-const BG      = "#010C14";
+const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP ?? "594694369615";
+const BG   = "#010C14";
+const PINK = "#F72585";
 
-const FLAVORS = [
-  { id: "citron-vert", name: "Citron Vert", emoji: "🍋", desc: "Le classique — acidulé & glacé" },
-  { id: "passion",     name: "Passion",     emoji: "🍊", desc: "Exotique & tropical" },
-  { id: "fraise",      name: "Fraise",      emoji: "🍓", desc: "Fruité & sucré" },
-  { id: "mangue",      name: "Mangue",      emoji: "🥭", desc: "Doux & estival" },
-];
-
-const PRICE = 6.5;
-
-const INCLUDES = [
-  "🧊 Cachaça premium bien fraîche",
-  "🍋 Parfum au choix",
-  "🧊 Crushed ice & texture veloutée",
-  "🥤 Gobelet ReadyMiix 50cl",
-  "🥤 Paille bambou",
-];
-
-function hexToRgba(hex: string, a: number) {
-  const h = hex.replace("#", "");
-  return `rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;
+interface Flavor {
+  id: string;
+  name: string;
+  sub?: string;
+  category: string;
+  emoji: string;
+  color: string;
 }
 
+const FLAVORS: Flavor[] = [
+  /* ── Classique ── */
+  { id: "citron-vert",   name: "Caïpi Classique", sub: "Citron Vert",  category: "classique", emoji: "🍋", color: "#a8e063" },
+  /* ── Fruité ── */
+  { id: "fraise",        name: "Fraise",          category: "fruitee", emoji: "🍓", color: "#FF4444" },
+  { id: "peche",         name: "Pêche",           category: "fruitee", emoji: "🍑", color: "#FFAA55" },
+  { id: "mangue",        name: "Mangue",          category: "fruitee", emoji: "🥭", color: "#FFB347" },
+  { id: "maracudja",     name: "Maracudja",       category: "fruitee", emoji: "🍊", color: "#E84393" },
+  { id: "ananas",        name: "Ananas",          category: "fruitee", emoji: "🍍", color: "#FFD700" },
+  { id: "fruits-rouges", name: "Fruits Rouges",   category: "fruitee", emoji: "🫐", color: "#CC2244" },
+  { id: "coco",          name: "Coco",            category: "fruitee", emoji: "🥥", color: "#D4C8AA" },
+  { id: "kiwi",          name: "Kiwi",            category: "fruitee", emoji: "🥝", color: "#5FA000" },
+  { id: "framboise",     name: "Framboise",       category: "fruitee", emoji: "🍇", color: "#FF3366" },
+  { id: "cerise",        name: "Cerise",          category: "fruitee", emoji: "🍒", color: "#990022" },
+  { id: "myrtille",      name: "Myrtille",        category: "fruitee", emoji: "🫐", color: "#6B21A8" },
+  { id: "pomme-verte",   name: "Pomme Verte",     category: "fruitee", emoji: "🍏", color: "#3A9500" },
+  { id: "litchi",        name: "Litchi",          category: "fruitee", emoji: "🍈", color: "#FFB0C8" },
+  { id: "banane",        name: "Banane",          category: "fruitee", emoji: "🍌", color: "#FFE066" },
+  { id: "poire",         name: "Poire",           category: "fruitee", emoji: "🍐", color: "#CCDD55" },
+];
+
+const CLASSIQUE_FLAVORS = FLAVORS.filter(f => f.category === "classique");
+const FRUITEE_FLAVORS   = FLAVORS.filter(f => f.category === "fruitee");
+
+const TIME_SLOTS: string[] = (() => {
+  const slots: string[] = [];
+  for (let h = 19; h <= 23; h++) {
+    slots.push(`${h}h00`);
+    if (h < 23) slots.push(`${h}h30`);
+  }
+  return slots;
+})();
+
+const TOAST_STYLE = { style: { background: "#050D16", color: "#E0F8FF", border: "1px solid rgba(0,200,255,0.2)" } };
+
 export default function FrozenCaipiPage() {
-  const [flavor, setFlavor] = useState("");
-  const [qty,    setQty]    = useState(1);
-  const { addItem, openCart } = useCartStore();
+  const [step, setStep]           = useState<0 | 1 | 2>(0);
+  const [flavorId, setFlavorId]   = useState<string | null>(null);
+  const [sizeId, setSizeId]       = useState<string | null>(null);
+  const [prepId, setPrepId]       = useState<string | null>(null);
+  const [supplements, setSupplements] = useState<string[]>([]);
+  const [prenom, setPrenom]       = useState("");
+  const [telephone, setTelephone] = useState("");
+  const [heure, setHeure]         = useState("");
+  const { addItem } = useCartStore();
 
-  const selected = FLAVORS.find(f => f.id === flavor);
+  const flavor = FLAVORS.find(f => f.id === flavorId) ?? null;
+  const categoryLabel = flavor?.category === "classique" ? "CLASSIQUE" : "FRUITÉ";
+  const basePrice = flavor && sizeId ? getCaipiPrice(flavor.category, sizeId) : null;
+  const suppTotal = supplements.reduce(
+    (sum, s) => sum + (CAIPI_SUPPLEMENTS.find(x => x.id === s)?.price ?? 0),
+    0
+  );
+  const unitPrice = basePrice !== null ? basePrice + suppTotal : null;
+  const isStep1Ready = !!flavorId && !!sizeId && !!prepId;
 
-  function handleAdd() {
-    if (!selected) return;
-    addItem({
-      id:       `frozen-caipi-${flavor}`,
-      name:     `Frozen Caipi – ${selected.name}`,
-      slug:     "frozen-caipi",
-      price:    PRICE,
-      image:    "",
-      volume:   "Cup 50cl",
-      quantity: qty,
-      options:  { sirop: selected.name },
-    });
-    toast.success(`Frozen Caipi ${selected.name} ajouté ! 🧊`, {
-      style: { background: "#050D16", color: "#E0F8FF", border: `1px solid ${hexToRgba(ACCENT, 0.3)}` },
-    });
-    openCart();
+  function toggleSupp(id: string) {
+    setSupplements(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   }
 
-  return (
-    <div className="min-h-screen pb-32" style={{ background: BG }}>
+  function handleSelectFlavor(id: string) {
+    setFlavorId(id);
+    setStep(1);
+  }
 
-      {/* ── Atmospheric background ── */}
+  function handleNext() {
+    if (!flavorId || !flavor) { toast.error("Choisis un parfum", TOAST_STYLE); return; }
+    if (!sizeId)   { toast.error("Choisis une taille", TOAST_STYLE); return; }
+    if (!prepId)   { toast.error("Choisis une préparation", TOAST_STYLE); return; }
+
+    const suppsSorted = [...supplements].sort();
+    const cartId = `caipi-${flavorId}-${sizeId}-${prepId}${suppsSorted.length ? "-" + suppsSorted.join("-") : ""}`;
+    const suppLabels = suppsSorted.map(id => CAIPI_SUPPLEMENTS.find(s => s.id === id)!.label);
+    const flavorDisplay = flavor.sub ? `${flavor.name} ${flavor.sub}` : flavor.name;
+
+    addItem({
+      id:       cartId,
+      name:     `Frozen Caïpi ${flavorDisplay}`,
+      slug:     "frozen-caipi",
+      price:    unitPrice!,
+      image:    "",
+      quantity: 1,
+      options: {
+        caipi: {
+          parfum:      flavorDisplay,
+          taille:      CAIPI_SIZES.find(s => s.id === sizeId)!.label,
+          preparation: CAIPI_PREPARATIONS.find(p => p.id === prepId)!.label,
+          supplements: suppLabels,
+        },
+      },
+    });
+
+    toast.success(`Frozen Caïpi ${flavorDisplay} ajoutée !`, { icon: "🧊", ...TOAST_STYLE });
+    setStep(2);
+  }
+
+  function handleWhatsApp() {
+    if (!prenom)    { toast.error("Entre ton prénom", TOAST_STYLE); return; }
+    if (!telephone) { toast.error("Entre ton téléphone", TOAST_STYLE); return; }
+    if (!heure)     { toast.error("Choisis une heure", TOAST_STYLE); return; }
+
+    const flavorDisplay = flavor?.sub ? `${flavor.name} ${flavor.sub}` : (flavor?.name ?? "");
+    const sizeName  = CAIPI_SIZES.find(s => s.id === sizeId)?.label ?? "";
+    const prepName  = CAIPI_PREPARATIONS.find(p => p.id === prepId)?.label ?? "";
+    const suppNames = supplements
+      .map(id => CAIPI_SUPPLEMENTS.find(s => s.id === id)?.label)
+      .filter(Boolean)
+      .join(", ");
+
+    const lines = [
+      "Bonjour ReadyMiix 🧊",
+      "",
+      "Je voudrais commander une Frozen Caïpi :",
+      `- Parfum : ${flavorDisplay}`,
+      `- Taille : ${sizeName}`,
+      `- Préparation : ${prepName}`,
+      suppNames ? `- Toppings : ${suppNames}` : null,
+      `- Total : ${formatPrice(unitPrice ?? 0)}`,
+      "",
+      `Prénom : ${prenom}`,
+      `Téléphone : ${telephone}`,
+      `Heure de passage : ${heure}`,
+      "",
+      "Merci !",
+    ].filter((l): l is string => l !== null);
+
+    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
+  }
+
+  /* ─────── shared flavor card (used on landing) ─────── */
+  function FlavorCard({ f }: { f: Flavor }) {
+    const startPrice = getCaipiPrice(f.category, "500ml");
+    return (
+      <button
+        onClick={() => handleSelectFlavor(f.id)}
+        className="relative flex items-center gap-3 p-3 rounded-2xl text-left active:scale-[0.97] transition-transform cursor-pointer w-full"
+        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+      >
+        <div className="w-12 h-14 rounded-xl flex items-center justify-center text-xl shrink-0"
+          style={{ background: `linear-gradient(160deg, ${f.color}60, ${f.color}20)`, border: `1px solid ${f.color}30` }}>
+          {f.emoji}
+        </div>
+        <div className="min-w-0">
+          <p className="text-white font-bold text-sm leading-tight truncate">{f.name}</p>
+          {f.sub && <p className="text-white/40 text-[10px] uppercase tracking-wider">{f.sub}</p>}
+          <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
+            Dès {formatPrice(startPrice)}
+          </p>
+        </div>
+      </button>
+    );
+  }
+
+  /* ═══════════════════════════════════════════════════ */
+
+  return (
+    <div className="min-h-screen" style={{ background: BG, paddingBottom: step === 1 ? 120 : 40 }}>
+
+      {/* BG glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full blur-[140px] opacity-10"
-          style={{ background: ACCENT }} />
-        <div className="absolute top-60 -right-40 w-[400px] h-[400px] rounded-full blur-[120px] opacity-8"
-          style={{ background: ACCENT2 }} />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px] opacity-6"
-          style={{ background: ACCENT }} />
+          style={{ background: "#00C8FF" }} />
+        <div className="absolute top-60 -right-40 w-[400px] h-[400px] rounded-full blur-[120px] opacity-[0.08]"
+          style={{ background: PINK }} />
       </div>
 
-      {/* ── Back nav ── */}
-      <div className="relative px-5 pt-20 pb-2">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest transition-opacity hover:opacity-70"
-          style={{ color: hexToRgba(ACCENT, 0.7) }}
-        >
-          <ChevronLeft className="w-4 h-4" /> Accueil
-        </Link>
-      </div>
+      {/* ══════════════ STEP 0 — LANDING ══════════════ */}
+      {step === 0 && (
+        <div className="relative px-5 pt-20 pb-10 max-w-lg mx-auto">
 
-      {/* ── Hero ── */}
-      <div className="relative px-5 pt-6 pb-10 text-center">
-        <p className="text-[10px] font-black uppercase tracking-[0.35em] mb-3" style={{ color: hexToRgba(ACCENT, 0.6) }}>
-          Frozen · Tropical · Premium
-        </p>
+          {/* Click & Collect badge */}
+          <div className="flex justify-center mb-6">
+            <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.3em] px-3 py-1.5 rounded-full"
+              style={{ background: "rgba(247,37,133,0.1)", border: "1px solid rgba(247,37,133,0.3)", color: PINK }}>
+              <MapPin className="w-3 h-3" />
+              Click &amp; Collect · Matoury
+            </span>
+          </div>
 
-        {/* Frost visual */}
-        <div className="relative mx-auto mb-6 w-64 h-64 md:w-80 md:h-80">
-          <div className="absolute inset-0 rounded-full blur-[60px] opacity-20" style={{ background: `radial-gradient(circle, ${ACCENT}, ${ACCENT2})` }} />
-          <div className="absolute inset-4 rounded-full border opacity-15" style={{ borderColor: ACCENT }} />
-          <div className="absolute inset-8 rounded-full border opacity-10" style={{ borderColor: ACCENT2 }} />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <div className="font-display text-[80px] md:text-[100px] leading-none text-white uppercase tracking-tight drop-shadow-2xl"
-                style={{ textShadow: `0 0 60px ${hexToRgba(ACCENT, 0.5)}` }}>
+          {/* Title */}
+          <h1 className="font-display text-center leading-none mb-3">
+            <span className="block text-[52px] md:text-[64px] text-white tracking-tight">Ta caïpi.</span>
+            <span className="block text-[52px] md:text-[64px] tracking-tight" style={{ color: PINK }}>
+              À ton goût.
+            </span>
+          </h1>
+          <p className="text-center text-xs text-white/40 mb-8">
+            Givrée, fruitée, préparée pour toi. · 16 parfums disponibles
+          </p>
+
+          {/* Cup hero */}
+          <div className="flex justify-center gap-3 mb-8">
+            {(["#FF6B6B", "#FFB347", "#F72585"] as const).map((c, i) => (
+              <div key={i}
+                className="w-20 h-28 rounded-b-3xl rounded-t-lg flex items-end justify-center pb-2 text-2xl"
+                style={{ background: `linear-gradient(160deg, ${c}80, ${c}25)`, border: `1px solid ${c}40` }}>
                 🧊
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <button
+            onClick={() => setStep(1)}
+            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-display font-bold text-white text-base uppercase tracking-widest mb-3 active:scale-[0.98] transition-transform"
+            style={{ background: `linear-gradient(135deg, #C5006A, ${PINK}, #FF5BA3)`, boxShadow: `0 0 40px rgba(247,37,133,0.4)` }}
+          >
+            Composer ma caïpi →
+          </button>
+
+          {/* Hours + WhatsApp */}
+          <div className="flex flex-col items-center gap-1 mb-8">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.3)" }} />
+              <span className="text-xs text-white/30">Mar–Dim · 19h–23h</span>
+            </div>
+            <a
+              href={`https://wa.me/${WA_NUMBER}`}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 text-xs font-bold"
+              style={{ color: "#25D366" }}
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              0694 36 96 15
+            </a>
+          </div>
+
+          {/* Important notice */}
+          <div className="flex items-start gap-3 p-4 rounded-2xl mb-8"
+            style={{ background: "rgba(247,37,133,0.07)", border: "1px solid rgba(247,37,133,0.2)" }}>
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: PINK }} />
+            <div className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
+              <span className="font-bold text-white">Uniquement sur commande · Pas de surplace.</span>
+              {" "}Prépare au minimum 15 min avant ton passage pour une fraîcheur optimale.
+            </div>
+          </div>
+
+          {/* CLASSIQUE */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: "#a8e063cc" }}>
+                🍋 Classique
+              </span>
+              <span className="text-[10px] text-white/30">10€ / 12€ / 18€</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {CLASSIQUE_FLAVORS.map(f => <FlavorCard key={f.id} f={f} />)}
+            </div>
+          </div>
+
+          {/* FRUITÉ */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: `${PINK}cc` }}>
+                🍓 Fruité
+              </span>
+              <span className="text-[10px] text-white/30">12€ / 14€ / 20€</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {FRUITEE_FLAVORS.map(f => <FlavorCard key={f.id} f={f} />)}
+            </div>
+          </div>
+
+          {/* Boissons & extras */}
+          <Link href="/shop"
+            className="flex items-center justify-between p-4 rounded-2xl cursor-pointer"
+            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🥤</span>
+              <span className="text-white font-semibold text-sm">Boissons &amp; extras</span>
+            </div>
+            <span className="text-white/30 text-sm">→</span>
+          </Link>
+        </div>
+      )}
+
+      {/* ══════════════ STEP 1 — PERSONNALISER ══════════════ */}
+      {step === 1 && (
+        <div className="relative">
+          <div className="px-5 pt-20 pb-4">
+            <button onClick={() => setStep(0)}
+              className="flex items-center gap-1.5 text-sm font-semibold text-white/50 hover:text-white/80 mb-6 cursor-pointer">
+              <ChevronLeft className="w-4 h-4" /> Retour
+            </button>
+            <p className="text-xs font-black uppercase tracking-[0.3em] mb-1"
+              style={{ color: flavor ? flavor.color + "cc" : "rgba(247,37,133,0.7)" }}>
+              {flavor ? categoryLabel : "CHOISIS TON PARFUM"}
+            </p>
+            <h2 className="font-display text-4xl text-white uppercase mb-0.5">
+              {flavor ? flavor.name : "Personnaliser"}
+            </h2>
+            {flavor?.sub && (
+              <p className="text-sm text-white/50 uppercase tracking-widest">{flavor.sub}</p>
+            )}
+          </div>
+
+          <div className="px-5 max-w-lg mx-auto flex flex-col gap-4">
+
+            {/* Parfum */}
+            <div className="flex flex-col gap-3 p-4 rounded-2xl"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <p className="text-xs font-black uppercase tracking-widest text-white/50">Parfum</p>
+              <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+                {FLAVORS.map(f => (
+                  <button
+                    key={f.id}
+                    onClick={() => setFlavorId(f.id)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all shrink-0 active:scale-95 cursor-pointer"
+                    style={{
+                      background:  flavorId === f.id ? PINK + "30" : "rgba(255,255,255,0.05)",
+                      border:      `1px solid ${flavorId === f.id ? PINK : "rgba(255,255,255,0.1)"}`,
+                      color:       flavorId === f.id ? PINK : "rgba(255,255,255,0.6)",
+                    }}
+                  >
+                    {flavorId === f.id && <Check className="w-3.5 h-3.5" />}
+                    <span>{f.emoji} {f.sub ? `${f.name} ${f.sub}` : f.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Taille */}
+            <div className="flex flex-col gap-3 p-4 rounded-2xl"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <p className="text-xs font-black uppercase tracking-widest text-white/50">Taille</p>
+              <div className="grid grid-cols-3 gap-2">
+                {CAIPI_SIZES.map(s => {
+                  const price  = flavor ? getCaipiPrice(flavor.category, s.id) : null;
+                  const active = sizeId === s.id;
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => setSizeId(s.id)}
+                      className="flex flex-col items-center gap-1 py-3 rounded-xl transition-all active:scale-95 cursor-pointer relative"
+                      style={{
+                        background: active ? PINK + "20" : "rgba(255,255,255,0.05)",
+                        border:     `1px solid ${active ? PINK : "rgba(255,255,255,0.1)"}`,
+                      }}
+                    >
+                      {s.id === "1litre" && (
+                        <span className="absolute -top-2 -right-1 text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full"
+                          style={{ background: PINK, color: "#fff" }}>
+                          NEW
+                        </span>
+                      )}
+                      {active && <Check className="w-3.5 h-3.5" style={{ color: PINK }} />}
+                      <span className="text-sm font-semibold text-white">{s.label}</span>
+                      {price !== null && (
+                        <span className="text-xs font-bold" style={{ color: PINK }}>
+                          {formatPrice(price)}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Préparation */}
+            <div className="flex flex-col gap-3 p-4 rounded-2xl"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <p className="text-xs font-black uppercase tracking-widest text-white/50">Préparation</p>
+              <div className="grid grid-cols-2 gap-2">
+                {CAIPI_PREPARATIONS.map(p => {
+                  const active = prepId === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => setPrepId(p.id)}
+                      className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
+                      style={{
+                        background: active ? PINK : "rgba(255,255,255,0.05)",
+                        border:     `1px solid ${active ? PINK : "rgba(255,255,255,0.1)"}`,
+                        color:      active ? "#fff" : "rgba(255,255,255,0.5)",
+                      }}
+                    >
+                      {active && <Check className="w-3.5 h-3.5" />}
+                      {p.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Suppléments */}
+            <div className="flex flex-col gap-3 p-4 rounded-2xl"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <p className="text-xs font-black uppercase tracking-widest text-white/50">
+                Toppings{" "}
+                <span className="text-white/25 normal-case font-normal">(optionnel)</span>
+              </p>
+              <div className="flex flex-col gap-4">
+                {CAIPI_SUPPLEMENTS.map(s => {
+                  const active = supplements.includes(s.id);
+                  return (
+                    <div key={s.id} className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-white font-semibold text-sm">{s.label}</p>
+                        <p className="text-xs" style={{ color: PINK }}>+{formatPrice(s.price)}</p>
+                      </div>
+                      <button
+                        onClick={() => toggleSupp(s.id)}
+                        className="relative w-11 h-6 rounded-full transition-colors shrink-0 cursor-pointer"
+                        style={{ background: active ? PINK : "rgba(255,255,255,0.12)" }}
+                      >
+                        <span
+                          className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform"
+                          style={{ transform: `translateX(${active ? "22px" : "2px"})` }}
+                        />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
-          {/* Frost particles */}
-          {["top-6 left-8", "top-4 right-12", "bottom-8 left-4", "bottom-6 right-6", "top-1/2 right-2"].map((pos, i) => (
-            <div key={i} className={`absolute ${pos} text-base opacity-30`} style={{ color: ACCENT2 }}>❄</div>
-          ))}
-        </div>
 
-        <h1 className="font-display leading-none uppercase text-white mb-2">
-          <span className="block text-[72px] md:text-[96px] tracking-tight"
-            style={{ textShadow: `0 0 40px ${hexToRgba(ACCENT, 0.4)}` }}>
-            FROZEN
-          </span>
-          <span className="block text-[56px] md:text-[72px] tracking-widest"
-            style={{ color: ACCENT, textShadow: `0 0 30px ${hexToRgba(ACCENT, 0.6)}` }}>
-            CAIPI
-          </span>
-        </h1>
-        <p className="text-sm text-white/40 max-w-xs mx-auto leading-relaxed">
-          La caipirinha revisitée — crushed ice, cachaça premium et parfums tropicaux.
-        </p>
-      </div>
-
-      {/* ── Content ── */}
-      <div className="relative px-5 max-w-lg mx-auto flex flex-col gap-6">
-
-        {/* Flavor selector */}
-        <div className="rounded-3xl p-5 border" style={{
-          background: hexToRgba(ACCENT, 0.04),
-          borderColor: hexToRgba(ACCENT, 0.12),
-        }}>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-4" style={{ color: hexToRgba(ACCENT, 0.7) }}>
-            Choisis ton parfum
-          </p>
-          <div className="grid grid-cols-2 gap-2.5">
-            {FLAVORS.map(f => {
-              const active = flavor === f.id;
-              return (
-                <button
-                  key={f.id}
-                  onClick={() => setFlavor(f.id)}
-                  className="relative flex flex-col gap-1 p-4 rounded-2xl text-left transition-all active:scale-[0.97]"
-                  style={{
-                    background:  active ? hexToRgba(ACCENT, 0.12) : hexToRgba("#ffffff", 0.03),
-                    border:      `2px solid ${active ? ACCENT : hexToRgba("#ffffff", 0.07)}`,
-                    boxShadow:   active ? `0 0 20px ${hexToRgba(ACCENT, 0.2)}` : "none",
-                  }}
-                >
-                  <span className="text-2xl">{f.emoji}</span>
-                  <span className="text-sm font-bold text-white leading-tight">{f.name}</span>
-                  <span className="text-[10px] text-white/40 leading-snug">{f.desc}</span>
-                  {active && (
-                    <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full flex items-center justify-center"
-                      style={{ background: ACCENT }}>
-                      <Check className="w-3 h-3 text-black" />
-                    </div>
-                  )}
-                </button>
-              );
-            })}
+          {/* Fixed bottom bar */}
+          <div className="fixed bottom-16 left-0 right-0 z-40 px-5 py-3"
+            style={{ background: "rgba(1,12,20,0.95)", backdropFilter: "blur(16px)", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+            <div className="max-w-lg mx-auto flex items-center gap-4">
+              <div className="shrink-0">
+                <p className="text-white/40 text-[10px] uppercase tracking-wide">Total</p>
+                <p className="font-display text-2xl font-bold leading-none"
+                  style={{ color: unitPrice !== null ? PINK : "rgba(255,255,255,0.25)" }}>
+                  {unitPrice !== null ? formatPrice(unitPrice) : "—"}
+                </p>
+              </div>
+              <button
+                onClick={handleNext}
+                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm uppercase tracking-widest active:scale-[0.98] transition-transform cursor-pointer"
+                style={{
+                  background:  isStep1Ready ? `linear-gradient(135deg, #C5006A, ${PINK})` : "rgba(255,255,255,0.08)",
+                  color:       isStep1Ready ? "#fff" : "rgba(255,255,255,0.3)",
+                  boxShadow:   isStep1Ready ? "0 0 25px rgba(247,37,133,0.35)" : "none",
+                }}
+              >
+                Ajouter au panier →
+              </button>
+            </div>
           </div>
         </div>
+      )}
 
-        {/* Quantity + Price */}
-        <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setQty(q => Math.max(1, q - 1))}
-              className="w-10 h-10 rounded-xl flex items-center justify-center border transition-colors"
-              style={{ background: hexToRgba(ACCENT, 0.06), borderColor: hexToRgba(ACCENT, 0.15) }}
-            >
-              <Minus className="w-4 h-4" style={{ color: ACCENT }} />
-            </button>
-            <span className="font-display text-2xl text-white w-6 text-center">{qty}</span>
-            <button
-              onClick={() => setQty(q => Math.min(10, q + 1))}
-              className="w-10 h-10 rounded-xl flex items-center justify-center border transition-colors"
-              style={{ background: hexToRgba(ACCENT, 0.06), borderColor: hexToRgba(ACCENT, 0.15) }}
-            >
-              <Plus className="w-4 h-4" style={{ color: ACCENT }} />
-            </button>
-          </div>
-          <div className="text-right">
-            <p className="text-[10px] text-white/30 uppercase tracking-wide">Total</p>
-            <p className="font-display text-3xl" style={{ color: ACCENT }}>
-              {(PRICE * qty).toFixed(2).replace(".", ",")}€
+      {/* ══════════════ STEP 2 — RETRAIT ══════════════ */}
+      {step === 2 && (
+        <div className="px-5 pt-20 pb-10 max-w-lg mx-auto">
+          <button onClick={() => setStep(1)}
+            className="flex items-center gap-1.5 text-sm font-semibold text-white/50 hover:text-white/80 mb-6 cursor-pointer">
+            <ChevronLeft className="w-4 h-4" /> Retour
+          </button>
+          <h2 className="font-display text-3xl text-white uppercase mb-6">Ton retrait</h2>
+
+          {/* Order summary */}
+          <div className="flex items-center gap-4 p-4 rounded-2xl mb-6"
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0"
+              style={{ background: flavor ? `linear-gradient(160deg, ${flavor.color}60, ${flavor.color}20)` : "rgba(255,255,255,0.05)" }}>
+              {flavor?.emoji ?? "🧊"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-semibold text-sm">
+                {flavor?.sub ? `${flavor.name} ${flavor.sub}` : flavor?.name}
+                {" · "}
+                {CAIPI_SIZES.find(s => s.id === sizeId)?.label}
+              </p>
+              <p className="text-white/40 text-xs">
+                {CAIPI_PREPARATIONS.find(p => p.id === prepId)?.label}
+                {supplements.length > 0 && ` · ${supplements.map(id => CAIPI_SUPPLEMENTS.find(s => s.id === id)?.label).join(", ")}`}
+              </p>
+            </div>
+            <p className="font-bold text-lg shrink-0" style={{ color: PINK }}>
+              {formatPrice(unitPrice ?? 0)}
             </p>
           </div>
-        </div>
 
-        {/* CTA */}
-        <button
-          onClick={handleAdd}
-          disabled={!flavor}
-          className="flex items-center justify-center gap-2.5 py-4 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all active:scale-[0.98]"
-          style={{
-            background: flavor
-              ? `linear-gradient(135deg, #0090C0, ${ACCENT}, ${ACCENT2})`
-              : hexToRgba("#ffffff", 0.05),
-            color:      flavor ? "#000" : "rgba(255,255,255,0.2)",
-            boxShadow:  flavor ? `0 0 30px ${hexToRgba(ACCENT, 0.35)}` : "none",
-            cursor:     flavor ? "pointer" : "not-allowed",
-          }}
-        >
-          <ShoppingCart className="w-4 h-4" />
-          {flavor ? "Ajouter au panier" : "Choisis un parfum"}
-          {flavor && <ChevronRight className="w-4 h-4" />}
-        </button>
+          {/* Form */}
+          <div className="flex flex-col gap-4 mb-6">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-white/50 mb-2">Prénom</label>
+              <input
+                value={prenom}
+                onChange={e => setPrenom(e.target.value)}
+                placeholder="Ex. : Lucas"
+                className="w-full px-4 py-3.5 rounded-xl text-white text-sm placeholder-white/20 focus:outline-none"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-white/50 mb-2">Téléphone</label>
+              <input
+                value={telephone}
+                onChange={e => setTelephone(e.target.value)}
+                placeholder="Ex. : 0694 36 96 15"
+                type="tel"
+                className="w-full px-4 py-3.5 rounded-xl text-white text-sm placeholder-white/20 focus:outline-none"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-white/50 mb-2">
+                Heure de passage
+              </label>
+              <select
+                value={heure}
+                onChange={e => setHeure(e.target.value)}
+                className="w-full px-4 py-3.5 rounded-xl text-sm focus:outline-none appearance-none"
+                style={{
+                  background: "rgba(255,255,255,0.05)",
+                  border:     "1px solid rgba(255,255,255,0.1)",
+                  color:      heure ? "#fff" : "rgba(255,255,255,0.3)",
+                }}
+              >
+                <option value="" disabled style={{ color: "#666", background: "#050D16" }}>
+                  Choisir une heure
+                </option>
+                {TIME_SLOTS.map(t => (
+                  <option key={t} value={t} style={{ background: "#050D16" }}>{t}</option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-        {/* What's included */}
-        <div className="rounded-3xl p-5 border" style={{
-          background: hexToRgba("#ffffff", 0.02),
-          borderColor: hexToRgba("#ffffff", 0.06),
-        }}>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-3 text-white/40">
-            Ce qui est inclus
+          {/* Location */}
+          <div className="flex items-start gap-3 p-4 rounded-2xl mb-4"
+            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <MapPin className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#00C8FF" }} />
+            <div>
+              <p className="text-white font-semibold text-sm">Retrait à Matoury</p>
+              <p className="text-white/40 text-xs">
+                Commande au minimum 15 min avant ton passage.
+              </p>
+            </div>
+          </div>
+
+          {/* Total */}
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-white font-bold text-lg">Total</p>
+            <p className="font-display text-2xl font-bold" style={{ color: PINK }}>
+              {formatPrice(unitPrice ?? 0)}
+            </p>
+          </div>
+
+          {/* WhatsApp CTA */}
+          <button
+            onClick={handleWhatsApp}
+            className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-white text-sm uppercase tracking-widest active:scale-[0.98] transition-transform mb-4 cursor-pointer"
+            style={{ background: "linear-gradient(135deg, #128C7E, #25D366)", boxShadow: "0 0 30px rgba(37,211,102,0.3)" }}
+          >
+            <MessageCircle className="w-5 h-5" />
+            Continuer sur WhatsApp
+          </button>
+
+          <p className="text-center text-white/25 text-xs leading-relaxed">
+            Ta commande est enregistrée sur le site.<br />
+            Envoie ensuite le message WhatsApp pour confirmation.
           </p>
-          <ul className="flex flex-col gap-2">
-            {INCLUDES.map(item => (
-              <li key={item} className="flex items-center gap-2 text-xs text-white/55 leading-snug">
-                <span className="shrink-0">{item.split(" ")[0]}</span>
-                <span>{item.split(" ").slice(1).join(" ")}</span>
-              </li>
-            ))}
-          </ul>
         </div>
-
-      </div>
+      )}
     </div>
   );
 }

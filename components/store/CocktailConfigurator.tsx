@@ -23,7 +23,7 @@ const SOFTS_FALLBACK: DbSoft[] = [
 ];
 
 interface DbSirop { id: string; name: string; slug: string; emoji: string; color: string; }
-interface DbSoft  { id: string; name: string; slug: string; emoji: string; surcharge: number; }
+interface DbSoft  { id: string; name: string; slug: string; emoji: string; image?: string | null; surcharge: number; }
 
 function hexToRgba(hex: string, alpha: number) {
   const h = hex.replace("#", "");
@@ -222,7 +222,14 @@ export default function CocktailConfigurator({ isOpen, onClose, type, basePrice 
                         boxShadow:   selected ? `0 0 18px ${accentColor}25` : "none",
                       }}
                     >
-                      <span className="text-2xl shrink-0">{s.emoji}</span>
+                      {s.image ? (
+                        <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 bg-white/5">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={s.image} alt={s.name} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <span className="text-2xl shrink-0 w-9 h-9 flex items-center justify-center">{s.emoji}</span>
+                      )}
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-white leading-tight truncate">{s.name}</p>
                         <p className="text-[10px] text-white/40">+{s.surcharge.toFixed(2).replace(".", ",")}€</p>

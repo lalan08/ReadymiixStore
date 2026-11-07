@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       name: body.name,
       slug: body.slug,
       emoji: body.emoji || "🥤",
+      image: body.image || null,
       surcharge: body.surcharge ?? 0,
       active: body.active ?? true,
       sortOrder: body.sortOrder ?? 0,

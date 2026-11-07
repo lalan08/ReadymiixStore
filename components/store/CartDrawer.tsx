@@ -100,6 +100,18 @@ export default function CartDrawer() {
                   {!item.options?.softs && item.options?.soft && (
                     <p className="text-xs text-brand-teal">+ {item.options.soft}</p>
                   )}
+                  {item.options?.caipi && (
+                    <>
+                      <p className="text-xs text-brand-teal">
+                        {item.options.caipi.parfum} · {item.options.caipi.taille} · {item.options.caipi.preparation}
+                      </p>
+                      {item.options.caipi.supplements.length > 0 && (
+                        <p className="text-xs text-brand-muted">
+                          + {item.options.caipi.supplements.join(", ")}
+                        </p>
+                      )}
+                    </>
+                  )}
                   <p className="text-sm font-bold text-brand-gold mt-1">
                     {formatPrice(item.price * item.quantity)}
                   </p>

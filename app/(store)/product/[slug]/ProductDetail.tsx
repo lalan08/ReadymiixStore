@@ -6,6 +6,7 @@ import { ChevronLeft, Plus, Minus, ShoppingCart, Check, Sparkles } from "lucide-
 import { useCartStore } from "@/lib/store";
 import { formatPrice, parseJsonField } from "@/lib/utils";
 import toast from "react-hot-toast";
+import CaipiConfigurator from "@/components/store/CaipiConfigurator";
 
 interface Soft {
   id: string;
@@ -52,7 +53,16 @@ export default function ProductDetail({ product, softs, related }: Props) {
   const images = parseJsonField<string[]>(product.images, []);
   const mainImage = images[activeImg] ?? null;
 
+  const tags = parseJsonField<string[]>(product.tags, []);
   const isComposer = COMPOSER_SLUGS.includes(product.category.slug);
+  function norm(s: string) {
+    return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  }
+  const isCaipi =
+    product.productType === "caipi" ||
+    tags.includes("caipi") ||
+    norm(product.slug).includes("caipi") ||
+    norm(product.name).includes("caipi");
   const showSofts  = softs.length > 0 && product.hasSoftChoice;
 
   const discount = product.comparePrice
@@ -139,7 +149,10 @@ export default function ProductDetail({ product, softs, related }: Props) {
 
       {/* ── Content ── */}
       <div className="relative -mt-6 md:mt-0 px-4 md:container-custom md:pt-8 max-w-2xl md:max-w-none mx-auto">
-        <div className="md:grid md:grid-cols-2 md:gap-12">
+        {isCaipi ? (
+          <CaipiConfigurator product={product} />
+        ) : null}
+        <div className={`md:grid md:grid-cols-2 md:gap-12 ${isCaipi ? "hidden" : ""}`}>
 
           {/* Left: info */}
           <div className="flex flex-col gap-5">
@@ -341,7 +354,7 @@ export default function ProductDetail({ product, softs, related }: Props) {
       </div>
 
       {/* ── Mobile sticky CTA ── */}
-      {product.stock > 0 && !isComposer && (
+      {product.stock > 0 && !isComposer && !isCaipi && (
         <div className="md:hidden fixed bottom-16 left-0 right-0 p-4 bg-brand-darker/95 backdrop-blur-xl border-t border-brand-border flex items-center gap-3 z-40">
           {/* Quantity compact */}
           <div className="flex items-center gap-2">

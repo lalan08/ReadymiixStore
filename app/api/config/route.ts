@@ -20,6 +20,7 @@ const PUBLIC_KEYS = [
   "hard_highlights",
   "hard_detail",
   "hard_base_price",
+  "composer_enabled",
 ];
 
 export async function GET() {

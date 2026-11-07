@@ -2,8 +2,13 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BottomNav from "@/components/store/BottomNav";
 import CinematicIntro from "@/components/store/CinematicIntro";
+import { isComposerEnabled } from "@/lib/siteConfig";
 
-export default function StoreLayout({ children }: { children: React.ReactNode }) {
+export const revalidate = 60;
+
+export default async function StoreLayout({ children }: { children: React.ReactNode }) {
+  const composerEnabled = await isComposerEnabled();
+
   return (
     <>
       {/*
@@ -17,12 +22,12 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
         }}
       />
       <CinematicIntro />
-      <Navbar />
+      <Navbar composerEnabled={composerEnabled} />
       <main className="min-h-screen pb-16 md:pb-0">{children}</main>
       <div className="md:block hidden">
         <Footer />
       </div>
-      <BottomNav />
+      <BottomNav composerEnabled={composerEnabled} />
     </>
   );
 }

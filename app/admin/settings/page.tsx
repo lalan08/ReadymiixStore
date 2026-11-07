@@ -58,6 +58,30 @@ export default function AdminSettingsPage() {
 
       <div className="flex flex-col gap-6">
 
+        {/* ── Section Composer activé/désactivé ── */}
+        <section className="bg-brand-card border border-brand-gold/30 rounded-2xl p-5">
+          <h2 className="font-display text-lg text-brand-text mb-1">🎯 Module Composer</h2>
+          <p className="text-brand-muted text-xs mb-4">
+            Active ou met en pause toute la partie <strong className="text-brand-text">Composer / Mixer</strong>.
+            Désactivé, le lien disparaît du menu et de la barre mobile, les boutons de l&apos;accueil n&apos;y renvoient plus,
+            et la page <code className="text-brand-gold">/composer</code> redirige vers la Boutique.
+          </p>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <div
+              onClick={() => set("composer_enabled", config.composer_enabled === "false" ? "true" : "false")}
+              className={`w-12 h-6 rounded-full transition-colors relative ${config.composer_enabled !== "false" ? "bg-brand-gold" : "bg-brand-border"}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${config.composer_enabled !== "false" ? "translate-x-7" : "translate-x-1"}`} />
+            </div>
+            <span className="text-sm text-brand-text font-semibold">
+              {config.composer_enabled !== "false" ? "Composer activé" : "Composer désactivé"}
+            </span>
+          </label>
+          <p className="text-[11px] text-brand-muted mt-2">
+            ⏱️ Le changement peut prendre jusqu&apos;à 1 minute pour s&apos;afficher côté site (cache).
+          </p>
+        </section>
+
         {/* ── Section Visuels → renvoi vers Médias ── */}
         <section className="bg-brand-card border border-brand-gold/30 rounded-2xl p-5">
           <h2 className="font-display text-lg text-brand-text mb-1">📸 Visuels — Page Composer</h2>

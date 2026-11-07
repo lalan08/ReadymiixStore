@@ -17,6 +17,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       name: body.name,
       slug: body.slug,
       emoji: body.emoji,
+      image: body.image ?? null,
       surcharge: body.surcharge,
       active: body.active,
       sortOrder: body.sortOrder,
