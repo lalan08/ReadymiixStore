@@ -113,7 +113,7 @@ export default function ShopClient({ allProducts, categories }: Props) {
               Tout
             </Link>
 
-            {categories.filter((c) => c._count.products > 0).map((cat) => (
+            {categories.filter((c) => c._count.products > 0 || c.name.toLowerCase().includes("frozen")).map((cat) => (
               <Link
                 key={cat.id}
                 href={`/shop?cat=${cat.slug}`}
