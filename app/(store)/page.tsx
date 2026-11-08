@@ -25,24 +25,24 @@ export default function HomePage() {
           }}
         />
 
-        {/* Cocktail image — right side */}
-        <div className="absolute right-0 top-0 bottom-0 w-[55%] md:w-[50%] pointer-events-none">
+        {/* Cocktail image — right side, prominent */}
+        <div className="absolute right-0 top-0 bottom-0 w-[65%] md:w-[58%] pointer-events-none">
           <Image
-            src="/Frozen .jpg.png"
+            src="/hero-cocktail.png"
             alt="Frozen Caïpi ReadyMiix"
             fill
             priority
             quality={95}
-            sizes="(max-width: 768px) 55vw, 50vw"
+            sizes="(max-width: 768px) 65vw, 58vw"
             className="object-cover object-center"
-            style={{ filter: "saturate(1.2) contrast(1.08) brightness(1.02)" }}
+            style={{ filter: "saturate(1.25) contrast(1.1) brightness(1.05)" }}
           />
           {/* Left fade over the image */}
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to right, #010C14 0%, rgba(1,12,20,0.80) 20%, rgba(1,12,20,0.30) 45%, transparent 70%)",
+                "linear-gradient(to right, #010C14 0%, rgba(1,12,20,0.85) 15%, rgba(1,12,20,0.40) 40%, rgba(1,12,20,0.10) 65%, transparent 85%)",
             }}
           />
         </div>
@@ -64,8 +64,8 @@ export default function HomePage() {
 
             {/* Title */}
             <h1
-              className="font-display uppercase leading-[0.92] tracking-tight mb-6"
-              style={{ fontSize: "clamp(2.4rem,9vw,5rem)" }}
+              className="font-display leading-[0.95] tracking-tight mb-6"
+              style={{ fontSize: "clamp(2.6rem,10vw,5.2rem)" }}
             >
               <span
                 className="block text-white"
@@ -74,19 +74,17 @@ export default function HomePage() {
                 Du goût.
               </span>
               <span
-                className="block"
-                style={{
-                  background: "linear-gradient(135deg, #fff 0%, #F72585 60%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 4px 20px rgba(247,37,133,0.4))",
-                }}
+                className="block text-white"
+                style={{ textShadow: "0 4px 30px rgba(0,0,0,0.9)" }}
               >
                 De la fraîcheur.
               </span>
               <span
-                className="block text-white"
-                style={{ textShadow: "0 4px 30px rgba(0,0,0,0.9)" }}
+                className="block"
+                style={{
+                  color: "#F72585",
+                  textShadow: "0 0 30px rgba(247,37,133,0.55), 0 4px 20px rgba(0,0,0,0.9)",
+                }}
               >
                 Des découvertes.
               </span>
@@ -100,10 +98,10 @@ export default function HomePage() {
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-8">
+            <div className="flex flex-col gap-3 mb-8">
               <Link
                 href="/shop"
-                className="group relative inline-flex items-center justify-center gap-2 text-white font-bold text-sm px-7 py-3.5 rounded-2xl uppercase tracking-wide overflow-hidden active:scale-[0.97] transition-transform duration-150"
+                className="group relative inline-flex items-center justify-center gap-2 text-white font-bold text-sm px-7 py-4 rounded-2xl uppercase tracking-wide overflow-hidden active:scale-[0.97] transition-transform duration-150 w-full sm:w-auto"
                 style={{
                   background: "linear-gradient(135deg, #C5006A, #F72585)",
                   boxShadow: "0 0 28px rgba(247,37,133,0.45), 0 4px 16px rgba(0,0,0,0.4)",
