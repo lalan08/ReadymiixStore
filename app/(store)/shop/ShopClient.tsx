@@ -3,9 +3,8 @@
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, ShoppingBag } from "lucide-react";
+import { Search, ShoppingBag, ArrowRight } from "lucide-react";
 import ShopCard from "@/components/store/ShopCard";
-import FrozenCaipiShop from "@/components/store/FrozenCaipiShop";
 
 interface TabCategory {
   id: string;
@@ -44,6 +43,55 @@ const ACTIVE_STYLE = {
   background: "linear-gradient(135deg, #C5006A, #F72585)",
   boxShadow: "0 0 16px rgba(247,37,133,0.45)",
 };
+
+function FrozenCaipiCard() {
+  return (
+    <Link
+      href="/frozen-caipi"
+      className="col-span-2 group relative overflow-hidden rounded-2xl cursor-pointer"
+      style={{ background: "linear-gradient(135deg, #1A0010 0%, #3D0022 100%)", minHeight: "120px" }}
+    >
+      {/* Cup image anchored right */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/Frozen.jpg.PNG.PNG"
+        alt=""
+        aria-hidden
+        className="absolute right-0 top-0 h-full w-1/2 object-contain object-right opacity-80 group-hover:scale-105 transition-transform duration-500"
+      />
+      {/* Fade toward text zone */}
+      <div className="absolute inset-0" style={{ background: "linear-gradient(to right, #1A0010 42%, transparent 78%)" }} />
+      {/* Neon border */}
+      <div
+        className="absolute inset-0 rounded-2xl border opacity-40 group-hover:opacity-80 transition-opacity"
+        style={{ borderColor: "rgba(247,37,133,0.45)" }}
+      />
+      {/* Top accent line */}
+      <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(247,37,133,0.6), transparent)" }} />
+
+      <div className="relative z-10 p-4 flex flex-col justify-center" style={{ minHeight: "120px" }}>
+        <p className="text-[9px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "#F72585" }}>
+          Sur commande · 16 parfums
+        </p>
+        <h3
+          className="font-sans font-black text-white leading-tight mb-1"
+          style={{ fontSize: "clamp(1.1rem, 4.5vw, 1.4rem)", fontFamily: "var(--font-inter), system-ui, sans-serif" }}
+        >
+          Frozen Caïpis
+        </h3>
+        <p className="text-xs mb-3" style={{ color: "rgba(240,240,248,0.70)" }}>
+          Compose ta caïpi sur mesure
+        </p>
+        <span
+          className="inline-flex items-center gap-1.5 text-xs font-bold py-2 px-4 rounded-full self-start text-white"
+          style={{ background: "linear-gradient(135deg, #C5006A, #F72585)", boxShadow: "0 0 12px rgba(247,37,133,0.4)" }}
+        >
+          Composer <ArrowRight className="w-3 h-3" />
+        </span>
+      </div>
+    </Link>
+  );
+}
 
 export default function ShopClient({ allProducts, categories }: Props) {
   const searchParams = useSearchParams();
@@ -153,28 +201,26 @@ export default function ShopClient({ allProducts, categories }: Props) {
         </div>
 
         {isFrozen ? (
-          <FrozenCaipiShop />
-        ) : products.length === 0 ? (
+          <FrozenCaipiCard />
+        ) : products.length === 0 && (activeCat || view) ? (
           <div className="flex flex-col items-center justify-center py-24 gap-5 text-center">
             <div className="w-20 h-20 rounded-full bg-brand-card border border-brand-border flex items-center justify-center">
               <ShoppingBag className="w-8 h-8 text-brand-muted/40" />
             </div>
             <div>
               <p className="font-display text-xl font-bold text-brand-text mb-1">
-                {activeCat ? "Aucun article dans cette catégorie" : "Boutique bientôt disponible"}
+                Aucun article dans cette catégorie
               </p>
-              <p className="text-brand-muted text-sm">
-                {activeCat ? "Essaie une autre catégorie." : "Reviens prochainement !"}
-              </p>
+              <p className="text-brand-muted text-sm">Essaie une autre catégorie.</p>
             </div>
-            {activeCat && (
-              <Link href="/shop" className="px-6 py-3 rounded-full bg-brand-gold text-white font-bold text-sm">
-                Voir tout
-              </Link>
-            )}
+            <Link href="/shop" className="px-6 py-3 rounded-full bg-brand-gold text-white font-bold text-sm">
+              Voir tout
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 md:gap-5">
+            {/* Frozen Caïpis card always first in the unfiltered view */}
+            {!activeCat && !view && <FrozenCaipiCard />}
             {products.map((product) => (
               <ShopCard key={product.id} product={product} />
             ))}

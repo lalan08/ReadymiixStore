@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, ShoppingBag } from "lucide-react";
+import { Home, Store, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 
 const TABS = [
-  { href: "/",     Icon: LayoutGrid,  label: "Sélection" },
-  { href: "/cart", Icon: ShoppingBag, label: "Panier"    },
+  { href: "/",     Icon: Home,       label: "Accueil"  },
+  { href: "/shop", Icon: Store,      label: "Boutique" },
+  { href: "/cart", Icon: ShoppingBag, label: "Panier"  },
 ];
 
 export default function BottomNav() {
