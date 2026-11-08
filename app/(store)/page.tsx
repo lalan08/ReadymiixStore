@@ -28,7 +28,7 @@ export default function HomePage() {
         {/* Cocktail image — right side, prominent */}
         <div className="absolute right-0 top-0 bottom-0 w-[65%] md:w-[58%] pointer-events-none">
           <Image
-            src="/Frozen%20.jpg.png"
+            src="/Frozen.jpg.PNG.PNG"
             alt="Frozen Caïpi ReadyMiix"
             fill
             priority
