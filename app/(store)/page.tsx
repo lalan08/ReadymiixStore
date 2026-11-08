@@ -79,10 +79,9 @@ export default function HomePage() {
 
           <p
             className="font-sans leading-relaxed"
-            style={{ fontSize: "13px", color: "rgba(240,240,248,0.88)" }}
+            style={{ fontSize: "13px", color: "rgba(240,240,248,0.88)", maxWidth: "54%" }}
           >
-            Frozen caïpis, boissons de qualité
-            <br />et nouveautés sélectionnées pour toi.
+            Frozen caïpis, boissons de qualité et nouveautés sélectionnées pour toi.
           </p>
         </div>
       </div>
@@ -90,7 +89,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════
           BOUTONS — sous la scène
       ══════════════════════════════════════ */}
-      <div className="bg-[#010C14] px-5 pt-5 pb-6">
+      <div className="bg-[#010C14] px-5 pt-2 pb-6">
         <div className="flex flex-col gap-3 max-w-[430px] mx-auto">
 
           {/* CTA principal */}

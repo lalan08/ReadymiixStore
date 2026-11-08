@@ -33,17 +33,17 @@ export default function Navbar() {
         )}
       >
         <div className="container-custom">
-          <nav className="flex items-center justify-between h-[72px] md:h-[80px]">
+          <nav className="flex items-center justify-between h-[72px] md:h-[80px] overflow-visible">
 
-            {/* Logo */}
+            {/* Logo — légèrement oversized pour déborder du header sans en changer la hauteur */}
             <Link href="/" aria-label="ReadyMiix Store — Accueil">
               <Image
                 src="/logo.png"
                 alt="ReadyMiix Store"
-                width={80}
-                height={80}
+                width={96}
+                height={96}
                 priority
-                className="w-[72px] h-[72px] md:w-20 md:h-20 object-contain"
+                className="w-[86px] h-[86px] md:w-[96px] md:h-[96px] object-contain"
               />
             </Link>
 
