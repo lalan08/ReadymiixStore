@@ -452,21 +452,27 @@ export default function FrozenCaipiPage() {
                         </div>
                         {/* Toggle track: 44 × 26 px */}
                         <div
-                          className="relative shrink-0 rounded-full transition-colors duration-200"
+                          className="relative shrink-0 rounded-full"
                           style={{
                             width: "44px",
                             height: "26px",
                             background: active ? PINK : "rgba(255,255,255,0.14)",
+                            transition: "background 0.2s",
+                            flexShrink: 0,
                           }}
                         >
-                          {/* Thumb: 20 px, 3 px margin each side */}
+                          {/* Thumb: 20 × 20 px, 3 px from top, left or right */}
                           <span
-                            className="absolute rounded-full bg-white shadow transition-transform duration-200"
+                            className="absolute rounded-full bg-white"
                             style={{
                               width: "20px",
                               height: "20px",
                               top: "3px",
-                              transform: `translateX(${active ? "21px" : "3px"})`,
+                              ...(active
+                                ? { right: "3px", left: "auto" }
+                                : { left: "3px", right: "auto" }),
+                              boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+                              transition: "left 0.2s, right 0.2s",
                             }}
                           />
                         </div>
