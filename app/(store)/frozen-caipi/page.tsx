@@ -212,18 +212,29 @@ export default function FrozenCaipiPage() {
           </p>
 
           {/* Cup hero — photo bannière */}
-          <div className="relative mb-8 rounded-2xl overflow-hidden">
+          <div className="relative mb-5 mx-3 rounded-2xl overflow-hidden" style={{ height: "155px" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/frozen-banner.png"
               alt="Frozen Caïpis — fraise, mangue, kiwi"
-              className="w-full h-auto object-cover"
+              className="absolute inset-0 w-full h-full object-cover object-center"
             />
             {/* Fade bottom edge into page bg */}
             <div
-              className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none"
+              className="absolute bottom-0 left-0 right-0 h-10 pointer-events-none"
               style={{ background: `linear-gradient(to bottom, transparent, ${BG})` }}
             />
+          </div>
+
+          {/* Choisis ton parfum */}
+          <div className="mb-5 mx-3">
+            <h2
+              className="font-sans font-black text-white"
+              style={{ fontSize: "clamp(1.1rem, 5vw, 1.4rem)", fontFamily: "var(--font-inter), system-ui, sans-serif" }}
+            >
+              Choisis ton parfum
+            </h2>
+            <div className="mt-1.5 h-[2px] w-10 rounded-full" style={{ background: "linear-gradient(90deg, #F72585, rgba(247,37,133,0.2))" }} />
           </div>
 
           {/* Hours + WhatsApp */}
@@ -252,17 +263,6 @@ export default function FrozenCaipiPage() {
               <span className="font-bold text-white">Uniquement sur commande · Pas de surplace.</span>
               {" "}Prépare au minimum 15 min avant ton passage pour une fraîcheur optimale.
             </div>
-          </div>
-
-          {/* Choisis ton parfum */}
-          <div className="mb-5">
-            <h2
-              className="font-sans font-black text-white"
-              style={{ fontSize: "clamp(1.1rem, 5vw, 1.4rem)", fontFamily: "var(--font-inter), system-ui, sans-serif" }}
-            >
-              Choisis ton parfum
-            </h2>
-            <div className="mt-1.5 h-[2px] w-10 rounded-full" style={{ background: "linear-gradient(90deg, #F72585, rgba(247,37,133,0.2))" }} />
           </div>
 
           {/* CLASSIQUE */}
