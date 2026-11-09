@@ -47,11 +47,11 @@ export default function Navbar() {
               />
             </Link>
 
-            {/* Cart */}
+            {/* Cart — desktop only; mobile uses the bottom nav Panier tab */}
             <button
               onClick={openCart}
               aria-label="Panier"
-              className="relative flex items-center justify-center w-10 h-10 rounded-xl border border-brand-border/50 hover:border-brand-gold/40 hover:bg-brand-gold/5 transition-all"
+              className="hidden md:flex relative items-center justify-center w-10 h-10 rounded-xl border border-brand-border/50 hover:border-brand-gold/40 hover:bg-brand-gold/5 transition-all"
             >
               <ShoppingCart className="w-5 h-5 text-brand-muted" />
               {mounted && count > 0 && (
