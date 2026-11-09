@@ -22,6 +22,8 @@ interface Flavor {
 }
 
 const FLAVORS: Flavor[] = [
+  /* ── Classique ── */
+  { id: "citron-vert",   name: "Caïpi Classique", sub: "Citron Vert",  category: "classique", emoji: "🍋", color: "#a8e063" },
   /* ── Fruité ── */
   { id: "fraise",        name: "Fraise",          category: "fruitee", emoji: "🍓", color: "#FF4444" },
   { id: "peche",         name: "Pêche",           category: "fruitee", emoji: "🍑", color: "#FFAA55" },
@@ -40,7 +42,9 @@ const FLAVORS: Flavor[] = [
   { id: "poire",         name: "Poire",           category: "fruitee", emoji: "🍐", color: "#CCDD55" },
 ];
 
-const FRUITEE_FLAVORS = FLAVORS.filter(f => f.category === "fruitee");
+const CLASSIQUE_FLAVORS = FLAVORS.filter(f => f.category === "classique");
+const FRUITEE_FLAVORS   = FLAVORS.filter(f => f.category === "fruitee");
+const SIROP_FLAVORS     = FLAVORS.filter(f => f.category !== "classique");
 
 const TIME_SLOTS: string[] = (() => {
   const slots: string[] = [];
@@ -278,6 +282,19 @@ export default function FrozenCaipiPage() {
             </div>
           </div>
 
+          {/* CLASSIQUE */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: "#a8e063cc" }}>
+                🍋 Classique
+              </span>
+              <span className="text-[10px] text-white/30">10€ / 12€ / 18€</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {CLASSIQUE_FLAVORS.map(f => <FlavorCard key={f.id} f={f} />)}
+            </div>
+          </div>
+
           {/* FRUITÉ */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
@@ -448,7 +465,7 @@ export default function FrozenCaipiPage() {
                             Parfum du sirop
                           </p>
                           <div className="flex flex-wrap gap-1.5">
-                            {FLAVORS.map(f => {
+                            {SIROP_FLAVORS.map(f => {
                               const sel = siropFlavorId === f.id;
                               return (
                                 <button
