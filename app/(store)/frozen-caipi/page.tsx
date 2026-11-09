@@ -441,22 +441,36 @@ export default function FrozenCaipiPage() {
                   const active = supplements.includes(s.id);
                   return (
                     <div key={s.id}>
-                      <div className="flex items-center justify-between gap-4">
-                        <div>
+                      {/* Full-row tap target */}
+                      <button
+                        onClick={() => toggleSupp(s.id)}
+                        className="flex items-center justify-between gap-4 w-full cursor-pointer active:opacity-80 transition-opacity"
+                      >
+                        <div className="text-left">
                           <p className="text-white font-semibold text-sm">{s.label}</p>
                           <p className="text-xs" style={{ color: PINK }}>+{formatPrice(s.price)}</p>
                         </div>
-                        <button
-                          onClick={() => toggleSupp(s.id)}
-                          className="relative w-11 h-6 rounded-full transition-colors shrink-0 cursor-pointer"
-                          style={{ background: active ? PINK : "rgba(255,255,255,0.12)" }}
+                        {/* Toggle track: 44 × 26 px */}
+                        <div
+                          className="relative shrink-0 rounded-full transition-colors duration-200"
+                          style={{
+                            width: "44px",
+                            height: "26px",
+                            background: active ? PINK : "rgba(255,255,255,0.14)",
+                          }}
                         >
+                          {/* Thumb: 20 px, 3 px margin each side */}
                           <span
-                            className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform"
-                            style={{ transform: `translateX(${active ? "22px" : "2px"})` }}
+                            className="absolute rounded-full bg-white shadow transition-transform duration-200"
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              top: "3px",
+                              transform: `translateX(${active ? "21px" : "3px"})`,
+                            }}
                           />
-                        </button>
-                      </div>
+                        </div>
+                      </button>
 
                       {/* Flavor picker — sirop only */}
                       {s.id === "sirop" && active && (
