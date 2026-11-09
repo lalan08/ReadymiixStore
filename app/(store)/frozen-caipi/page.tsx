@@ -22,8 +22,6 @@ interface Flavor {
 }
 
 const FLAVORS: Flavor[] = [
-  /* ── Classique ── */
-  { id: "citron-vert",   name: "Caïpi Classique", sub: "Citron Vert",  category: "classique", emoji: "🍋", color: "#a8e063" },
   /* ── Fruité ── */
   { id: "fraise",        name: "Fraise",          category: "fruitee", emoji: "🍓", color: "#FF4444" },
   { id: "peche",         name: "Pêche",           category: "fruitee", emoji: "🍑", color: "#FFAA55" },
@@ -42,8 +40,7 @@ const FLAVORS: Flavor[] = [
   { id: "poire",         name: "Poire",           category: "fruitee", emoji: "🍐", color: "#CCDD55" },
 ];
 
-const CLASSIQUE_FLAVORS = FLAVORS.filter(f => f.category === "classique");
-const FRUITEE_FLAVORS   = FLAVORS.filter(f => f.category === "fruitee");
+const FRUITEE_FLAVORS = FLAVORS.filter(f => f.category === "fruitee");
 
 const TIME_SLOTS: string[] = (() => {
   const slots: string[] = [];
@@ -278,19 +275,6 @@ export default function FrozenCaipiPage() {
             <div className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
               <span className="font-bold text-white">Uniquement sur commande · Pas de surplace.</span>
               {" "}Prépare au minimum 15 min avant ton passage pour une fraîcheur optimale.
-            </div>
-          </div>
-
-          {/* CLASSIQUE */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: "#a8e063cc" }}>
-                🍋 Classique
-              </span>
-              <span className="text-[10px] text-white/30">10€ / 12€ / 18€</span>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {CLASSIQUE_FLAVORS.map(f => <FlavorCard key={f.id} f={f} />)}
             </div>
           </div>
 
