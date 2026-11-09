@@ -211,15 +211,19 @@ export default function FrozenCaipiPage() {
             Givrée, fruitée, préparée pour toi. · 16 parfums disponibles
           </p>
 
-          {/* Cup hero */}
-          <div className="flex justify-center gap-3 mb-8">
-            {(["#FF6B6B", "#FFB347", "#F72585"] as const).map((c, i) => (
-              <div key={i}
-                className="w-20 h-28 rounded-b-3xl rounded-t-lg flex items-end justify-center pb-2 text-2xl"
-                style={{ background: `linear-gradient(160deg, ${c}80, ${c}25)`, border: `1px solid ${c}40` }}>
-                🧊
-              </div>
-            ))}
+          {/* Cup hero — photo bannière */}
+          <div className="relative mb-8 rounded-2xl overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/frozen-banner.png"
+              alt="Frozen Caïpis — fraise, mangue, kiwi"
+              className="w-full h-auto object-cover"
+            />
+            {/* Fade bottom edge into page bg */}
+            <div
+              className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none"
+              style={{ background: `linear-gradient(to bottom, transparent, ${BG})` }}
+            />
           </div>
 
           {/* CTA */}
