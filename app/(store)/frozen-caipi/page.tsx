@@ -62,6 +62,7 @@ export default function FrozenCaipiPage() {
   const [sizeId, setSizeId]       = useState<string | null>(null);
   const [prepId, setPrepId]       = useState<string | null>(null);
   const [supplements, setSupplements] = useState<string[]>([]);
+  const [siropFlavorId, setSiropFlavorId] = useState<string | null>(null);
   const [prenom, setPrenom]       = useState("");
   const [telephone, setTelephone] = useState("");
   const [heure, setHeure]         = useState("");
@@ -78,7 +79,21 @@ export default function FrozenCaipiPage() {
   const isStep1Ready = !!flavorId && !!sizeId && !!prepId;
 
   function toggleSupp(id: string) {
-    setSupplements(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    setSupplements(prev => {
+      if (prev.includes(id)) {
+        if (id === "sirop") setSiropFlavorId(null);
+        return prev.filter(x => x !== id);
+      }
+      return [...prev, id];
+    });
+  }
+
+  function getSuppLabel(id: string): string {
+    if (id === "sirop" && siropFlavorId) {
+      const sf = FLAVORS.find(f => f.id === siropFlavorId);
+      return sf ? `Sirop ${sf.name}` : "Sirop";
+    }
+    return CAIPI_SUPPLEMENTS.find(s => s.id === id)?.label ?? id;
   }
 
   function handleSelectFlavor(id: string) {
@@ -92,8 +107,9 @@ export default function FrozenCaipiPage() {
     if (!prepId)   { toast.error("Choisis une préparation", TOAST_STYLE); return; }
 
     const suppsSorted = [...supplements].sort();
-    const cartId = `caipi-${flavorId}-${sizeId}-${prepId}${suppsSorted.length ? "-" + suppsSorted.join("-") : ""}`;
-    const suppLabels = suppsSorted.map(id => CAIPI_SUPPLEMENTS.find(s => s.id === id)!.label);
+    const siropSuffix = suppsSorted.includes("sirop") && siropFlavorId ? `-${siropFlavorId}` : "";
+    const cartId = `caipi-${flavorId}-${sizeId}-${prepId}${suppsSorted.length ? "-" + suppsSorted.join("-") : ""}${siropSuffix}`;
+    const suppLabels = suppsSorted.map(id => getSuppLabel(id));
     const flavorDisplay = flavor.sub ? `${flavor.name} ${flavor.sub}` : flavor.name;
 
     addItem({
@@ -126,7 +142,7 @@ export default function FrozenCaipiPage() {
     const sizeName  = CAIPI_SIZES.find(s => s.id === sizeId)?.label ?? "";
     const prepName  = CAIPI_PREPARATIONS.find(p => p.id === prepId)?.label ?? "";
     const suppNames = supplements
-      .map(id => CAIPI_SUPPLEMENTS.find(s => s.id === id)?.label)
+      .map(id => getSuppLabel(id))
       .filter(Boolean)
       .join(", ");
 
@@ -423,21 +439,51 @@ export default function FrozenCaipiPage() {
                 {CAIPI_SUPPLEMENTS.map(s => {
                   const active = supplements.includes(s.id);
                   return (
-                    <div key={s.id} className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className="text-white font-semibold text-sm">{s.label}</p>
-                        <p className="text-xs" style={{ color: PINK }}>+{formatPrice(s.price)}</p>
+                    <div key={s.id}>
+                      <div className="flex items-center justify-between gap-4">
+                        <div>
+                          <p className="text-white font-semibold text-sm">{s.label}</p>
+                          <p className="text-xs" style={{ color: PINK }}>+{formatPrice(s.price)}</p>
+                        </div>
+                        <button
+                          onClick={() => toggleSupp(s.id)}
+                          className="relative w-11 h-6 rounded-full transition-colors shrink-0 cursor-pointer"
+                          style={{ background: active ? PINK : "rgba(255,255,255,0.12)" }}
+                        >
+                          <span
+                            className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform"
+                            style={{ transform: `translateX(${active ? "22px" : "2px"})` }}
+                          />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => toggleSupp(s.id)}
-                        className="relative w-11 h-6 rounded-full transition-colors shrink-0 cursor-pointer"
-                        style={{ background: active ? PINK : "rgba(255,255,255,0.12)" }}
-                      >
-                        <span
-                          className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform"
-                          style={{ transform: `translateX(${active ? "22px" : "2px"})` }}
-                        />
-                      </button>
+
+                      {/* Flavor picker — sirop only */}
+                      {s.id === "sirop" && active && (
+                        <div className="mt-3">
+                          <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>
+                            Parfum du sirop
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {FLAVORS.map(f => {
+                              const sel = siropFlavorId === f.id;
+                              return (
+                                <button
+                                  key={f.id}
+                                  onClick={() => setSiropFlavorId(f.id)}
+                                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold cursor-pointer transition-all active:scale-95"
+                                  style={{
+                                    background: sel ? `${f.color}40` : "rgba(255,255,255,0.05)",
+                                    border:     `1px solid ${sel ? f.color : "rgba(255,255,255,0.1)"}`,
+                                    color:      sel ? "#fff" : "rgba(255,255,255,0.5)",
+                                  }}
+                                >
+                                  {f.emoji} {f.name}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -496,7 +542,7 @@ export default function FrozenCaipiPage() {
               </p>
               <p className="text-white/40 text-xs">
                 {CAIPI_PREPARATIONS.find(p => p.id === prepId)?.label}
-                {supplements.length > 0 && ` · ${supplements.map(id => CAIPI_SUPPLEMENTS.find(s => s.id === id)?.label).join(", ")}`}
+                {supplements.length > 0 && ` · ${supplements.map(id => getSuppLabel(id)).join(", ")}`}
               </p>
             </div>
             <p className="font-bold text-lg shrink-0" style={{ color: PINK }}>
