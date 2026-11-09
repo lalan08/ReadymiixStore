@@ -226,15 +226,6 @@ export default function FrozenCaipiPage() {
             />
           </div>
 
-          {/* CTA */}
-          <button
-            onClick={() => setStep(1)}
-            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-display font-bold text-white text-base uppercase tracking-widest mb-3 active:scale-[0.98] transition-transform"
-            style={{ background: `linear-gradient(135deg, #C5006A, ${PINK}, #FF5BA3)`, boxShadow: `0 0 40px rgba(247,37,133,0.4)` }}
-          >
-            Composer ma caïpi →
-          </button>
-
           {/* Hours + WhatsApp */}
           <div className="flex flex-col items-center gap-1 mb-8">
             <div className="flex items-center gap-1.5">
@@ -261,6 +252,17 @@ export default function FrozenCaipiPage() {
               <span className="font-bold text-white">Uniquement sur commande · Pas de surplace.</span>
               {" "}Prépare au minimum 15 min avant ton passage pour une fraîcheur optimale.
             </div>
+          </div>
+
+          {/* Choisis ton parfum */}
+          <div className="mb-5">
+            <h2
+              className="font-sans font-black text-white"
+              style={{ fontSize: "clamp(1.1rem, 5vw, 1.4rem)", fontFamily: "var(--font-inter), system-ui, sans-serif" }}
+            >
+              Choisis ton parfum
+            </h2>
+            <div className="mt-1.5 h-[2px] w-10 rounded-full" style={{ background: "linear-gradient(90deg, #F72585, rgba(247,37,133,0.2))" }} />
           </div>
 
           {/* CLASSIQUE */}

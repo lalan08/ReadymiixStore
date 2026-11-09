@@ -92,28 +92,18 @@ export default function HomePage() {
       <div className="bg-[#010C14] px-5 pt-2 pb-6">
         <div className="flex flex-col gap-3 max-w-[430px] mx-auto">
 
-          {/* CTA principal */}
+          {/* CTA principal — Frozen Caïpis */}
           <Link
-            href="/shop"
+            href="/frozen-caipi"
             className="group relative w-full inline-flex items-center justify-center gap-2 text-white font-sans font-bold text-[15px] py-4 rounded-2xl overflow-hidden active:scale-[0.97] transition-transform duration-150"
             style={{
               background: "linear-gradient(135deg, #C5006A 0%, #F72585 100%)",
               boxShadow: "0 4px 24px rgba(247,37,133,0.45), 0 2px 8px rgba(0,0,0,0.5)",
             }}
           >
-            <span className="relative z-10">Découvrir la sélection</span>
+            <span className="relative z-10">Composer ma caïpi</span>
             <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-0.5 transition-transform" />
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-          </Link>
-
-          {/* Lien secondaire */}
-          <Link
-            href="/frozen-caipi"
-            className="font-sans font-semibold text-[14px] text-center flex items-center justify-center gap-1.5 py-1 transition-colors"
-            style={{ color: "rgba(240,240,248,0.80)" }}
-          >
-            Composer ma caïpi
-            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
 
           {/* Infos retrait — contraste renforcé */}
