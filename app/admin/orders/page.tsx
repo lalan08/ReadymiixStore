@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { formatPrice, formatDate, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/utils";
+import { formatPrice, formatDate, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, ORDER_PAYMENT_LABELS } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
 import OrderStatusUpdate from "./OrderStatusUpdate";
 
@@ -89,32 +89,42 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
                     {order.customerName} · {order.customerEmail} · {order.customerPhone}
                   </p>
                   <p className="text-xs text-brand-muted mt-0.5">
-                    {formatDate(order.createdAt)} · {order.city}
-                    {order.paymentMethod === "cash_on_delivery" && " · Paiement à la livraison"}
-                    {order.paymentMethod === "bank_transfer" && " · Virement bancaire"}
-                    {order.paymentMethod === "whatsapp" && " · WhatsApp"}
+                    {formatDate(order.createdAt)}
+                    {order.pickupTime && ` · Retrait ${order.pickupTime}`}
+                    {" · "}{ORDER_PAYMENT_LABELS[order.paymentMethod] ?? order.paymentMethod}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="font-display font-bold text-xl text-brand-gold">
                     {formatPrice(order.total)}
                   </p>
-                  {order.deliveryFee === 0 && (
-                    <p className="text-xs text-brand-success">Livraison gratuite</p>
-                  )}
+                  <p className="text-xs text-brand-muted">Click &amp; Collect</p>
                 </div>
               </div>
 
               {/* Items */}
               <div className="flex flex-col gap-1.5 border-t border-brand-border pt-3">
-                {order.items.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm">
-                    <span className="text-brand-muted">
-                      {item.name} <span className="text-brand-text">×{item.quantity}</span>
-                    </span>
-                    <span className="text-brand-text">{formatPrice(item.price * item.quantity)}</span>
-                  </div>
-                ))}
+                {order.items.map((item) => {
+                  let detail = "";
+                  if (item.options) {
+                    try {
+                      const c = JSON.parse(item.options)?.caipi;
+                      if (c) {
+                        detail = `${c.taille} · ${c.preparation}`;
+                        if (c.supplements?.length) detail += ` · +${c.supplements.join(", ")}`;
+                      }
+                    } catch {}
+                  }
+                  return (
+                    <div key={item.id} className="flex justify-between text-sm">
+                      <span className="text-brand-muted">
+                        {item.name} <span className="text-brand-text">×{item.quantity}</span>
+                        {detail && <span className="block text-xs mt-0.5 text-brand-muted/70">{detail}</span>}
+                      </span>
+                      <span className="text-brand-text">{formatPrice(item.price * item.quantity)}</span>
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Notes */}

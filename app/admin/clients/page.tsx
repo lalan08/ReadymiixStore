@@ -27,14 +27,15 @@ export default async function AdminClientsPage() {
   }>();
 
   for (const o of orders) {
-    if (!clientMap.has(o.customerEmail)) {
-      clientMap.set(o.customerEmail, {
-        name: o.customerName, email: o.customerEmail,
+    const key = o.customerEmail ?? o.customerPhone;
+    if (!clientMap.has(key)) {
+      clientMap.set(key, {
+        name: o.customerName, email: o.customerEmail ?? "",
         phone: o.customerPhone, city: o.city,
         totalOrders: 0, totalSpent: 0, lastOrderAt: o.createdAt,
       });
     }
-    const c = clientMap.get(o.customerEmail)!;
+    const c = clientMap.get(key)!;
     c.totalOrders++;
     c.totalSpent += o.total;
     if (o.createdAt > c.lastOrderAt) {

@@ -50,12 +50,21 @@ export function generateOrderNumber(): string {
 }
 
 export const ORDER_STATUS_LABELS: Record<string, string> = {
-  PENDING:    "En attente",
-  CONFIRMED:  "Confirmée",
-  PROCESSING: "En préparation",
-  SHIPPED:    "Expédiée",
-  DELIVERED:  "Livrée",
-  CANCELLED:  "Annulée",
+  PENDING:         "En attente",
+  PENDING_PAYMENT: "Paiement en cours",
+  CONFIRMED:       "Confirmée",
+  PROCESSING:      "En préparation",
+  SHIPPED:         "Expédiée",
+  DELIVERED:       "Livrée",
+  CANCELLED:       "Annulée",
+};
+
+export const ORDER_PAYMENT_LABELS: Record<string, string> = {
+  cash_on_pickup:   "À régler en espèces",
+  card_online:      "Payée en ligne",
+  cash_on_delivery: "Paiement à la livraison",
+  bank_transfer:    "Virement bancaire",
+  whatsapp:         "WhatsApp",
 };
 
 export const ORDER_STATUS_COLORS: Record<string, string> = {

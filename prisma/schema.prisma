@@ -45,35 +45,38 @@ model Product {
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  orderNumber   String      @unique
-  customerName  String
-  customerEmail String
-  customerPhone String
-  address       String?
-  city          String?
-  postalCode    String?
-  notes         String?
-  items         OrderItem[]
-  subtotal      Float
-  deliveryFee   Float       @default(0)
-  total         Float
-  status        String      @default("PENDING")
-  paymentMethod String      @default("cash_on_delivery")
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  customerName    String
+  customerEmail   String?
+  customerPhone   String
+  address         String?
+  city            String?
+  postalCode      String?
+  pickupTime      String?
+  notes           String?
+  items           OrderItem[]
+  subtotal        Float
+  deliveryFee     Float       @default(0)
+  total           Float
+  status          String      @default("PENDING")
+  paymentMethod   String      @default("cash_on_pickup")
+  stripeSessionId String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
   name      String
   price     Float
   quantity  Int
   image     String?
+  options   String?
 }
 
 model Newsletter {

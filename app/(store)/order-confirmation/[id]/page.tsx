@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { formatPrice, formatDate, ORDER_STATUS_LABELS } from "@/lib/utils";
+import { formatPrice, formatDate, ORDER_STATUS_LABELS, ORDER_PAYMENT_LABELS } from "@/lib/utils";
 import Link from "next/link";
-import { CheckCircle, Package, MessageCircle, ArrowRight } from "lucide-react";
+import { CheckCircle, Clock, MessageCircle, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -10,139 +10,192 @@ export const metadata: Metadata = { title: "Commande confirmée" };
 
 interface Props { params: { id: string } }
 
+const BG   = "#010C14";
+const PINK = "#F72585";
+
 export default async function OrderConfirmationPage({ params }: Props) {
   const order = await prisma.order.findUnique({
-    where: { id: params.id },
+    where:   { id: params.id },
     include: { items: true },
   });
 
   if (!order) notFound();
 
-  const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP ?? "594694000000";
-  const waMsg    = encodeURIComponent(
-    `Bonjour ReadyMiix ! Je viens de passer la commande ${order.orderNumber}. Pouvez-vous confirmer ?`
-  );
+  const whatsapp    = process.env.NEXT_PUBLIC_WHATSAPP ?? "594694369615";
+  const paymentLabel = ORDER_PAYMENT_LABELS[order.paymentMethod] ?? order.paymentMethod;
+  const isPaid       = order.paymentMethod === "card_online";
+
+  const waLines: string[] = [
+    `Commande ${order.orderNumber} ${isPaid ? "✅ Payée en ligne" : "💵 À régler en espèces"}`,
+    "",
+  ];
+  order.items.forEach(item => {
+    let optLine = "";
+    if (item.options) {
+      try {
+        const opts = JSON.parse(item.options);
+        const c = opts?.caipi;
+        if (c) {
+          optLine = ` · ${c.taille} · ${c.preparation}`;
+          if (c.supplements?.length) optLine += ` + ${c.supplements.join(", ")}`;
+        }
+      } catch {}
+    }
+    waLines.push(`• ${item.name}${optLine} × ${item.quantity} = ${formatPrice(item.price * item.quantity)}`);
+  });
+  waLines.push(``, `Total : ${formatPrice(order.total)}`);
+  if (order.pickupTime) waLines.push(`Retrait : ${order.pickupTime}`);
+
+  const waMsg = encodeURIComponent(waLines.join("\n"));
 
   return (
-    <div className="pt-24 pb-16 min-h-screen">
-      <div className="container-custom max-w-2xl">
-        {/* Success header */}
-        <div className="text-center mb-10">
-          <div className="w-20 h-20 rounded-full bg-brand-success/15 border border-brand-success/30 flex items-center justify-center mx-auto mb-5">
-            <CheckCircle className="w-10 h-10 text-brand-success" />
+    <div
+      className="min-h-screen px-5 pb-24"
+      style={{ background: BG, paddingTop: "5rem" }}
+    >
+      <div className="max-w-lg mx-auto flex flex-col gap-5">
+
+        {/* Header */}
+        <div className="text-center pt-4 pb-2">
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{
+              background: "rgba(247,37,133,0.08)",
+              border:     "1px solid rgba(247,37,133,0.3)",
+            }}
+          >
+            <CheckCircle className="w-8 h-8" style={{ color: PINK }} />
           </div>
-          <h1 className="font-display text-3xl font-bold text-brand-text mb-2">
-            Commande confirmée !
+          <h1
+            className="font-sans font-black text-white text-2xl mb-1"
+            style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
+          >
+            {isPaid ? "Payée en ligne !" : "Commande confirmée !"}
           </h1>
-          <p className="text-brand-muted">
-            Merci {order.customerName.split(" ")[0]} ! Votre commande{" "}
-            <span className="font-bold text-brand-gold">{order.orderNumber}</span> a bien été reçue.
+          <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
+            Merci {order.customerName} · N°{" "}
+            <span className="font-bold" style={{ color: PINK }}>{order.orderNumber}</span>
           </p>
         </div>
 
-        {/* Order details */}
-        <div className="rounded-2xl bg-brand-card border border-brand-border p-6 mb-6">
-          <h2 className="font-display font-bold text-brand-text mb-4 flex items-center gap-2">
-            <Package className="w-5 h-5 text-brand-gold" />
-            Détails de la commande
-          </h2>
-
-          <div className="grid sm:grid-cols-2 gap-4 mb-5 text-sm">
+        {/* Pickup info */}
+        {order.pickupTime && (
+          <div
+            className="flex items-center gap-3 p-4 rounded-2xl"
+            style={{ background: "rgba(0,210,200,0.06)", border: "1px solid rgba(0,210,200,0.2)" }}
+          >
+            <Clock className="w-5 h-5 shrink-0" style={{ color: "#00D2C8" }} />
             <div>
-              <p className="text-brand-muted">Numéro de commande</p>
-              <p className="font-bold text-brand-gold">{order.orderNumber}</p>
-            </div>
-            <div>
-              <p className="text-brand-muted">Date</p>
-              <p className="font-medium text-brand-text">{formatDate(order.createdAt)}</p>
-            </div>
-            <div>
-              <p className="text-brand-muted">Statut</p>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-warning/15 text-brand-warning border border-brand-warning/30">
-                {ORDER_STATUS_LABELS[order.status] ?? order.status}
-              </span>
-            </div>
-            <div>
-              <p className="text-brand-muted">Mode de paiement</p>
-              <p className="font-medium text-brand-text capitalize">
-                {order.paymentMethod === "cash_on_delivery" && "Paiement à la livraison"}
-                {order.paymentMethod === "bank_transfer" && "Virement bancaire"}
-                {order.paymentMethod === "whatsapp" && "Via WhatsApp"}
+              <p className="text-white font-bold text-sm">Retrait à {order.pickupTime}</p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+                Click &amp; Collect · Matoury
               </p>
             </div>
           </div>
+        )}
 
-          {/* Items */}
-          <div className="flex flex-col gap-2 border-t border-brand-border pt-4">
-            {order.items.map((item) => (
-              <div key={item.id} className="flex justify-between text-sm">
-                <span className="text-brand-muted">
-                  {item.name} <span className="text-brand-text">x{item.quantity}</span>
-                </span>
-                <span className="font-medium text-brand-text">
-                  {formatPrice(item.price * item.quantity)}
-                </span>
-              </div>
-            ))}
-            <div className="flex justify-between font-bold text-brand-text border-t border-brand-border pt-2 mt-2">
-              <span>Total payé</span>
-              <span className="text-brand-gold">{formatPrice(order.total)}</span>
-            </div>
+        {/* Payment status */}
+        <div
+          className="flex items-center gap-3 p-4 rounded-2xl"
+          style={{
+            background: isPaid
+              ? "rgba(0,210,200,0.06)"
+              : "rgba(247,37,133,0.06)",
+            border: isPaid
+              ? "1px solid rgba(0,210,200,0.2)"
+              : "1px solid rgba(247,37,133,0.2)",
+          }}
+        >
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-lg"
+            style={{
+              background: isPaid ? "rgba(0,210,200,0.12)" : "rgba(247,37,133,0.12)",
+            }}
+          >
+            {isPaid ? "💳" : "💵"}
+          </div>
+          <div>
+            <p className="text-white font-bold text-sm">{paymentLabel}</p>
+            {!isPaid && (
+              <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                {formatPrice(order.total)} à régler au retrait
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Delivery info */}
-        <div className="rounded-2xl bg-brand-card border border-brand-border p-6 mb-6">
-          <h2 className="font-display font-bold text-brand-text mb-4">Livraison à</h2>
-          <p className="text-brand-muted text-sm">
-            {order.customerName}<br />
-            {order.address}<br />
-            {order.postalCode} {order.city}
+        {/* Articles */}
+        <div
+          className="p-4 rounded-2xl"
+          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
+        >
+          <p className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.35)" }}>
+            Tes articles
           </p>
-          {order.notes && (
-            <p className="text-xs text-brand-muted mt-2 italic">Note : {order.notes}</p>
-          )}
+          <div className="flex flex-col gap-2">
+            {order.items.map((item) => {
+              let caipiDetail = "";
+              if (item.options) {
+                try {
+                  const opts = JSON.parse(item.options);
+                  const c = opts?.caipi;
+                  if (c) {
+                    caipiDetail = `${c.taille} · ${c.preparation}`;
+                    if (c.supplements?.length) caipiDetail += ` · +${c.supplements.join(", ")}`;
+                  }
+                } catch {}
+              }
+              return (
+                <div key={item.id} className="flex items-start justify-between gap-3 text-sm">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium leading-snug">{item.name} ×{item.quantity}</p>
+                    {caipiDetail && (
+                      <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>{caipiDetail}</p>
+                    )}
+                  </div>
+                  <p className="font-bold shrink-0" style={{ color: PINK }}>
+                    {formatPrice(item.price * item.quantity)}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+          <div
+            className="flex items-center justify-between mt-3 pt-3 font-bold"
+            style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+          >
+            <span className="text-white">Total</span>
+            <span style={{ color: PINK }}>{formatPrice(order.total)}</span>
+          </div>
         </div>
 
-        {/* Next steps */}
-        <div className="rounded-2xl bg-gradient-to-r from-brand-purple/10 to-brand-gold/10 border border-brand-border p-6 mb-8">
-          <h2 className="font-display font-bold text-brand-text mb-3">Et maintenant ?</h2>
-          <ul className="flex flex-col gap-2.5 text-sm">
-            {[
-              "Nous avons reçu votre commande et allons la préparer très vite.",
-              "Vous recevrez un email de confirmation à " + order.customerEmail + ".",
-              "Notre équipe vous contactera pour la livraison.",
-              "En cas de question, n'hésitez pas à nous contacter via WhatsApp.",
-            ].map((step, i) => (
-              <li key={i} className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-brand-gold/20 text-brand-gold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                  {i + 1}
-                </span>
-                <span className="text-brand-muted">{step}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* WhatsApp recap */}
+        <a
+          href={`https://wa.me/${whatsapp}?text=${waMsg}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-white text-sm uppercase tracking-widest active:scale-[0.98] transition-transform"
+          style={{
+            background: "linear-gradient(135deg, #128C7E, #25D366)",
+            boxShadow:  "0 0 24px rgba(37,211,102,0.3)",
+          }}
+        >
+          <MessageCircle className="w-4 h-4" /> Envoyer le récapitulatif sur WhatsApp
+        </a>
 
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <a
-            href={`https://wa.me/${whatsapp}?text=${waMsg}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 bg-green-500/10 text-green-400 border border-green-500/30 hover:bg-green-500/20 font-semibold py-3.5 rounded-xl transition-colors text-sm"
-          >
-            <MessageCircle className="w-5 h-5" />
-            Contacter via WhatsApp
-          </a>
-          <Link
-            href="/shop"
-            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-brand-gold-dark to-brand-gold text-brand-darker font-bold py-3.5 rounded-xl text-sm"
-          >
-            Continuer mes achats
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
+        {/* Back to store */}
+        <Link
+          href="/frozen-caipi"
+          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-white text-sm border active:scale-[0.98] transition-transform"
+          style={{ borderColor: "rgba(255,255,255,0.1)" }}
+        >
+          Commander une autre caïpi <ArrowRight className="w-4 h-4" />
+        </Link>
+
+        <p className="text-xs text-center" style={{ color: "rgba(255,255,255,0.2)" }}>
+          {formatDate(order.createdAt)}
+        </p>
+
       </div>
     </div>
   );
