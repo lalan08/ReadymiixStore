@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP ?? "594694369615";
 const BG   = "#010C14";
 const PINK = "#F72585";
 
@@ -123,28 +122,6 @@ export default function CartPage() {
     }
   }
 
-  /* ── WhatsApp recap ──────────────────────────────────────── */
-  function buildWARecap(orderNumber: string) {
-    const lines: string[] = [
-      `Commande ${orderNumber} ✅`,
-      "",
-      "Articles :",
-    ];
-    items.forEach(item => {
-      const c = item.options?.caipi;
-      if (c) {
-        lines.push(`• Frozen Caïpi ${c.parfum} · ${c.taille} · ${c.preparation}`);
-        if (c.supplements.length > 0) lines.push(`  + ${c.supplements.join(", ")}`);
-        lines.push(`  × ${item.quantity} = ${formatPrice(item.price * item.quantity)}`);
-      } else {
-        lines.push(`• ${item.name} × ${item.quantity} = ${formatPrice(item.price * item.quantity)}`);
-      }
-    });
-    lines.push("", `Total : ${formatPrice(cartTotal)}`);
-    lines.push(`Retrait : ${heure}`);
-    lines.push(payChoice === "card" ? "Payée en ligne ✅" : "À régler en espèces 💵");
-    return encodeURIComponent(lines.join("\n"));
-  }
 
   /* ── PANIER VIDE ─────────────────────────────────────────── */
   if (items.length === 0) {

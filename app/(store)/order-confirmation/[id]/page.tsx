@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { formatPrice, formatDate, ORDER_STATUS_LABELS, ORDER_PAYMENT_LABELS } from "@/lib/utils";
+import { formatPrice, formatDate, ORDER_PAYMENT_LABELS } from "@/lib/utils";
 import Link from "next/link";
 import { CheckCircle, Clock, MessageCircle, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
