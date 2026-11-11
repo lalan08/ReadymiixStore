@@ -130,7 +130,29 @@ export default function FrozenCaipiPage() {
       },
     });
 
-    toast.success(`Frozen Caïpi ${flavorDisplay} ajoutée !`, { icon: "🧊", ...TOAST_STYLE });
+    toast.custom(
+      (t) => (
+        <div
+          className={`flex items-center gap-3 px-4 py-3 rounded-2xl shadow-lg transition-all ${t.visible ? "opacity-100" : "opacity-0"}`}
+          style={{ background: "#050D16", border: "1px solid rgba(0,200,255,0.2)", color: "#E0F8FF", maxWidth: "320px" }}
+        >
+          <span className="text-lg">🧊</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold truncate">Ajouté au panier !</p>
+            <p className="text-xs" style={{ color: "rgba(0,210,200,0.8)" }}>{flavorDisplay}</p>
+          </div>
+          <a
+            href="/cart"
+            className="text-xs font-bold shrink-0 px-2.5 py-1 rounded-lg"
+            style={{ background: "rgba(247,37,133,0.15)", color: "#F72585" }}
+            onClick={() => toast.dismiss(t.id)}
+          >
+            Voir →
+          </a>
+        </div>
+      ),
+      { duration: 3500 },
+    );
     setStep(2);
   }
 
