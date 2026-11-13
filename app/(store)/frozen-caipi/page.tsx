@@ -1,16 +1,46 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronLeft, Check, MessageCircle, Clock, MapPin, AlertCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ChevronLeft, Check, MessageCircle, Clock, MapPin, AlertCircle, Ban } from "lucide-react";
 import Link from "next/link";
 import { useCartStore } from "@/lib/store";
-import { getCaipiPrice, CAIPI_SIZES, CAIPI_PREPARATIONS, CAIPI_SUPPLEMENTS } from "@/lib/caipiPricing";
+import { CAIPI_SIZES, CAIPI_PREPARATIONS } from "@/lib/caipiPricing";
 import { formatPrice } from "@/lib/utils";
 import toast from "react-hot-toast";
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP ?? "594694369615";
 const BG   = "#010C14";
 const PINK = "#F72585";
+
+interface CaipiConfig {
+  ordering_open: boolean;
+  disabled_flavors: string[];
+  supplement_bonbons_enabled: boolean;
+  supplement_bonbons_price: number;
+  supplement_sirop_enabled: boolean;
+  supplement_sirop_price: number;
+  price_classique_500ml: number;
+  price_classique_700ml: number;
+  price_classique_1litre: number;
+  price_fruitee_500ml: number;
+  price_fruitee_700ml: number;
+  price_fruitee_1litre: number;
+}
+
+const DEFAULT_CONFIG: CaipiConfig = {
+  ordering_open: true,
+  disabled_flavors: [],
+  supplement_bonbons_enabled: true,
+  supplement_bonbons_price: 1,
+  supplement_sirop_enabled: true,
+  supplement_sirop_price: 2,
+  price_classique_500ml: 10,
+  price_classique_700ml: 12,
+  price_classique_1litre: 18,
+  price_fruitee_500ml: 12,
+  price_fruitee_700ml: 14,
+  price_fruitee_1litre: 20,
+};
 
 interface Flavor {
   id: string;
@@ -42,13 +72,19 @@ const FLAVORS: Flavor[] = [
   { id: "poire",         name: "Poire",           category: "fruitee", emoji: "🍐", color: "#CCDD55" },
 ];
 
-const CLASSIQUE_FLAVORS = FLAVORS.filter(f => f.category === "classique");
-const FRUITEE_FLAVORS   = FLAVORS.filter(f => f.category === "fruitee");
-const SIROP_FLAVORS     = FLAVORS.filter(f => f.category !== "classique");
+const ALL_CLASSIQUE_FLAVORS = FLAVORS.filter(f => f.category === "classique");
+const ALL_FRUITEE_FLAVORS   = FLAVORS.filter(f => f.category === "fruitee");
+const ALL_SIROP_FLAVORS     = FLAVORS.filter(f => f.category !== "classique");
 
 const TOAST_STYLE = { style: { background: "#050D16", color: "#E0F8FF", border: "1px solid rgba(0,200,255,0.2)" } };
 
+function getCaipiPriceFromConfig(config: CaipiConfig, category: string, sizeId: string): number {
+  const key = `price_${category === "classique" ? "classique" : "fruitee"}_${sizeId}` as keyof CaipiConfig;
+  return (config[key] as number) ?? 0;
+}
+
 export default function FrozenCaipiPage() {
+  const [config, setConfig]       = useState<CaipiConfig>(DEFAULT_CONFIG);
   const [step, setStep]           = useState<0 | 1>(0);
   const [flavorId, setFlavorId]   = useState<string | null>(null);
   const [sizeId, setSizeId]       = useState<string | null>(null);
@@ -57,11 +93,29 @@ export default function FrozenCaipiPage() {
   const [siropFlavorId, setSiropFlavorId] = useState<string | null>(null);
   const { addItem } = useCartStore();
 
+  useEffect(() => {
+    fetch("/api/caipi-config")
+      .then(r => r.json())
+      .then(setConfig)
+      .catch(() => {});
+  }, []);
+
+  // Filter flavors based on config
+  const CLASSIQUE_FLAVORS = ALL_CLASSIQUE_FLAVORS.filter(f => !config.disabled_flavors.includes(f.id));
+  const FRUITEE_FLAVORS   = ALL_FRUITEE_FLAVORS.filter(f => !config.disabled_flavors.includes(f.id));
+  const SIROP_FLAVORS     = ALL_SIROP_FLAVORS.filter(f => !config.disabled_flavors.includes(f.id));
+  const ACTIVE_FLAVORS    = FLAVORS.filter(f => !config.disabled_flavors.includes(f.id));
+
+  const supplements_list = [
+    ...(config.supplement_bonbons_enabled ? [{ id: "bonbons", label: "Bonbons", price: config.supplement_bonbons_price }] : []),
+    ...(config.supplement_sirop_enabled   ? [{ id: "sirop",   label: "Sirop fruité", price: config.supplement_sirop_price }] : []),
+  ];
+
   const flavor = FLAVORS.find(f => f.id === flavorId) ?? null;
   const categoryLabel = flavor?.category === "classique" ? "CLASSIQUE" : "FRUITÉ";
-  const basePrice = flavor && sizeId ? getCaipiPrice(flavor.category, sizeId) : null;
+  const basePrice = flavor && sizeId ? getCaipiPriceFromConfig(config, flavor.category, sizeId) : null;
   const suppTotal = supplements.reduce(
-    (sum, s) => sum + (CAIPI_SUPPLEMENTS.find(x => x.id === s)?.price ?? 0),
+    (sum, s) => sum + (supplements_list.find(x => x.id === s)?.price ?? 0),
     0
   );
   const unitPrice = basePrice !== null ? basePrice + suppTotal : null;
@@ -82,7 +136,7 @@ export default function FrozenCaipiPage() {
       const sf = FLAVORS.find(f => f.id === siropFlavorId);
       return sf ? `Sirop ${sf.name}` : "Sirop";
     }
-    return CAIPI_SUPPLEMENTS.find(s => s.id === id)?.label ?? id;
+    return supplements_list.find(s => s.id === id)?.label ?? id;
   }
 
   function handleSelectFlavor(id: string) {
@@ -98,7 +152,7 @@ export default function FrozenCaipiPage() {
     const suppsSorted = [...supplements].sort();
     const siropSuffix = suppsSorted.includes("sirop") && siropFlavorId ? `-${siropFlavorId}` : "";
     const cartId = `caipi-${flavorId}-${sizeId}-${prepId}${suppsSorted.length ? "-" + suppsSorted.join("-") : ""}${siropSuffix}`;
-    const suppLabels = suppsSorted.map(id => getSuppLabel(id));
+    const suppLabels = suppsSorted.map((id: string) => getSuppLabel(id));
     const flavorDisplay = flavor.sub ? `${flavor.name} ${flavor.sub}` : flavor.name;
 
     addItem({
@@ -146,7 +200,7 @@ export default function FrozenCaipiPage() {
 
   /* ─────── shared flavor card (used on landing) ─────── */
   function FlavorCard({ f }: { f: Flavor }) {
-    const startPrice = getCaipiPrice(f.category, "500ml");
+    const startPrice = getCaipiPriceFromConfig(config, f.category, "500ml");
     return (
       <button
         onClick={() => handleSelectFlavor(f.id)}
@@ -184,6 +238,22 @@ export default function FrozenCaipiPage() {
       {/* ══════════════ STEP 0 — LANDING ══════════════ */}
       {step === 0 && (
         <div className="relative px-5 pt-20 pb-10 max-w-lg mx-auto">
+
+          {/* Closed banner */}
+          {!config.ordering_open && (
+            <div
+              className="flex items-center gap-3 p-4 rounded-2xl mb-6"
+              style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)" }}
+            >
+              <Ban className="w-5 h-5 shrink-0 text-red-400" />
+              <div>
+                <p className="font-bold text-red-300 text-sm">Commandes fermées pour le moment</p>
+                <p className="text-xs text-white/40 mt-0.5">
+                  Reviens plus tard ou contacte-nous sur WhatsApp.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Click & Collect badge */}
           <div className="flex justify-center mb-6">
@@ -260,30 +330,38 @@ export default function FrozenCaipiPage() {
           </div>
 
           {/* CLASSIQUE */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: "#a8e063cc" }}>
-                🍋 Classique
-              </span>
-              <span className="text-[10px] text-white/30">10€ / 12€ / 18€</span>
+          {CLASSIQUE_FLAVORS.length > 0 && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: "#a8e063cc" }}>
+                  🍋 Classique
+                </span>
+                <span className="text-[10px] text-white/30">
+                  {formatPrice(config.price_classique_500ml)} / {formatPrice(config.price_classique_700ml)} / {formatPrice(config.price_classique_1litre)}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {CLASSIQUE_FLAVORS.map(f => <FlavorCard key={f.id} f={f} />)}
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              {CLASSIQUE_FLAVORS.map(f => <FlavorCard key={f.id} f={f} />)}
-            </div>
-          </div>
+          )}
 
           {/* FRUITÉ */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: `${PINK}cc` }}>
-                🍓 Fruité
-              </span>
-              <span className="text-[10px] text-white/30">12€ / 14€ / 20€</span>
+          {FRUITEE_FLAVORS.length > 0 && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: `${PINK}cc` }}>
+                  🍓 Fruité
+                </span>
+                <span className="text-[10px] text-white/30">
+                  {formatPrice(config.price_fruitee_500ml)} / {formatPrice(config.price_fruitee_700ml)} / {formatPrice(config.price_fruitee_1litre)}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {FRUITEE_FLAVORS.map(f => <FlavorCard key={f.id} f={f} />)}
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              {FRUITEE_FLAVORS.map(f => <FlavorCard key={f.id} f={f} />)}
-            </div>
-          </div>
+          )}
 
           {/* Boissons & extras */}
           <Link href="/shop"
@@ -325,7 +403,7 @@ export default function FrozenCaipiPage() {
               style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
               <p className="text-xs font-black uppercase tracking-widest text-white/50">Parfum</p>
               <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-                {FLAVORS.map(f => (
+                {ACTIVE_FLAVORS.map(f => (
                   <button
                     key={f.id}
                     onClick={() => setFlavorId(f.id)}
@@ -349,7 +427,7 @@ export default function FrozenCaipiPage() {
               <p className="text-xs font-black uppercase tracking-widest text-white/50">Taille</p>
               <div className="grid grid-cols-3 gap-2">
                 {CAIPI_SIZES.map(s => {
-                  const price  = flavor ? getCaipiPrice(flavor.category, s.id) : null;
+                  const price  = flavor ? getCaipiPriceFromConfig(config, flavor.category, s.id) : null;
                   const active = sizeId === s.id;
                   return (
                     <button
@@ -414,7 +492,7 @@ export default function FrozenCaipiPage() {
                 <span className="text-white/25 normal-case font-normal">(optionnel)</span>
               </p>
               <div className="flex flex-col gap-4">
-                {CAIPI_SUPPLEMENTS.map(s => {
+                {supplements_list.map(s => {
                   const active = supplements.includes(s.id);
                   return (
                     <div key={s.id}>
@@ -462,7 +540,7 @@ export default function FrozenCaipiPage() {
                             Parfum du sirop
                           </p>
                           <div className="flex flex-wrap gap-1.5">
-                            {SIROP_FLAVORS.map(f => {
+                            {SIROP_FLAVORS.length > 0 ? SIROP_FLAVORS.map(f => {
                               const sel = siropFlavorId === f.id;
                               return (
                                 <button
@@ -478,7 +556,7 @@ export default function FrozenCaipiPage() {
                                   {f.emoji} {f.name}
                                 </button>
                               );
-                            })}
+                            }) : <span className="text-xs text-white/30">Aucun parfum disponible</span>}
                           </div>
                         </div>
                       )}

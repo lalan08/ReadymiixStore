@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Sparkles, LayoutDashboard, ShoppingBag, Tag,
   LogOut, Droplets, Coffee, Settings,
-  Store, CalendarDays, Menu, X,
+  Store, CalendarDays, Menu, X, IceCream2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -32,9 +32,10 @@ const NAV_GROUPS = [
     ],
   },
   {
-    label: "COMMANDES",
+    label: "FROZEN CAÏPIS",
     items: [
       { href: "/admin/orders", icon: ShoppingBag, label: "Commandes" },
+      { href: "/admin/caipi",  icon: IceCream2,   label: "Frozen Caïpis" },
     ],
   },
   {
