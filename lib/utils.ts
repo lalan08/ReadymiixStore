@@ -53,7 +53,7 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
   PENDING:         "En attente",
   PENDING_PAYMENT: "Paiement en cours",
   CONFIRMED:       "Confirmée",
-  PROCESSING:      "En préparation",
+  PROCESSING:      "Commande prête",
   SHIPPED:         "Expédiée",
   DELIVERED:       "Livrée",
   CANCELLED:       "Annulée",
