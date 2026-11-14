@@ -4,6 +4,9 @@ import { prisma } from "@/lib/prisma";
 export const revalidate = 300; // 5 minutes — config changes infrequently
 
 const PUBLIC_KEYS = [
+  "whatsapp_number",
+  "maintenance_message",
+  "maintenance_enabled",
   "bonbons_text",
   "bonbons_items",
   "soft_supplement",

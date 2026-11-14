@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getSiteConfigMap } from "@/lib/siteConfig";
 import { notFound } from "next/navigation";
 import { formatPrice, formatDate, ORDER_PAYMENT_LABELS } from "@/lib/utils";
 import Link from "next/link";
@@ -21,7 +22,8 @@ export default async function OrderConfirmationPage({ params }: Props) {
 
   if (!order) notFound();
 
-  const whatsapp    = process.env.NEXT_PUBLIC_WHATSAPP ?? "594694369615";
+  const cfg         = await getSiteConfigMap();
+  const whatsapp    = cfg.whatsapp_number ?? process.env.NEXT_PUBLIC_WHATSAPP ?? "594694369615";
   const paymentLabel = ORDER_PAYMENT_LABELS[order.paymentMethod] ?? order.paymentMethod;
   const isPaid       = order.paymentMethod === "card_online";
 
