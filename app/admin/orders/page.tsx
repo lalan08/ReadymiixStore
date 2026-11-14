@@ -8,52 +8,64 @@ import Link from "next/link";
 export const metadata = { title: "Commandes" };
 export const dynamic  = "force-dynamic";
 
-const STATUS_LIST = ["PENDING", "PENDING_PAYMENT", "CONFIRMED", "PROCESSING", "DELIVERED", "CANCELLED"];
+const ACTIVE_STATUSES = ["PENDING", "PENDING_PAYMENT", "CONFIRMED", "PROCESSING"];
+const DONE_STATUSES   = ["DELIVERED", "CANCELLED"];
 
-interface Props { searchParams: { status?: string; view?: string } }
+interface Props { searchParams: { status?: string; view?: string; tab?: string } }
 
 export default async function AdminOrdersPage({ searchParams }: Props) {
   const statusFilter = searchParams.status;
   const view         = searchParams.view ?? "today";
+  const tab          = searchParams.tab  ?? "actives";
 
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
 
-  const whereToday = {
-    createdAt: { gte: todayStart },
-    ...(statusFilter ? { status: statusFilter } : {}),
-  };
-  const whereAll = statusFilter ? { status: statusFilter } : undefined;
+  const tabStatuses  = tab === "terminees" ? DONE_STATUSES : ACTIVE_STATUSES;
+  const statusClause = statusFilter
+    ? { status: statusFilter }
+    : { status: { in: tabStatuses } };
+
+  const whereBase = view === "today"
+    ? { createdAt: { gte: todayStart }, ...statusClause }
+    : statusClause;
 
   type OrderWithItems = Awaited<ReturnType<typeof prisma.order.findMany<{ include: { items: true } }>>>[number];
   let orders: OrderWithItems[] = [];
-  let todayCount  = 0;
+  let activeCount = 0;
+  let doneCount   = 0;
   let pendingCount = 0;
   let dbError: string | null = null;
 
+  const countWhere = (statuses: string[]) =>
+    view === "today"
+      ? { createdAt: { gte: todayStart }, status: { in: statuses } }
+      : { status: { in: statuses } };
+
   try {
-    [orders, todayCount, pendingCount] = await Promise.all([
+    [orders, activeCount, doneCount, pendingCount] = await Promise.all([
       prisma.order.findMany({
-        where:   view === "today" ? whereToday : whereAll,
+        where:   whereBase,
         include: { items: true },
-        orderBy: view === "today"
+        orderBy: tab === "actives"
           ? [{ pickupTime: "asc" }, { createdAt: "asc" }]
           : { createdAt: "desc" },
       }),
-      prisma.order.count({ where: { createdAt: { gte: todayStart } } }),
+      prisma.order.count({ where: countWhere(ACTIVE_STATUSES) }),
+      prisma.order.count({ where: countWhere(DONE_STATUSES) }),
       prisma.order.count({ where: { status: "PENDING" } }),
     ]);
   } catch (err) {
     console.error("[orders page]", err);
-    // Fallback: try without pickupTime sort (pre-migration)
     try {
-      [orders, todayCount, pendingCount] = await Promise.all([
+      [orders, activeCount, doneCount, pendingCount] = await Promise.all([
         prisma.order.findMany({
-          where:   view === "today" ? whereToday : whereAll,
+          where:   whereBase,
           include: { items: true },
           orderBy: { createdAt: "desc" },
         }),
-        prisma.order.count({ where: { createdAt: { gte: todayStart } } }),
+        prisma.order.count({ where: countWhere(ACTIVE_STATUSES) }),
+        prisma.order.count({ where: countWhere(DONE_STATUSES) }),
         prisma.order.count({ where: { status: "PENDING" } }),
       ]);
       dbError = "migration";
@@ -80,6 +92,11 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
     );
   }
 
+  const baseHref = (overrides: Record<string, string>) => {
+    const p = new URLSearchParams({ view, tab, ...overrides });
+    return `/admin/orders?${p.toString()}`;
+  };
+
   return (
     <div className="max-w-6xl flex flex-col gap-6">
 
@@ -91,7 +108,6 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
             <p className="font-bold text-brand-warning text-sm">Migration SQL à appliquer</p>
             <p className="text-xs text-brand-muted mt-1">
               Le tri par heure de retrait nécessite la migration <code className="text-brand-gold">prisma/migration_click_collect.sql</code> sur Neon.
-              Les commandes s&apos;affichent sans tri d&apos;heure pour l&apos;instant.
             </p>
           </div>
         </div>
@@ -114,7 +130,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
         {/* View toggle */}
         <div className="flex items-center gap-1 p-1 rounded-xl bg-brand-darker border border-brand-border">
           <Link
-            href="/admin/orders?view=today"
+            href={baseHref({ view: "today" })}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
               view === "today"
                 ? "bg-brand-gold text-brand-darker"
@@ -122,10 +138,10 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
             }`}
           >
             <Clock className="w-3 h-3" />
-            Aujourd&apos;hui ({todayCount})
+            Aujourd&apos;hui
           </Link>
           <Link
-            href="/admin/orders?view=all"
+            href={baseHref({ view: "all" })}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
               view !== "today"
                 ? "bg-brand-gold text-brand-darker"
@@ -137,10 +153,52 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
         </div>
       </div>
 
-      {/* Status filter */}
+      {/* Tab bar: Actives / Terminées */}
+      <div className="flex items-center gap-1 p-1 rounded-xl bg-brand-darker border border-brand-border self-start">
+        <Link
+          href={baseHref({ tab: "actives" })}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+            tab !== "terminees"
+              ? "bg-brand-card text-brand-text shadow"
+              : "text-brand-muted hover:text-brand-text"
+          }`}
+        >
+          Actives
+          {activeCount > 0 && (
+            <span className={`ml-2 text-xs px-1.5 py-0.5 rounded-full font-bold ${
+              tab !== "terminees"
+                ? "bg-brand-warning/20 text-brand-warning"
+                : "bg-brand-border text-brand-muted"
+            }`}>
+              {activeCount}
+            </span>
+          )}
+        </Link>
+        <Link
+          href={baseHref({ tab: "terminees" })}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+            tab === "terminees"
+              ? "bg-brand-card text-brand-text shadow"
+              : "text-brand-muted hover:text-brand-text"
+          }`}
+        >
+          Terminées
+          {doneCount > 0 && (
+            <span className={`ml-2 text-xs px-1.5 py-0.5 rounded-full font-bold ${
+              tab === "terminees"
+                ? "bg-brand-border text-brand-muted"
+                : "bg-brand-border text-brand-muted"
+            }`}>
+              {doneCount}
+            </span>
+          )}
+        </Link>
+      </div>
+
+      {/* Status filter chips */}
       <div className="flex flex-wrap gap-2">
         <Link
-          href={`/admin/orders?view=${view}`}
+          href={baseHref({})}
           className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
             !statusFilter
               ? "bg-brand-gold/10 text-brand-gold border-brand-gold/30"
@@ -149,10 +207,10 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
         >
           Tous
         </Link>
-        {STATUS_LIST.map((s) => (
+        {tabStatuses.map((s) => (
           <Link
             key={s}
-            href={`/admin/orders?view=${view}&status=${s}`}
+            href={baseHref({ status: s })}
             className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
               statusFilter === s
                 ? "bg-brand-gold/10 text-brand-gold border-brand-gold/30"
@@ -169,10 +227,14 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
           <ShoppingBag className="w-12 h-12 text-brand-muted" />
           <div className="text-center">
             <p className="font-display font-bold text-brand-text mb-1">
-              {view === "today" ? "Aucune commande aujourd'hui" : "Aucune commande"}
+              {tab === "terminees" ? "Aucune commande terminée" : "Aucune commande active"}
             </p>
             <p className="text-brand-muted text-sm">
-              {view === "today" ? "Les commandes du jour apparaîtront ici." : "Les commandes apparaîtront ici."}
+              {tab === "terminees"
+                ? "Les commandes livrées ou annulées apparaîtront ici."
+                : view === "today"
+                  ? "Les commandes du jour apparaîtront ici."
+                  : "Les commandes apparaîtront ici."}
             </p>
           </div>
         </div>
@@ -185,10 +247,12 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
               style={{
                 borderLeftWidth: "3px",
                 borderLeftColor:
-                  order.status === "PENDING"    ? "rgb(245,158,11)" :
-                  order.status === "PROCESSING" ? "rgb(168,85,247)" :
-                  order.status === "DELIVERED"  ? "rgb(34,197,94)"  :
-                  order.status === "CANCELLED"  ? "rgb(239,68,68)"  : "transparent",
+                  order.status === "PENDING"         ? "rgb(245,158,11)" :
+                  order.status === "PENDING_PAYMENT" ? "rgb(59,130,246)"  :
+                  order.status === "CONFIRMED"       ? "rgb(20,184,166)"  :
+                  order.status === "PROCESSING"      ? "rgb(168,85,247)"  :
+                  order.status === "DELIVERED"       ? "rgb(34,197,94)"   :
+                  order.status === "CANCELLED"       ? "rgb(239,68,68)"   : "transparent",
               }}
             >
               {/* Header */}
@@ -201,7 +265,6 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
                     <span className={`text-xs px-2.5 py-0.5 rounded-full border font-medium ${ORDER_STATUS_COLORS[order.status] ?? ""}`}>
                       {ORDER_STATUS_LABELS[order.status] ?? order.status}
                     </span>
-                    {/* Payment badge */}
                     <span className={`text-xs px-2.5 py-0.5 rounded-full border font-medium ${
                       order.paymentMethod === "card_online"
                         ? "text-brand-teal border-brand-teal/30 bg-brand-teal/10"
@@ -221,7 +284,6 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
                   <p className="font-display font-bold text-xl text-brand-gold">
                     {formatPrice(order.total)}
                   </p>
-                  {/* Pickup time badge */}
                   {order.pickupTime && (
                     <span className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full bg-brand-teal/10 text-brand-teal border border-brand-teal/20">
                       <Clock className="w-3 h-3" />
