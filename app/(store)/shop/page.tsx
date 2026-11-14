@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import ShopClient from "./ShopClient";
 import { Suspense } from "react";
 
-export const revalidate = 60;
+export const dynamic  = "force-dynamic";
 export const metadata = { title: "Boutique — ReadyMiix" };
 
 const COMPOSER_SLUGS = ["light", "hard"];

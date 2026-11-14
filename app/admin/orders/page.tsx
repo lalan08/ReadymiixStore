@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { formatPrice, formatDate, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, ORDER_PAYMENT_LABELS } from "@/lib/utils";
-import { ShoppingBag, Clock } from "lucide-react";
+import { ShoppingBag, Clock, AlertTriangle } from "lucide-react";
 import OrderStatusUpdate from "./OrderStatusUpdate";
 import QuickOrderActions from "./QuickOrderActions";
 import Link from "next/link";
@@ -25,20 +25,77 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
   };
   const whereAll = statusFilter ? { status: statusFilter } : undefined;
 
-  const [orders, todayCount, pendingCount] = await Promise.all([
-    prisma.order.findMany({
-      where:   view === "today" ? whereToday : whereAll,
-      include: { items: true },
-      orderBy: view === "today"
-        ? [{ pickupTime: "asc" }, { createdAt: "asc" }]
-        : { createdAt: "desc" },
-    }),
-    prisma.order.count({ where: { createdAt: { gte: todayStart } } }),
-    prisma.order.count({ where: { status: "PENDING" } }),
-  ]);
+  type OrderWithItems = Awaited<ReturnType<typeof prisma.order.findMany<{ include: { items: true } }>>>[number];
+  let orders: OrderWithItems[] = [];
+  let todayCount  = 0;
+  let pendingCount = 0;
+  let dbError: string | null = null;
+
+  try {
+    [orders, todayCount, pendingCount] = await Promise.all([
+      prisma.order.findMany({
+        where:   view === "today" ? whereToday : whereAll,
+        include: { items: true },
+        orderBy: view === "today"
+          ? [{ pickupTime: "asc" }, { createdAt: "asc" }]
+          : { createdAt: "desc" },
+      }),
+      prisma.order.count({ where: { createdAt: { gte: todayStart } } }),
+      prisma.order.count({ where: { status: "PENDING" } }),
+    ]);
+  } catch (err) {
+    console.error("[orders page]", err);
+    // Fallback: try without pickupTime sort (pre-migration)
+    try {
+      [orders, todayCount, pendingCount] = await Promise.all([
+        prisma.order.findMany({
+          where:   view === "today" ? whereToday : whereAll,
+          include: { items: true },
+          orderBy: { createdAt: "desc" },
+        }),
+        prisma.order.count({ where: { createdAt: { gte: todayStart } } }),
+        prisma.order.count({ where: { status: "PENDING" } }),
+      ]);
+      dbError = "migration";
+    } catch (err2) {
+      console.error("[orders page fallback]", err2);
+      dbError = "db";
+    }
+  }
+
+  if (dbError === "db") {
+    return (
+      <div className="max-w-2xl flex flex-col gap-6">
+        <h1 className="font-display text-2xl font-bold text-brand-text">Commandes</h1>
+        <div className="rounded-2xl border border-red-500/40 bg-red-500/10 p-6 flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="w-6 h-6 text-red-400 shrink-0" />
+            <p className="font-bold text-red-300">Impossible de se connecter à la base de données</p>
+          </div>
+          <p className="text-sm text-brand-muted">
+            Vérifie que la variable <code className="text-brand-gold bg-brand-darker px-1.5 py-0.5 rounded text-xs">DATABASE_URL</code> est bien configurée dans ton hébergeur.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl flex flex-col gap-6">
+
+      {/* Migration banner */}
+      {dbError === "migration" && (
+        <div className="rounded-2xl border border-brand-warning/40 bg-brand-warning/10 p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-brand-warning shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold text-brand-warning text-sm">Migration SQL à appliquer</p>
+            <p className="text-xs text-brand-muted mt-1">
+              Le tri par heure de retrait nécessite la migration <code className="text-brand-gold">prisma/migration_click_collect.sql</code> sur Neon.
+              Les commandes s&apos;affichent sans tri d&apos;heure pour l&apos;instant.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
