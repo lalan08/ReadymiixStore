@@ -12,25 +12,32 @@ interface Props {
 
 const ACTIONS = [
   {
-    id:       "PROCESSING",
-    label:    "Prête",
-    icon:     ChefHat,
-    color:    "text-brand-purple-light border-brand-purple/40 hover:bg-brand-purple/10",
-    showOn:   ["PENDING", "CONFIRMED"],
+    id:     "CONFIRMED",
+    label:  "Accepter",
+    icon:   PackageCheck,
+    color:  "text-brand-teal border-brand-teal/40 hover:bg-brand-teal/10",
+    showOn: ["PENDING", "PENDING_PAYMENT"],
   },
   {
-    id:       "DELIVERED",
-    label:    "Récupérée",
-    icon:     PackageCheck,
-    color:    "text-brand-success border-brand-success/40 hover:bg-brand-success/10",
-    showOn:   ["PROCESSING", "CONFIRMED", "PENDING"],
+    id:     "PROCESSING",
+    label:  "Commande prête",
+    icon:   ChefHat,
+    color:  "text-brand-purple-light border-brand-purple/40 hover:bg-brand-purple/10",
+    showOn: ["CONFIRMED"],
   },
   {
-    id:       "CANCELLED",
-    label:    "Annuler",
-    icon:     X,
-    color:    "text-brand-error border-brand-error/40 hover:bg-brand-error/10",
-    showOn:   ["PENDING", "CONFIRMED", "PROCESSING"],
+    id:     "DELIVERED",
+    label:  "Récupérée",
+    icon:   PackageCheck,
+    color:  "text-brand-success border-brand-success/40 hover:bg-brand-success/10",
+    showOn: ["PROCESSING"],
+  },
+  {
+    id:     "CANCELLED",
+    label:  "Annuler",
+    icon:   X,
+    color:  "text-brand-error border-brand-error/40 hover:bg-brand-error/10",
+    showOn: ["PENDING", "PENDING_PAYMENT", "CONFIRMED", "PROCESSING"],
   },
 ];
 
