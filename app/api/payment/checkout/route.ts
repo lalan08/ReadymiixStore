@@ -26,7 +26,6 @@ export async function POST(req: Request) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       locale: "fr",
-      automatic_payment_methods: { enabled: true },
       line_items: order.items.map((item) => ({
         price_data: {
           currency: "eur",
