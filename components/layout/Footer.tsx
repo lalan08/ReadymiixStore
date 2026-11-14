@@ -169,13 +169,19 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-brand-border">
-        <div className="container-custom py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="container-custom py-5 flex flex-col sm:flex-row items-center justify-between gap-3 flex-wrap">
           <p className="text-xs text-brand-muted">
-            © {currentYear} ReadyMiix Cocktails. Tous droits réservés.
+            © {currentYear} ReadyMiix and More. Tous droits réservés.
           </p>
-          <p className="text-xs text-brand-muted">
-            🍹 À consommer avec modération. Interdit aux mineurs.
-          </p>
+          <div className="flex items-center gap-4">
+            <Link href="/privacy-policy" className="text-xs text-brand-muted hover:text-brand-text transition-colors">
+              Confidentialité
+            </Link>
+            <Link href="/terms" className="text-xs text-brand-muted hover:text-brand-text transition-colors">
+              CGV
+            </Link>
+            <span className="text-xs text-brand-muted">· À consommer avec modération. Interdit aux mineurs.</span>
+          </div>
         </div>
       </div>
     </footer>
