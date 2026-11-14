@@ -201,11 +201,18 @@ export default function FrozenCaipiPage() {
   /* ─────── shared flavor card (used on landing) ─────── */
   function FlavorCard({ f }: { f: Flavor }) {
     const startPrice = getCaipiPriceFromConfig(config, f.category, "500ml");
+    const closed = !config.ordering_open;
     return (
       <button
-        onClick={() => handleSelectFlavor(f.id)}
-        className="relative flex items-center gap-3 p-3 rounded-2xl text-left active:scale-[0.97] transition-transform cursor-pointer w-full"
-        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+        onClick={() => !closed && handleSelectFlavor(f.id)}
+        disabled={closed}
+        className="relative flex items-center gap-3 p-3 rounded-2xl text-left transition-transform w-full"
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          opacity: closed ? 0.4 : 1,
+          cursor: closed ? "not-allowed" : "pointer",
+        }}
       >
         <div className="w-12 h-14 rounded-xl flex items-center justify-center text-xl shrink-0"
           style={{ background: `linear-gradient(160deg, ${f.color}60, ${f.color}20)`, border: `1px solid ${f.color}30` }}>
@@ -580,14 +587,20 @@ export default function FrozenCaipiPage() {
               </div>
               <button
                 onClick={handleNext}
-                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm uppercase tracking-widest active:scale-[0.98] transition-transform cursor-pointer"
+                disabled={!isStep1Ready || !config.ordering_open}
+                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm uppercase tracking-widest transition-transform"
                 style={{
-                  background:  isStep1Ready ? `linear-gradient(135deg, #C5006A, ${PINK})` : "rgba(255,255,255,0.08)",
-                  color:       isStep1Ready ? "#fff" : "rgba(255,255,255,0.3)",
-                  boxShadow:   isStep1Ready ? "0 0 25px rgba(247,37,133,0.35)" : "none",
+                  background:  !config.ordering_open
+                    ? "rgba(255,255,255,0.06)"
+                    : isStep1Ready
+                      ? `linear-gradient(135deg, #C5006A, ${PINK})`
+                      : "rgba(255,255,255,0.08)",
+                  color:       !config.ordering_open || !isStep1Ready ? "rgba(255,255,255,0.25)" : "#fff",
+                  boxShadow:   isStep1Ready && config.ordering_open ? "0 0 25px rgba(247,37,133,0.35)" : "none",
+                  cursor:      !config.ordering_open ? "not-allowed" : isStep1Ready ? "pointer" : "default",
                 }}
               >
-                Ajouter au panier →
+                {!config.ordering_open ? "Commandes fermées" : "Ajouter au panier →"}
               </button>
             </div>
           </div>

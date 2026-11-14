@@ -1,10 +1,23 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateOrderNumber } from "@/lib/utils";
+import { DEFAULT_CAIPI_CONFIG } from "@/lib/caipiConfig";
 import type { CartItem } from "@/lib/types";
 
 export async function POST(req: Request) {
   try {
+    // Check ordering_open before anything else
+    try {
+      const row = await prisma.siteConfig.findUnique({ where: { key: "caipi_config" } });
+      const cfg = row ? { ...DEFAULT_CAIPI_CONFIG, ...JSON.parse(row.value) } : DEFAULT_CAIPI_CONFIG;
+      if (!cfg.ordering_open) {
+        return NextResponse.json(
+          { error: "Les commandes sont fermées pour le moment. Réessaie plus tard." },
+          { status: 403 }
+        );
+      }
+    } catch { /* si la config est inaccessible, on laisse passer */ }
+
     const body = await req.json();
     const {
       customerName,
